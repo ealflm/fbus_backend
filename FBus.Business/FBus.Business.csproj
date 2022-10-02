@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <AssemblyName>FBus.Business</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="SearchModel\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\FBus.Data\FBus.Data.csproj" />
+  </ItemGroup>
+
+</Project>
