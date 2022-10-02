@@ -19,7 +19,7 @@
     "FBus.API": {
       "commandName": "Project",
       "launchBrowser": true,
-      "applicationUrl": "http://localhost:17888",
+      "applicationUrl": "http://localhost:23935",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
