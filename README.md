@@ -3,7 +3,7 @@
 ## Infomation
 
 - WebApi: https://fbus-api.azurewebsites.net
-- WebApp: https://icy-field-0af8c8c00.2.azurestaticapps.net
+- WebApp: https://fbus.azurewebsites.net
 - Database: 
     + Server name: fbus.database.windows.net
     + Login: fbus
