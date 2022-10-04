@@ -6,7 +6,7 @@ using FBus.Business.Interfaces;
 
 namespace FBus.API.Controllers
 {
-    [Route("api/" + Version + "/admins")]
+    [Route("api/" + Version + "/admin/home")]
     [ApiController]
     public class AdminsController : BaseController
     {
