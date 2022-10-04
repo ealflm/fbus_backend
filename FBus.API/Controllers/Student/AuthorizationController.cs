@@ -9,7 +9,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using IAuthorizationService = FBus.Business.Authorization.Interfaces.IAuthorizationService;
 
-namespace FBus.API.Controllers.Admin
+namespace FBus.API.Controllers.Student
 {
     [ApiController]
     public class AuthorizationController : BaseController
@@ -21,25 +21,11 @@ namespace FBus.API.Controllers.Admin
             _authorizationService = authorizationService;
         }
 
-        [HttpPost]
-        [Route(ApiVer1Url.Admin.Login)]
-        public async Task<IActionResult> Login([FromBody] LoginSearchModel model)
-        {
-            return SendResponse( await _authorizationService.Login(model, global::Login.Admin));
-        }
-
-        [HttpPost]
-        [Route(ApiVer1Url.Admin.Register)]
-        public async Task<IActionResult> Register([FromForm] LoginSearchModel model)
-        {
-            return SendResponse(await _authorizationService.Register(model));
-        }
-        /*
         [HttpGet]
-        [Route(ApiVer1Url.Admin.LoginGoogle)]
+        [Route(ApiVer1Url.Student.Login)]
         public async Task<IActionResult> LoginGoogle([FromQuery] string idToken)
         {
             return SendResponse(await _authorizationService.LoginGoogle(idToken));
-        }*/
+        }
     }
 }

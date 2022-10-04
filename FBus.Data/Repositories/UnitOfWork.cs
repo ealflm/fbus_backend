@@ -12,15 +12,18 @@ namespace FBus.Data.Repositories
 
         public IGenericRepository<Admin> AdminRepository { get; }
         public IGenericRepository<Student> StudentRepository { get; }
+        public IGenericRepository<Driver> DriverRepository { get; }
         public UnitOfWork(FBusContext dbContext,
                         IGenericRepository<Admin> adminRepository,
-                        IGenericRepository<Student> studentRepository
+                        IGenericRepository<Student> studentRepository,
+                        IGenericRepository<Driver> driverRepository
             )
         {
             _dbContext = dbContext;
 
             AdminRepository = adminRepository;
             StudentRepository = studentRepository;
+            DriverRepository = driverRepository;    
         }
 
         public FBusContext Context()

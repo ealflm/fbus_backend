@@ -48,8 +48,8 @@ namespace FBus.Business.Authorization.Implements
                     }
                 case 1:
                     {
-                        user = await _unitOfWork.AdminRepository.Query()
-                        .Where(x => x.UserName == userName && x.Password != null)
+                        user = await _unitOfWork.DriverRepository.Query()
+                        .Where(x => x.Phone == userName && x.Password != null)
                         .FirstOrDefaultAsync();
                         break;
                     }
