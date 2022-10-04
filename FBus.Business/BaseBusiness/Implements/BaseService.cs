@@ -1,7 +1,7 @@
-﻿using FBus.Business.Interfaces;
+﻿using FBus.Business.BaseBusiness.Interfaces;
 using FBus.Data.Interfaces;
 
-namespace FBus.Business.Implements
+namespace FBus.Business.BaseBusiness.Implements
 {
     public class BaseService : IBaseService
     {

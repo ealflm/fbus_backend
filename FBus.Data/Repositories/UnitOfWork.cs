@@ -11,14 +11,16 @@ namespace FBus.Data.Repositories
         private readonly FBusContext _dbContext;
 
         public IGenericRepository<Admin> AdminRepository { get; }
-
+        public IGenericRepository<Student> StudentRepository { get; }
         public UnitOfWork(FBusContext dbContext,
-                        IGenericRepository<Admin> adminRepository
+                        IGenericRepository<Admin> adminRepository,
+                        IGenericRepository<Student> studentRepository
             )
         {
             _dbContext = dbContext;
 
             AdminRepository = adminRepository;
+            StudentRepository = studentRepository;
         }
 
         public FBusContext Context()

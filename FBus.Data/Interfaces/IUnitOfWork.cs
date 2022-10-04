@@ -8,7 +8,7 @@ namespace FBus.Data.Interfaces
     public interface IUnitOfWork
     {
         IGenericRepository<Admin> AdminRepository { get; }
-
+        IGenericRepository<Student> StudentRepository { get; }
         FBusContext Context();
 
         DatabaseFacade Database();

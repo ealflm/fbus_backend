@@ -6,8 +6,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
-using FBus.Business.Implements;
-using FBus.Business.Interfaces;
+using FBus.Business.BaseBusiness.Implements;
+using FBus.Business.BaseBusiness.Interfaces;
 using FBus.Data.Context;
 using FBus.Data.Interfaces;
 using FBus.Data.Repositories;
@@ -20,6 +20,12 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System;
 using FBus.API.Utilities.Swagger;
+using Microsoft.AspNetCore.Builder.Extensions;
+using FirebaseAdmin;
+using Google.Apis.Auth.OAuth2;
+using FBus.Business.Authorization.Interfaces;
+using IAuthorizationService = FBus.Business.Authorization.Interfaces.IAuthorizationService;
+using FBus.Business.Authorization.Implements;
 
 namespace FBus.API
 {
@@ -147,15 +153,15 @@ namespace FBus.API
 
             #endregion
 
-
-            
-
+            services.AddSingleton(FirebaseApp.Create(new AppOptions()
+            {
+                Credential = GoogleCredential.FromFile(Configuration["Firebase:Admin"]),
+            })
+            );
 
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
-
-            services.AddTransient<IAdminService, AdminService>();
-
+            services.AddScoped<IAuthorizationService, AuthorizationService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

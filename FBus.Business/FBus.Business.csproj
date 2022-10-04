@@ -6,7 +6,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="SearchModel\" />
+    <Compile Remove="SearchModel\**" />
+    <EmbeddedResource Remove="SearchModel\**" />
+    <None Remove="SearchModel\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FirebaseAdmin" Version="2.3.0" />
   </ItemGroup>
 
   <ItemGroup>
