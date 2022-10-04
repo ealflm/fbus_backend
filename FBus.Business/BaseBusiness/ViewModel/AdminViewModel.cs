@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace FBus.Data.Models
+namespace FBus.Business.BaseBusiness.ViewModel
 {
-    public partial class Admin
+    public class AdminViewModel
     {
         public Guid AdminId { get; set; }
         public string UserName { get; set; }
-        public byte[] Password { get; set; }
-        public byte[] Salt { get; set; }
     }
 }

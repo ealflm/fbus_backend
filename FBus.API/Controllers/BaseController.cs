@@ -1,42 +1,77 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using FBus.Business.BaseBusiness.CommonModel;
+using Microsoft.AspNetCore.Mvc;
+using System;
 
 namespace FBus.API.Controllers
 {
     public class BaseController : ControllerBase
     {
-        protected const string Version = "v1.0";
-
-        /*
         [NonAction]
-        public virtual OkObjectResult Success(object value)
+        public ObjectResult SendResponse(object result)
         {
-            var model = new SuccessModel()
+            int statusCode = 200;
+            string message = "Thành công";
+            if (result == null)
             {
-                Data = value
-            };
-            return Ok(model);
+                statusCode = 404;
+                message = "Không tìm thấy";
+            }
+            else if (result.GetType().GetProperties()[0].Name == "Id" && (result.GetType().GetProperties()[0].GetValue(result)).ToString() == "-1")
+            {
+                statusCode = 404;
+                message = "Không thể tìm thấy xe trên bản đồ";
+                result = null;
+            }
+            return HandleObjectResponse(statusCode, message, result);
         }
 
         [NonAction]
-        public virtual OkObjectResult Success()
+        public ObjectResult SendResponse(bool result)
         {
-            var model = new SuccessModel()
-            {
-                Data = "Success"
-            };
-            return Ok(model);
+            int statusCode = result ? 201 : 400;
+            string message = result ? "Thành công" : "Dữ liệu không phù hợp";
+            return HandleObjectResponse(statusCode, message, null);
         }
-
 
         [NonAction]
-        public virtual OkObjectResult Fail(string value)
+        public ObjectResult SendResponse(Response response)
         {
-            var model = new ErrorModel()
-            {
-                Error = value
-            };
-            return Ok(model);
+            return HandleObjectResponse(response.StatusCode, response.Message, response.Data);
         }
-        */
+
+        [NonAction]
+        public ObjectResult ResponseOTP(Response response)
+        {
+            return HandleObjectResponse(response.StatusCode, response.Message, response.Data);
+        }
+
+        private ObjectResult HandleObjectResponse(int statusCode, string message, object result)
+        {
+            ObjectResult objectResult = null;
+            Object responseData = null;
+
+            if
+            (result == null)
+            {
+                responseData = new
+                {
+                    statusCode = statusCode,
+                    message = message
+                };
+            }
+            else
+            {
+                responseData = new
+                {
+                    statusCode = statusCode,
+                    message = message,
+                    body = result
+                };
+            }
+
+            objectResult = new ObjectResult(responseData);
+            objectResult.StatusCode = statusCode;
+            return objectResult;
+        }
     }
 }
