@@ -10,6 +10,7 @@ namespace FBus.Data.Interfaces
         IGenericRepository<Admin> AdminRepository { get; }
         IGenericRepository<Student> StudentRepository { get; }
         IGenericRepository<Driver> DriverRepository { get; }
+        IGenericRepository<Station> StationRepository { get; }
         FBusContext Context();
 
         DatabaseFacade Database();

@@ -37,11 +37,11 @@ namespace FBus.Data.Repositories
         public void Update(TEntity entity)
         {
             _dbSet.Attach(entity);
-
+            string name = entity.GetType().Name;
             foreach (PropertyInfo prop in entity.GetType().GetProperties())
             {
                 if (prop.GetGetMethod().IsVirtual) continue;
-                if (prop.Name == "Id") continue;
+                if (prop.Name.Equals(name+"Id")) continue;
                 if (prop.GetValue(entity, null) != null)
                 {
                     _dbContext.Entry(entity).Property(prop.Name).IsModified = true;

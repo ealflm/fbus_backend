@@ -261,7 +261,7 @@ namespace FBus.Data.Context
 
                 entity.Property(e => e.Latidude).HasColumnType("decimal(8, 7)");
 
-                entity.Property(e => e.Logitude).HasColumnType("decimal(8, 7)");
+                entity.Property(e => e.Longitude).HasColumnType("decimal(8, 7)");
 
                 entity.Property(e => e.Name).IsRequired();
             });
@@ -338,6 +338,12 @@ namespace FBus.Data.Context
                 entity.Property(e => e.ModifyDate).HasColumnType("datetime");
 
                 entity.Property(e => e.Rate).HasColumnType("decimal(8, 7)");
+
+                entity.HasOne(d => d.Station)
+                    .WithMany(p => p.StudentTrips)
+                    .HasForeignKey(d => d.StationId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_StudentTrip_Station");
 
                 entity.HasOne(d => d.Student)
                     .WithMany(p => p.StudentTrips)

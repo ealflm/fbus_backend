@@ -16,6 +16,7 @@ namespace FBus.Data.Models
         public DateTime ModifyDate { get; set; }
         public int Status { get; set; }
 
+        public virtual Station Station { get; set; }
         public virtual Student Student { get; set; }
         public virtual Trip Trip { get; set; }
     }

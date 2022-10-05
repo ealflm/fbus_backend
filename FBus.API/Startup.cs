@@ -28,6 +28,8 @@ using IAuthorizationService = FBus.Business.Authorization.Interfaces.IAuthorizat
 using FBus.Business.Authorization.Implements;
 using FBus.Business.StudentManagement.Interface;
 using FBus.Business.StudentManagement.Implements;
+using FBus.Business.StationManagement.Interfaces;
+using FBus.Business.StationManagement.Implements;
 
 namespace FBus.API
 {
@@ -168,6 +170,7 @@ namespace FBus.API
             services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
             services.AddScoped<IAuthorizationService, AuthorizationService>();
             services.AddScoped<IStudentService, StudentService>();
+            services.AddScoped<IStationManagementService, StationManagementService>();
             #endregion
         }
 
