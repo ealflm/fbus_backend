@@ -26,6 +26,8 @@ using Google.Apis.Auth.OAuth2;
 using FBus.Business.Authorization.Interfaces;
 using IAuthorizationService = FBus.Business.Authorization.Interfaces.IAuthorizationService;
 using FBus.Business.Authorization.Implements;
+using FBus.Business.StudentManagement.Interface;
+using FBus.Business.StudentManagement.Implements;
 
 namespace FBus.API
 {
@@ -153,15 +155,20 @@ namespace FBus.API
 
             #endregion
 
+            #region Add Third-party-service
             services.AddSingleton(FirebaseApp.Create(new AppOptions()
             {
                 Credential = GoogleCredential.FromFile(Configuration["Firebase:Admin"]),
             })
             );
+            #endregion
 
+            #region Define Service Provider
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
             services.AddScoped<IAuthorizationService, AuthorizationService>();
+            services.AddScoped<IStudentService, StudentService>();
+            #endregion
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
