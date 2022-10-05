@@ -1,4 +1,4 @@
-using FBus.Business.StudentManagement.Models;
+using FBus.Business.BaseBusiness.ViewModel;
 using FBus.Data.Models;
 
 namespace FBus.Business.BaseBusiness.Configuration
@@ -17,6 +17,19 @@ namespace FBus.Business.BaseBusiness.Configuration
                 PhotoUrl = student.PhotoUrl,
                 AutomaticScheduling = student.AutomaticScheduling,
                 Status = student.Status
+            };
+        }
+
+        public static StationViewModel AsViewModel(this Station item)
+        {
+            return new()
+            {
+                Address = item.Address,
+                Latidude = item.Latidude,
+                Longitude = item.Longitude,
+                Name = item.Name,
+                StationId = item.StationId,
+                Status = item.Status
             };
         }
     }
