@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using FBus.Business.StudentManagement.Interface;
+using FBus.Business.StudentManagement.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -18,16 +19,37 @@ namespace FBus.API.Controllers.Student
 
         [HttpGet]
         [Route(ApiVer1Url.Student.BaseApiUrl + "/{id}")]
-        public async Task<IActionResult> GetDetails(string id)
+        public async Task<IActionResult> GetDetailsByStudent(string id)
         {
             return SendResponse(await _studentService.GetDetails(id));
         }
 
         [HttpGet]
-        [Route(ApiVer1Url.Student.StudentList)]
+        [Route(ApiVer1Url.Admin.Student + "/{id}")]
+        public async Task<IActionResult> GetDetailsByAdmin(string id)
+        {
+            return SendResponse(await _studentService.GetDetails(id));
+        }
+
+        [HttpGet]
+        [Route(ApiVer1Url.Admin.StudentList)]
         public async Task<IActionResult> GetList()
         {
             return SendResponse(await _studentService.GetList());
+        }
+
+        [HttpPut]
+        [Route(ApiVer1Url.Admin.Student + "/{id}")]
+        public async Task<IActionResult> UpdateByAdmin(string id, [FromForm] UpdateStudentModel student)
+        {
+            return SendResponse(await _studentService.Update(id, student));
+        }
+
+        [HttpPut]
+        [Route(ApiVer1Url.Student.BaseApiUrl + "/{id}")]
+        public async Task<IActionResult> UpdateByStudent(string id, [FromForm] UpdateStudentModel student)
+        {
+            return SendResponse(await _studentService.Update(id, student));
         }
     }
 }
