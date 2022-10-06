@@ -21,14 +21,14 @@ namespace FBus.API.Utilities.Swagger
             if (swaggerDoc.Info.Version.Equals("driver"))
             {
                 var nonMobileRoutes = swaggerDoc.Paths
-                .Where(x => !x.Key.ToLower().Contains("/driver/"))
+                .Where(x => !x.Key.ToLower().Contains("/driver/") || x.Key.ToLower().Contains("/admin/"))
                 .ToList();
                 nonMobileRoutes.ForEach(x => { swaggerDoc.Paths.Remove(x.Key); });
             }
             if (swaggerDoc.Info.Version.Equals("student"))
             {
                 var nonMobileRoutes = swaggerDoc.Paths
-                .Where(x => !x.Key.ToLower().Contains("/student/"))
+                .Where(x => !x.Key.ToLower().Contains("/student/") || x.Key.ToLower().Contains("/admin/"))
                 .ToList();
                 nonMobileRoutes.ForEach(x => { swaggerDoc.Paths.Remove(x.Key); });
             }

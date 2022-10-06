@@ -11,8 +11,16 @@ namespace ApiVer1Url
         // Authorization
         public const string Login = BaseApiUrl + "/authorization/login";
         public const string Register = BaseApiUrl + "/authorization/register";
-        
+
         // Station
         public const string Station = BaseApiUrl + "/station";
+
+        // student
+        public const string Student = BaseApiUrl + "/student";
+
+        // Student list
+        public const string StudentList = Student + "/list";
+
+
     }
 }
