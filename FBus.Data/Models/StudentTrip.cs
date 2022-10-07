@@ -14,6 +14,7 @@ namespace FBus.Data.Models
         public string Feedback { get; set; }
         public DateTime CreateDate { get; set; }
         public DateTime ModifyDate { get; set; }
+        public bool Type { get; set; }
         public int Status { get; set; }
 
         public virtual Station Station { get; set; }

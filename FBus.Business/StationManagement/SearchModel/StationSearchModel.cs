@@ -16,6 +16,6 @@ namespace FBus.Business.StationManagement.SearchModel
         [Required]
         public decimal Longitude { get; set; }
         [Required]
-        public decimal Latidude { get; set; }
+        public decimal Latitude { get; set; }
     }
 }
