@@ -32,6 +32,7 @@ using FBus.Business.StationManagement.Interfaces;
 using FBus.Business.StationManagement.Implements;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
+using Azure.Storage.Blobs;
 
 namespace FBus.API
 {
@@ -160,19 +161,26 @@ namespace FBus.API
             #endregion
 
             #region Add Third-party-service
+
+            // Firebase
             services.AddSingleton(FirebaseApp.Create(new AppOptions()
             {
                 Credential = GoogleCredential.FromFile(Configuration["Firebase:Admin"]),
-            })
-            );
+            }));
+
+            // Azure blob
+            services.AddScoped(_ => new BlobServiceClient(Configuration.GetConnectionString("AzureBlobStorage")));
+
             #endregion
 
             #region Define Service Provider
+
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
             services.AddScoped<IAuthorizationService, AuthorizationService>();
             services.AddScoped<IStudentService, StudentService>();
             services.AddScoped<IStationManagementService, StationManagementService>();
+
             #endregion
         }
 
