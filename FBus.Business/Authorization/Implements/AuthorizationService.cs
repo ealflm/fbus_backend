@@ -1,6 +1,7 @@
 ﻿using FBus.Business.Authorization.Interfaces;
 using FBus.Business.Authorization.SearchModel;
 using FBus.Business.BaseBusiness.CommonModel;
+using FBus.Business.BaseBusiness.Configuration;
 using FBus.Business.BaseBusiness.Implements;
 using FBus.Business.BaseBusiness.ViewModel;
 using FBus.Data.Interfaces;
@@ -60,7 +61,7 @@ namespace FBus.Business.Authorization.Implements
 
             if (user != null && VerifyPassword(password, user.Password, user.Salt))
             {
-                if (((int)loginType==1 && user.Status != 0)|| (int)loginType==0)
+                if (((int)loginType == 1 && user.Status != 0) || (int)loginType == 0)
                 {
                     foreach (var x in result.GetType().GetProperties())
                     {
@@ -75,14 +76,21 @@ namespace FBus.Business.Authorization.Implements
                 }
                 else
                 {
-                    message = "The user doesn't have permission to access this resource";
-                    result = null;
+                    return new()
+                    {
+                        StatusCode=(int) StatusCode.BadRequest,
+                        Message = Message.CustomContent("The user doesn't have permission to access this resource")
+                    };
                 }
             }
             else
             {
-                message = "Invalid user name or password";
-                result = null;
+                return new()
+                {
+                    StatusCode= (int) StatusCode.BadRequest,
+                    Message = "Invalid user name or password"
+                };
+
             }
 
             return new Response(200,result, message);
@@ -104,7 +112,6 @@ namespace FBus.Business.Authorization.Implements
         {
             Response resultModel = null;
             string result = null;
-            string message = null;
 
             if (!string.IsNullOrEmpty(model.UserName) && !string.IsNullOrEmpty(model.Password))
             {
@@ -124,7 +131,7 @@ namespace FBus.Business.Authorization.Implements
 
             }
 
-            if (resultModel != null && resultModel.Data != null)
+            if (resultModel.Data != null)
             {
                 switch ((int)loginType)
                 {
@@ -141,14 +148,20 @@ namespace FBus.Business.Authorization.Implements
                 }
 
             }
-
-            message = resultModel.Message;
+            else
+            {
+                return new()
+                {
+                    StatusCode = (int)StatusCode.BadRequest,
+                    Message = resultModel.Message
+                };
+            }
 
             return new()
             {
-                StatusCode=200,
+                StatusCode=(int) StatusCode.Ok,
                 Data= result,
-                Message= message,
+                Message= Message.CustomContent("Đăng nhập thành công"),
             };
         }
 
