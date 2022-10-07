@@ -25,7 +25,7 @@ namespace FBus.Business.BaseBusiness.Configuration
             return new()
             {
                 Address = item.Address,
-                Latidude = item.Latidude,
+                Latitude = item.Latitude,
                 Longitude = item.Longitude,
                 Name = item.Name,
                 StationId = item.StationId,

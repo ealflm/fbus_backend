@@ -13,7 +13,7 @@ namespace FBus.Business.StationManagement.Interfaces
         Task<Response> Create(StationSearchModel model);
         Task<Response> Get(Guid id);
         Task<Response> GetList();
-        Task<Response> Update(StationUpdateModel model);
+        Task<Response> Update(StationUpdateModel model, Guid id);
         Task<Response> Delete(Guid id);
     }
 }

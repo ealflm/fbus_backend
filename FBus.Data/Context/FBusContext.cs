@@ -259,7 +259,7 @@ namespace FBus.Data.Context
 
                 entity.Property(e => e.Address).IsRequired();
 
-                entity.Property(e => e.Latidude).HasColumnType("decimal(8, 7)");
+                entity.Property(e => e.Latitude).HasColumnType("decimal(8, 7)");
 
                 entity.Property(e => e.Longitude).HasColumnType("decimal(8, 7)");
 

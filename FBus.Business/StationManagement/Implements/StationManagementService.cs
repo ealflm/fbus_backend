@@ -22,7 +22,7 @@ namespace FBus.Business.StationManagement.Implements
 
         public async Task<Response> Create(StationSearchModel model)
         {
-            bool already = (await _unitOfWork.StationRepository.Query().Where(x => x.Latidude == model.Latidude && x.Longitude == model.Longitude).FirstOrDefaultAsync())!= null;
+            bool already = (await _unitOfWork.StationRepository.Query().Where(x => x.Latitude == model.Latitude && x.Longitude == model.Longitude).FirstOrDefaultAsync())!= null;
             if (already)
             {
                 return new()
@@ -34,7 +34,7 @@ namespace FBus.Business.StationManagement.Implements
             var entity = new Station()
             {
                 Address = model.Address,
-                Latidude = model.Latidude,
+                Latitude = model.Latitude,
                 Longitude = model.Longitude,
                 Name = model.Name,
                 Status = 1,
@@ -100,9 +100,29 @@ namespace FBus.Business.StationManagement.Implements
             };
         }
 
-        public Task<Response> Update(StationUpdateModel model)
+        public async Task<Response> Update(StationUpdateModel model, Guid id)
         {
-            throw new NotImplementedException();
+            var entity= await _unitOfWork.StationRepository.GetById(id);
+            if(entity!= null)
+            {
+                entity.Longitude= UpdateTypeOfNotNullAbleObject<decimal>(entity.Longitude, model.Longitude);
+                entity.Latitude = UpdateTypeOfNotNullAbleObject<decimal>(entity.Latitude, model.Latitude);
+                entity.Status = UpdateTypeOfNotNullAbleObject<int>(entity.Status, model.Status);
+                entity.Name= UpdateTypeOfNullAbleObject<string>(entity.Name, model.Name);
+                entity.Address= UpdateTypeOfNullAbleObject<string>(entity.Address, model.Address);
+                _unitOfWork.StationRepository.Update(entity);
+                await _unitOfWork.SaveChangesAsync();
+                return new()
+                {
+                    StatusCode= (int)StatusCode.Success,
+                    Message= Message.UpdatedSuccess
+                };
+            }
+            return new()
+            {
+                StatusCode = (int)StatusCode.NotFound,
+                Message = Message.NotFound
+            };
         }
     }
 }
