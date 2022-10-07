@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -30,6 +30,8 @@ using FBus.Business.StudentManagement.Interface;
 using FBus.Business.StudentManagement.Implements;
 using FBus.Business.StationManagement.Interfaces;
 using FBus.Business.StationManagement.Implements;
+using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.AspNetCore.Http;
 
 namespace FBus.API
 {
@@ -191,11 +193,24 @@ namespace FBus.API
                 c.RoutePrefix = "";
             });
 
-            app.UseHttpsRedirection();
+            // app.UseHttpsRedirection();
+            app.UseExceptionHandler(c => c.Run(async context =>
+            {
+                var exception = context.Features
+                    .Get<IExceptionHandlerPathFeature>()
+                    .Error;
+                var response = new
+                {
+                    statusCode = 500,
+                    message = $"Lỗi hệ thống: {exception.Message}"
+                };
+                await context.Response.WriteAsJsonAsync(response);
+            }));
 
             app.UseRouting();
 
             app.UseCors(options => options.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
+            app.UseAuthentication();
 
             app.UseAuthorization();
 
