@@ -267,40 +267,43 @@ namespace FBus.Business.Authorization.Implements
             status = model.Status;
 
             _unitOfWork.StudentRepository.Update(model);
+
+            result = new StudentViewModel()
+            {
+              FullName = userInfo.DisplayName,
+              Email = userInfo.Email,
+              Phone = userInfo.PhoneNumber,
+              PhotoUrl = userInfo.PhotoUrl,
+              AutomaticScheduling = model.AutomaticScheduling,
+              Status = model.Status
+            };
           }
           else
           {
             var studentModel = new Student()
             {
               StudentId = Guid.NewGuid(),
-              AutomaticScheduling = false,
-              Email = userInfo.Email,
               FullName = userInfo.DisplayName,
+              Email = userInfo.Email,
               Phone = userInfo.PhoneNumber,
               PhotoUrl = userInfo.PhotoUrl,
+              AutomaticScheduling = false,
               Uid = userInfo.Uid,
-              Status = 1
+              Status = 0
             };
             await _unitOfWork.StudentRepository.Add(studentModel);
-          }
 
-          if (status != 0)
-          {
-            message = "The user doesn't have permission to access this resource";
-          }
-          else
-          {
             result = new StudentViewModel()
             {
-              StudentId = model.StudentId,
-              FullName = model.FullName,
-              Email = model.Email,
-              Phone = model.Phone,
-              PhotoUrl = model.PhotoUrl,
-              AutomaticScheduling = model.AutomaticScheduling,
-              Status = model.Status
+              FullName = userInfo.DisplayName,
+              Email = userInfo.Email,
+              Phone = userInfo.PhoneNumber,
+              PhotoUrl = userInfo.PhotoUrl,
+              AutomaticScheduling = false,
+              Status = 0
             };
           }
+
 
           await _unitOfWork.SaveChangesAsync();
         }
