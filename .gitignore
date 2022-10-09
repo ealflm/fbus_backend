@@ -364,3 +364,4 @@ FodyWeavers.xsd
 
 # Debug for vscode tool
 .vscode
+.DS_Store
