@@ -32,5 +32,17 @@ namespace FBus.Business.BaseBusiness.Configuration
                 Status = item.Status
             };
         }
+
+        public static BusViewModel AsBusViewModel(this FBus.Data.Models.BusVehicle item)
+        {
+            return new()
+            {
+                BusId = item.BusVehicleId,
+                LicensePlates = item.LicensePlates,
+                Seat = item.Seat,
+                Color = item.Color,
+                Status = item.Status
+            };
+        }
     }
 }

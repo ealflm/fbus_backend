@@ -18,7 +18,7 @@ namespace FBus.Data.Context
         }
 
         public virtual DbSet<Admin> Admins { get; set; }
-        public virtual DbSet<Bu> buses { get; set; }
+        public virtual DbSet<BusVehicle> BusVehicles { get; set; }
         public virtual DbSet<Driver> Drivers { get; set; }
         public virtual DbSet<DriverNotification> DriverNotifications { get; set; }
         public virtual DbSet<DriverShift> DriverShifts { get; set; }
@@ -57,13 +57,11 @@ namespace FBus.Data.Context
                     .IsUnicode(false);
             });
 
-            modelBuilder.Entity<Bu>(entity =>
+            modelBuilder.Entity<BusVehicle>(entity =>
             {
-                entity.HasKey(e => e.BusId);
+                entity.ToTable("BusVehicle");
 
-                entity.ToTable("Bus");
-
-                entity.Property(e => e.BusId).ValueGeneratedNever();
+                entity.Property(e => e.BusVehicleId).ValueGeneratedNever();
 
                 entity.Property(e => e.Color)
                     .IsRequired()

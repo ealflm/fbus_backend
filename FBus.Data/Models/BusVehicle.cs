@@ -3,14 +3,14 @@ using System.Collections.Generic;
 
 namespace FBus.Data.Models
 {
-    public partial class Bu
+    public partial class BusVehicle
     {
-        public Bu()
+        public BusVehicle()
         {
             Trips = new HashSet<Trip>();
         }
 
-        public Guid BusId { get; set; }
+        public Guid BusVehicleId { get; set; }
         public string LicensePlates { get; set; }
         public string Color { get; set; }
         public int Seat { get; set; }

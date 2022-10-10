@@ -21,6 +21,8 @@ namespace ApiVer1Url
         // Student list
         public const string StudentList = Student + "/list";
 
+        // Bus vehicle
+        public const string BusVehicle = BaseApiUrl + "/bus";
 
     }
 }
