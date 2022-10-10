@@ -14,19 +14,22 @@ namespace FBus.Data.Repositories
         public IGenericRepository<Student> StudentRepository { get; }
         public IGenericRepository<Driver> DriverRepository { get; }
         public IGenericRepository<Station> StationRepository { get; }
+        public IGenericRepository<BusVehicle> BusRepository { get; set; }
         public UnitOfWork(FBusContext dbContext,
                         IGenericRepository<Admin> adminRepository,
                         IGenericRepository<Student> studentRepository,
                         IGenericRepository<Driver> driverRepository,
-                        IGenericRepository<Station> stationRepository
+                        IGenericRepository<Station> stationRepository,
+                        IGenericRepository<BusVehicle> busRepository
             )
         {
             _dbContext = dbContext;
 
             AdminRepository = adminRepository;
             StudentRepository = studentRepository;
-            DriverRepository = driverRepository;    
+            DriverRepository = driverRepository;
             StationRepository = stationRepository;
+            BusRepository = busRepository;
         }
 
         public FBusContext Context()
