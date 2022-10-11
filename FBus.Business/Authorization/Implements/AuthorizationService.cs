@@ -230,7 +230,7 @@ namespace FBus.Business.Authorization.Implements
 
         if (user != null)
         {
-          if (user.Status == 1)
+          if (user.Status == 0)
           {
             result = new StudentViewModel()
             {
@@ -313,7 +313,14 @@ namespace FBus.Business.Authorization.Implements
         message = "Invalid ID token";
       }
 
-      return new Response(200, GetToken((StudentViewModel)result, 2), message);
+      if (result != null)
+      {
+        return new Response(200, GetToken((StudentViewModel)result, 2), "Successfully generating a token");
+      }
+      else
+      {
+        return new Response(400, message);
+      }
     }
 
     public async Task<Response> Register(LoginSearchModel model)
