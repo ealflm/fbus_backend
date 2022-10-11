@@ -23,7 +23,7 @@ namespace FBus.API.Controllers.Student
 
     [HttpPost]
     [Route(ApiVer1Url.Student.Login)]
-    public async Task<IActionResult> LoginGoogle([FromBody] string idToken)
+    public async Task<IActionResult> LoginGoogle([FromQuery] string idToken)
     {
       return SendResponse(await _authorizationService.LoginGoogle(idToken));
     }
