@@ -11,21 +11,21 @@ using IAuthorizationService = FBus.Business.Authorization.Interfaces.IAuthorizat
 
 namespace FBus.API.Controllers.Student
 {
-    [ApiController]
-    public class AuthorizationController : BaseController
+  [ApiController]
+  public class AuthorizationController : BaseController
+  {
+    private readonly IAuthorizationService _authorizationService;
+
+    public AuthorizationController(IAuthorizationService authorizationService)
     {
-        private readonly IAuthorizationService _authorizationService;
-
-        public AuthorizationController(IAuthorizationService authorizationService)
-        {
-            _authorizationService = authorizationService;
-        }
-
-        [HttpGet]
-        [Route(ApiVer1Url.Student.Login)]
-        public async Task<IActionResult> LoginGoogle([FromQuery] string idToken)
-        {
-            return SendResponse(await _authorizationService.LoginGoogle(idToken));
-        }
+      _authorizationService = authorizationService;
     }
+
+    [HttpPost]
+    [Route(ApiVer1Url.Student.Login)]
+    public async Task<IActionResult> LoginGoogle([FromQuery] string idToken)
+    {
+      return SendResponse(await _authorizationService.LoginGoogle(idToken));
+    }
+  }
 }
