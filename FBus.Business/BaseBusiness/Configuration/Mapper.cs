@@ -44,5 +44,18 @@ namespace FBus.Business.BaseBusiness.Configuration
                 Status = item.Status
             };
         }
+
+        public static DriverViewModel AsDriverViewModel(this Driver item)
+        {
+            return new()
+            {
+                DriverId = item.DriverId,
+                FullName = item.FullName,
+                Phone = item.Phone,
+                PhotoUrl = item.PhotoUrl,
+                Address = item.Address,
+                Status = item.Status
+            };
+        }
     }
 }

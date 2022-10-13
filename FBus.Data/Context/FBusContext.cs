@@ -90,7 +90,7 @@ namespace FBus.Data.Context
 
                 entity.Property(e => e.Password)
                     .IsRequired()
-                    .HasMaxLength(100)
+                    .HasMaxLength(500)
                     .IsFixedLength();
 
                 entity.Property(e => e.Phone)
@@ -104,7 +104,7 @@ namespace FBus.Data.Context
 
                 entity.Property(e => e.Salt)
                     .IsRequired()
-                    .HasMaxLength(100)
+                    .HasMaxLength(500)
                     .IsFixedLength();
             });
 

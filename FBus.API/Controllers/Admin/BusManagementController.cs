@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
-using FBus.Business.BusVehicle.Interfaces;
-using FBus.Business.BusVehicle.Models;
+using FBus.Business.BusVehicleManagement.Interfaces;
+using FBus.Business.BusVehicleManagement.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

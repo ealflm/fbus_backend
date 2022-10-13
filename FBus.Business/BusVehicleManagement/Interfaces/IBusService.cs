@@ -1,8 +1,8 @@
 using System.Threading.Tasks;
 using FBus.Business.BaseBusiness.CommonModel;
-using FBus.Business.BusVehicle.Models;
+using FBus.Business.BusVehicleManagement.Models;
 
-namespace FBus.Business.BusVehicle.Interfaces
+namespace FBus.Business.BusVehicleManagement.Interfaces
 {
     public interface IBusService
     {

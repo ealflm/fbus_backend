@@ -1,4 +1,4 @@
-namespace FBus.Business.BusVehicle.Models
+namespace FBus.Business.BusVehicleManagement.Models
 {
     public class UpdateBusModel
     {
