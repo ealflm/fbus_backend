@@ -365,3 +365,6 @@ FodyWeavers.xsd
 # Debug for vscode tool
 .vscode
 .DS_Store
+
+# Ignore file with Development config
+*.Development.json
