@@ -33,10 +33,12 @@ using FBus.Business.StationManagement.Implements;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Azure.Storage.Blobs;
-using FBus.Business.BusVehicle.Interfaces;
-using FBus.Business.BusVehicle.Implements;
+using FBus.Business.BusVehicleManagement.Interfaces;
+using FBus.Business.BusVehicleManagement.Implements;
 using Microsoft.AspNetCore.Mvc;
 using FBus.API.Utilities.Validation;
+using FBus.Business.DriverManagement.Interfaces;
+using FBus.Business.DriverManagement.Implements;
 
 namespace FBus.API
 {
@@ -195,6 +197,9 @@ namespace FBus.API
             services.AddScoped<IStudentService, StudentService>();
             services.AddScoped<IStationManagementService, StationManagementService>();
             services.AddScoped<IBusService, BusService>();
+            services.AddScoped<IDriverService, DriverService>();
+            services.AddScoped<IAzureBlobService, AzureBlobService>();
+            services.AddScoped<ISMSService, SMSService>();
 
             #endregion
         }
