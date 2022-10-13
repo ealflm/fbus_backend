@@ -193,13 +193,13 @@ namespace FBus.API
 
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+            services.AddScoped<IAzureBlobService, AzureBlobService>();
+            services.AddScoped<ISMSService, SMSService>();
             services.AddScoped<IAuthorizationService, AuthorizationService>();
             services.AddScoped<IStudentService, StudentService>();
             services.AddScoped<IStationManagementService, StationManagementService>();
             services.AddScoped<IBusService, BusService>();
             services.AddScoped<IDriverService, DriverService>();
-            services.AddScoped<IAzureBlobService, AzureBlobService>();
-            services.AddScoped<ISMSService, SMSService>();
 
             #endregion
         }

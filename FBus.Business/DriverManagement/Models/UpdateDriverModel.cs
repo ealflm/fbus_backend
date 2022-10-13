@@ -1,6 +1,8 @@
+using FBus.Business.BaseBusiness.CommonModel;
+
 namespace FBus.Business.DriverManagement.Models
 {
-    public class UpdateDriverModel
+    public class UpdateDriverModel : FileModel
     {
         public string FullName { get; set; }
         public string PhotoUrl { get; set; }
