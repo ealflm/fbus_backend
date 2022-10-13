@@ -36,5 +36,12 @@ namespace FBus.API.Controllers.Admin
         {
             return SendResponse(await _driverService.Create(model));
         }
+
+        [HttpPut]
+        [Route(ApiVer1Url.Admin.Driver + "/{id}")]
+        public async Task<IActionResult> UpdateDriver(string id, [FromForm] UpdateDriverModel model)
+        {
+            return SendResponse(await _driverService.Update(id, model));
+        }
     }
 }

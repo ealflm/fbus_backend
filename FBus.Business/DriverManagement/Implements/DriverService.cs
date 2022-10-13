@@ -107,9 +107,32 @@ namespace FBus.Business.DriverManagement.Implements
             };
         }
 
-        public Task<Response> Update(string id, UpdateDriverModel model)
+        public async Task<Response> Update(string id, UpdateDriverModel model)
         {
-            throw new System.NotImplementedException();
+            var driver = await _unitOfWork.DriverRepository.GetById(Guid.Parse(id));
+            if (driver == null)
+            {
+                return new()
+                {
+                    StatusCode = (int)StatusCode.NotFound,
+                    Message = Message.NotFound
+                };
+            }
+
+            driver.FullName = UpdateTypeOfNullAbleObject<string>(driver.FullName, model.FullName);
+            driver.PhotoUrl = await _azureBlobService.DeleteFile(model.DeleteFile, AzureBlobContainer.Driver, driver.PhotoUrl);
+            driver.PhotoUrl += await _azureBlobService.UploadFile(model.UploadFile, AzureBlobContainer.Driver);
+            driver.Address = UpdateTypeOfNullAbleObject<string>(driver.Address, model.Address);
+            driver.Status = UpdateTypeOfNotNullAbleObject<int>(driver.Status, model.Status);
+
+            _unitOfWork.DriverRepository.Update(driver);
+            await _unitOfWork.SaveChangesAsync();
+
+            return new()
+            {
+                StatusCode = (int)StatusCode.Success,
+                Message = Message.UpdatedSuccess
+            };
         }
     }
 }
