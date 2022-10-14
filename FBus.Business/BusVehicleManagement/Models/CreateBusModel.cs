@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace FBus.Business.BusVehicle.Models
+namespace FBus.Business.BusVehicleManagement.Models
 {
     public class CreateBusModel
     {

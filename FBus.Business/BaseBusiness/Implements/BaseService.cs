@@ -1,4 +1,7 @@
-﻿using FBus.Business.BaseBusiness.Interfaces;
+﻿using System;
+using System.Linq;
+using System.Text;
+using FBus.Business.BaseBusiness.Interfaces;
 using FBus.Data.Interfaces;
 
 namespace FBus.Business.BaseBusiness.Implements
@@ -24,6 +27,20 @@ namespace FBus.Business.BaseBusiness.Implements
         public static T? UpdateTypeOfNotNullAbleObject<T>(T? oldValue, T? newValue) where T : struct
         {
             return newValue != null ? newValue.Value : oldValue != null ? oldValue.Value : null;
+        }
+
+        public static void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
+        {
+            using var hmac = new System.Security.Cryptography.HMACSHA512();
+            passwordSalt = hmac.Key;
+            passwordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
+        }
+
+        public static string GeneratePinCodeAuto(int lengthOfString)
+        {
+            var random = new Random();
+            const string chars = "0123456789";
+            return new string(Enumerable.Repeat(chars, lengthOfString).Select(s => s[random.Next(s.Length)]).ToArray());
         }
     }
 }

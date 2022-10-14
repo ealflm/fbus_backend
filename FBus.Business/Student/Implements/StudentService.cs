@@ -6,6 +6,7 @@ using Azure.Storage.Blobs;
 using FBus.Business.BaseBusiness.CommonModel;
 using FBus.Business.BaseBusiness.Configuration;
 using FBus.Business.BaseBusiness.Implements;
+using FBus.Business.BaseBusiness.Interfaces;
 using FBus.Business.StudentManagement.Interface;
 using FBus.Business.StudentManagement.Models;
 using FBus.Data.Interfaces;
@@ -13,10 +14,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FBus.Business.StudentManagement.Implements
 {
-    public class StudentService : AzureBlobService, IStudentService
+    public class StudentService : BaseService, IStudentService
     {
-        public StudentService(IUnitOfWork unitOfWork, BlobServiceClient blobServiceClient) : base(unitOfWork, blobServiceClient)
+        private IAzureBlobService _azureBlobService;
+
+        public StudentService(IUnitOfWork unitOfWork, IAzureBlobService azureBlobService) : base(unitOfWork)
         {
+            _azureBlobService = azureBlobService;
         }
 
         public async Task<Response> Disable(string id)
@@ -92,7 +96,7 @@ namespace FBus.Business.StudentManagement.Implements
             stud.FullName = UpdateTypeOfNullAbleObject<string>(stud.FullName, student.FullName);
             stud.Phone = UpdateTypeOfNullAbleObject<string>(stud.Phone, student.Phone);
             stud.Address = UpdateTypeOfNullAbleObject<string>(stud.Address, student.Address);
-            stud.PhotoUrl = UpdateTypeOfNullAbleObject<string>(stud.PhotoUrl, student.PhotoUrl);
+            stud.PhotoUrl = await _azureBlobService.UploadFile(student.UploadFile, AzureBlobContainer.Student);
             stud.NotifyToken = UpdateTypeOfNullAbleObject<string>(stud.NotifyToken, student.NotifyToken);
             stud.AutomaticScheduling = UpdateTypeOfNotNullAbleObject<bool>(stud.AutomaticScheduling, student.AutomaticScheduling);
             stud.Status = UpdateTypeOfNotNullAbleObject<int>(stud.Status, student.Status);

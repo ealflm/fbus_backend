@@ -8,11 +8,11 @@ using Microsoft.AspNetCore.Http;
 
 namespace FBus.Business.BaseBusiness.Implements
 {
-    public class AzureBlobService : BaseService, IAzureBlobService
+    public class AzureBlobService : IAzureBlobService
     {
         protected readonly BlobServiceClient _blobServiceClient;
-        private static readonly string[] _container = { "admin", "student", "driver", "upload-file" };
-        public AzureBlobService(IUnitOfWork unitOfWork, BlobServiceClient blobServiceClient) : base(unitOfWork)
+        private static readonly string[] _container = { "driver", "student" };
+        public AzureBlobService(BlobServiceClient blobServiceClient)
         {
             _blobServiceClient = blobServiceClient;
         }

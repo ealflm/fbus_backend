@@ -4,13 +4,13 @@ using System.Threading.Tasks;
 using FBus.Business.BaseBusiness.CommonModel;
 using FBus.Business.BaseBusiness.Configuration;
 using FBus.Business.BaseBusiness.Implements;
-using FBus.Business.BusVehicle.Interfaces;
-using FBus.Business.BusVehicle.Models;
+using FBus.Business.BusVehicleManagement.Interfaces;
+using FBus.Business.BusVehicleManagement.Models;
 using FBus.Data.Interfaces;
 using FBus.Data.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace FBus.Business.BusVehicle.Implements
+namespace FBus.Business.BusVehicleManagement.Implements
 {
     public class BusService : BaseService, IBusService
     {
