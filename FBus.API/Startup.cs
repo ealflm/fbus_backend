@@ -33,6 +33,8 @@ using FBus.Business.StationManagement.Implements;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Azure.Storage.Blobs;
+using FBus.Business.RouteManagement.Interfaces;
+using FBus.Business.RouteManagement.Implements;
 using FBus.Business.BusVehicleManagement.Interfaces;
 using FBus.Business.BusVehicleManagement.Implements;
 using Microsoft.AspNetCore.Mvc;
@@ -166,16 +168,6 @@ namespace FBus.API
 
             #endregion
 
-            #region Format Error Response With Annotation Model Validation
-
-            // Custom Error Message for Model Validation
-            services.Configure<ApiBehaviorOptions>(options =>
-            {
-                options.InvalidModelStateResponseFactory = actionContext => new AnnotationCustomErrorResponse().ErrorResponse(actionContext);
-            });
-
-            #endregion
-
             #region Add Third-party-service
 
             // Firebase
@@ -198,9 +190,9 @@ namespace FBus.API
             services.AddScoped<IAuthorizationService, AuthorizationService>();
             services.AddScoped<IStudentService, StudentService>();
             services.AddScoped<IStationManagementService, StationManagementService>();
+            services.AddScoped<IRouteManagementService, RouteManagementService>();
             services.AddScoped<IBusService, BusService>();
             services.AddScoped<IDriverService, DriverService>();
-
             #endregion
         }
 
