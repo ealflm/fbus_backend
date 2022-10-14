@@ -90,7 +90,7 @@ namespace FBus.Data.Context
 
                 entity.Property(e => e.Password)
                     .IsRequired()
-                    .HasMaxLength(100)
+                    .HasMaxLength(500)
                     .IsFixedLength();
 
                 entity.Property(e => e.Phone)
@@ -104,7 +104,7 @@ namespace FBus.Data.Context
 
                 entity.Property(e => e.Salt)
                     .IsRequired()
-                    .HasMaxLength(100)
+                    .HasMaxLength(500)
                     .IsFixedLength();
             });
 
@@ -185,9 +185,9 @@ namespace FBus.Data.Context
             {
                 entity.ToTable("Route");
 
-                entity.Property(e => e.RouteId).ValueGeneratedNever();
+                entity.Property(e => e.RouteId).HasDefaultValueSql("(newid())");
 
-                entity.Property(e => e.Distance).HasColumnType("decimal(8, 7)");
+                entity.Property(e => e.Distance).HasColumnType("decimal(16, 7)");
 
                 entity.Property(e => e.Name).IsRequired();
             });

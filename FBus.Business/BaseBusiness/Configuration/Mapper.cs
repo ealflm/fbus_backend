@@ -33,6 +33,18 @@ namespace FBus.Business.BaseBusiness.Configuration
             };
         }
 
+        public static RouteViewModel AsViewModel(this Route item)
+        {
+            return new()
+            {
+                Distance = item.Distance,
+                TotalStation = item.TotalStation,
+                RouteId = item.RouteId,
+                Name = item.Name,
+                Status = item.Status
+            };
+        }
+
         public static BusViewModel AsBusViewModel(this FBus.Data.Models.BusVehicle item)
         {
             return new()

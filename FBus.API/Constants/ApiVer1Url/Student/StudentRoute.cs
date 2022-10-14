@@ -13,5 +13,8 @@ namespace ApiVer1Url
 
         // Station
         public const string Station = BaseApiUrl + "/station";
+
+        // Route
+        public const string Route = BaseApiUrl + "/route";
     }
 }

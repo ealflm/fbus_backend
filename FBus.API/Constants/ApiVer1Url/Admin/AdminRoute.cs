@@ -24,5 +24,8 @@ namespace ApiVer1Url
         // Bus vehicle
         public const string BusVehicle = BaseApiUrl + "/bus";
 
+        // Route
+        public const string Route = BaseApiUrl + "/route";
+
     }
 }
