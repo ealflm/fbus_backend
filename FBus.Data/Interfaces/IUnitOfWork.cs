@@ -12,6 +12,8 @@ namespace FBus.Data.Interfaces
         IGenericRepository<Driver> DriverRepository { get; }
         IGenericRepository<Station> StationRepository { get; }
         IGenericRepository<BusVehicle> BusRepository { get; }
+        IGenericRepository<Route> RouteRepository { get; }
+        IGenericRepository<RouteStation> RouteStationRepository { get; }
 
         FBusContext Context();
 

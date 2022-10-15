@@ -19,5 +19,8 @@ namespace ApiVer1Url
 
         // Change password
         public const string ChangePassword = BaseApiUrl + "/change-password";
+
+        // Route
+        public const string Route = BaseApiUrl + "/route";
     }
 }
