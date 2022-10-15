@@ -96,18 +96,6 @@ namespace FBus.Business.Authorization.Implements
             return new Response(200, result, message);
         }
 
-        private bool VerifyPassword(string password, byte[] passwordHash, byte[] passwordSalt)
-        {
-            var hmac = new System.Security.Cryptography.HMACSHA512(passwordSalt);
-            var computedHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
-            for (int i = 0; i < computedHash.Length; i++)
-            {
-                if (computedHash[i] != passwordHash[i]) return false;
-            }
-
-            return true;
-        }
-
         public async Task<Response> Login(LoginSearchModel model, Login loginType)
         {
             Response resultModel = null;
@@ -336,6 +324,88 @@ namespace FBus.Business.Authorization.Implements
             await _unitOfWork.AdminRepository.Add(admin);
             await _unitOfWork.SaveChangesAsync();
             return new Response(200, "Created admin");
+        }
+
+        private int ChangePassword<T>(T account, ModifiedPasswordModel model)
+        {
+
+            if (account == null)
+            {
+                return 0;
+            }
+            if (!VerifyPassword(model.OldPassowrd, (byte[])account.GetType().GetProperty("Password").GetValue(account), (byte[])account.GetType().GetProperty("Salt").GetValue(account)))
+            {
+                return 1;
+            }
+
+            // Some fields will be change
+            CreatePasswordHash(model.NewPassword, out byte[] passwordHash, out byte[] passwordSalt);
+            account.GetType().GetProperty("Password").SetValue(account, passwordHash);
+            account.GetType().GetProperty("Salt").SetValue(account, passwordSalt);
+            return 2;
+        }
+
+        public async Task<Response> ChangePassword(ModifiedPasswordModel model, Login role)
+        {
+            int check = -1;
+            switch ((int)role)
+            {
+                case 0: // admin
+                    {
+                        var account = await _unitOfWork.AdminRepository
+                            .Query()
+                            .Where(x => x.UserName == model.Username)
+                            .FirstOrDefaultAsync();
+                        check = ChangePassword<Admin>(account, model);
+                        if (check == 2)
+                        {
+                            _unitOfWork.AdminRepository.Update(account);
+                        }
+                        break;
+                    }
+                case 1: // driver
+                    {
+                        var account = await _unitOfWork.DriverRepository
+                            .Query()
+                            .Where(x => x.Phone == model.Username)
+                            .FirstOrDefaultAsync();
+                        check = ChangePassword<Driver>(account, model);
+                        if (check == 2)
+                        {
+                            _unitOfWork.DriverRepository.Update(account);
+                        }
+                        break;
+                    }
+            }
+
+            switch (check)
+            {
+                case 0:
+                    {
+                        return new()
+                        {
+                            StatusCode = (int)StatusCode.BadRequest,
+                            Message = Message.WrongUsername
+                        };
+                    }
+                case 1:
+                    {
+                        return new()
+                        {
+                            StatusCode = (int)StatusCode.BadRequest,
+                            Message = Message.WrongPassword
+                        };
+                    }
+                default:
+                    {
+                        await _unitOfWork.SaveChangesAsync();
+                        return new()
+                        {
+                            StatusCode = (int)StatusCode.Ok,
+                            Message = Message.ChangePasswordSuccess
+                        };
+                    }
+            }
         }
     }
 }

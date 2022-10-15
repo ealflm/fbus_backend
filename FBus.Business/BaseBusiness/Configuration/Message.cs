@@ -8,6 +8,9 @@ namespace FBus.Business.BaseBusiness.Configuration
         public readonly static string GetDetailsSuccess = "Lấy thông tin chi tiết thành công";
         public readonly static string GetListSuccess = "Lấy danh sách thành công";
         public readonly static string AlreadyExist = "Đối tượng đã tồn tại";
+        public readonly static string WrongUsername = "Tài khoản không chính xác";
+        public readonly static string WrongPassword = "Mật khẩu không chính xác";
+        public readonly static string ChangePasswordSuccess = "Đổi mật khẩu thành công";
 
         public static string CustomContent(string content)
         {

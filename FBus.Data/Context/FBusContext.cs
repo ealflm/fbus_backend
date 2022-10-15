@@ -21,11 +21,9 @@ namespace FBus.Data.Context
         public virtual DbSet<BusVehicle> BusVehicles { get; set; }
         public virtual DbSet<Driver> Drivers { get; set; }
         public virtual DbSet<DriverNotification> DriverNotifications { get; set; }
-        public virtual DbSet<DriverShift> DriverShifts { get; set; }
         public virtual DbSet<FavoriteTrip> FavoriteTrips { get; set; }
         public virtual DbSet<Route> Routes { get; set; }
         public virtual DbSet<RouteStation> RouteStations { get; set; }
-        public virtual DbSet<Shift> Shifts { get; set; }
         public virtual DbSet<StartLocation> StartLocations { get; set; }
         public virtual DbSet<Station> Stations { get; set; }
         public virtual DbSet<Student> Students { get; set; }
@@ -90,7 +88,7 @@ namespace FBus.Data.Context
 
                 entity.Property(e => e.Password)
                     .IsRequired()
-                    .HasMaxLength(500)
+                    .HasMaxLength(128)
                     .IsFixedLength();
 
                 entity.Property(e => e.Phone)
@@ -104,7 +102,7 @@ namespace FBus.Data.Context
 
                 entity.Property(e => e.Salt)
                     .IsRequired()
-                    .HasMaxLength(500)
+                    .HasMaxLength(128)
                     .IsFixedLength();
             });
 
@@ -133,27 +131,6 @@ namespace FBus.Data.Context
                     .HasForeignKey(d => d.DriverId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_DriverNotify_Driver");
-            });
-
-            modelBuilder.Entity<DriverShift>(entity =>
-            {
-                entity.ToTable("DriverShift");
-
-                entity.Property(e => e.DriverShiftId).ValueGeneratedNever();
-
-                entity.Property(e => e.Date).HasColumnType("date");
-
-                entity.HasOne(d => d.Driver)
-                    .WithMany(p => p.DriverShifts)
-                    .HasForeignKey(d => d.DriverId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_DriverShift_Driver");
-
-                entity.HasOne(d => d.Shift)
-                    .WithMany(p => p.DriverShifts)
-                    .HasForeignKey(d => d.ShiftId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_DriverShift_Shift");
             });
 
             modelBuilder.Entity<FavoriteTrip>(entity =>
@@ -185,9 +162,9 @@ namespace FBus.Data.Context
             {
                 entity.ToTable("Route");
 
-                entity.Property(e => e.RouteId).ValueGeneratedNever();
+                entity.Property(e => e.RouteId).HasDefaultValueSql("(newid())");
 
-                entity.Property(e => e.Distance).HasColumnType("decimal(8, 7)");
+                entity.Property(e => e.Distance).HasColumnType("decimal(16, 7)");
 
                 entity.Property(e => e.Name).IsRequired();
             });
@@ -215,17 +192,6 @@ namespace FBus.Data.Context
                     .HasForeignKey(d => d.StationId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_RouteStation_Station");
-            });
-
-            modelBuilder.Entity<Shift>(entity =>
-            {
-                entity.ToTable("Shift");
-
-                entity.Property(e => e.ShiftId).ValueGeneratedNever();
-
-                entity.Property(e => e.TimeEnd).HasColumnType("time(0)");
-
-                entity.Property(e => e.TimeStart).HasColumnType("time(0)");
             });
 
             modelBuilder.Entity<StartLocation>(entity =>
@@ -374,11 +340,11 @@ namespace FBus.Data.Context
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Trip_Bus");
 
-                entity.HasOne(d => d.DriverShift)
+                entity.HasOne(d => d.Driver)
                     .WithMany(p => p.Trips)
-                    .HasForeignKey(d => d.DriverShiftId)
+                    .HasForeignKey(d => d.DriverId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Trip_DriverShift");
+                    .HasConstraintName("FK_Trip_Driver");
 
                 entity.HasOne(d => d.Route)
                     .WithMany(p => p.Trips)

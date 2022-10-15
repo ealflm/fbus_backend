@@ -13,5 +13,11 @@ namespace ApiVer1Url
 
         // Station
         public const string Station = BaseApiUrl + "/station";
+
+        // Update Profile
+        public const string Profile = BaseApiUrl + "/profile";
+
+        // Change password
+        public const string ChangePassword = BaseApiUrl + "/change-password";
     }
 }

@@ -36,6 +36,18 @@ namespace FBus.Business.BaseBusiness.Implements
             passwordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
         }
 
+        public static bool VerifyPassword(string password, byte[] passwordHash, byte[] passwordSalt)
+        {
+            var hmac = new System.Security.Cryptography.HMACSHA512(passwordSalt);
+            var computedHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
+            for (int i = 0; i < computedHash.Length; i++)
+            {
+                if (computedHash[i] != passwordHash[i]) return false;
+            }
+
+            return true;
+        }
+
         public static string GeneratePinCodeAuto(int lengthOfString)
         {
             var random = new Random();
