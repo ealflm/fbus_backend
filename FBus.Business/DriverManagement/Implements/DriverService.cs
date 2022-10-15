@@ -107,7 +107,7 @@ namespace FBus.Business.DriverManagement.Implements
             };
         }
 
-        public async Task<Response> Update(string id, UpdateDriverModel model)
+        public async Task<Response> Update(string id, UpdateDriverModel model, bool isAdminRole = false)
         {
             var driver = await _unitOfWork.DriverRepository.GetById(Guid.Parse(id));
             if (driver == null)
@@ -123,7 +123,11 @@ namespace FBus.Business.DriverManagement.Implements
             driver.PhotoUrl = await _azureBlobService.DeleteFile(model.DeleteFile, AzureBlobContainer.Driver, driver.PhotoUrl);
             driver.PhotoUrl += await _azureBlobService.UploadFile(model.UploadFile, AzureBlobContainer.Driver);
             driver.Address = UpdateTypeOfNullAbleObject<string>(driver.Address, model.Address);
-            driver.Status = UpdateTypeOfNotNullAbleObject<int>(driver.Status, model.Status);
+
+            if (isAdminRole)
+            {
+                driver.Status = UpdateTypeOfNotNullAbleObject<int>(driver.Status, model.Status);
+            }
 
             _unitOfWork.DriverRepository.Update(driver);
             await _unitOfWork.SaveChangesAsync();

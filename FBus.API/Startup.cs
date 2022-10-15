@@ -168,6 +168,16 @@ namespace FBus.API
 
             #endregion
 
+            #region Format Error Response With Annotation Model Validation
+
+            // Custom Error Message for Model Validation
+            services.Configure<ApiBehaviorOptions>(options =>
+            {
+                options.InvalidModelStateResponseFactory = actionContext => new AnnotationCustomErrorResponse().ErrorResponse(actionContext);
+            });
+
+            #endregion
+
             #region Add Third-party-service
 
             // Firebase

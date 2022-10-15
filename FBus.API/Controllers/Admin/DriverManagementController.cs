@@ -41,7 +41,7 @@ namespace FBus.API.Controllers.Admin
         [Route(ApiVer1Url.Admin.Driver + "/{id}")]
         public async Task<IActionResult> UpdateDriver(string id, [FromForm] UpdateDriverModel model)
         {
-            return SendResponse(await _driverService.Update(id, model));
+            return SendResponse(await _driverService.Update(id, model, isAdminRole: true));
         }
     }
 }
