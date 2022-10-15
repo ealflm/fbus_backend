@@ -50,7 +50,7 @@ namespace FBus.API.Controllers.Admin
         }
 
        /* [HttpPut("{id}")]
-        public async Task<IActionResult> Update(Guid id, [FromBody] StationUpdateModel model)
+        public async Task<IActionResult> Update(Guid id, [FromBody] RouteUpdateModel model)
         {
             return SendResponse(await _service.Update(model, id));
         }*/

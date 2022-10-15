@@ -41,6 +41,8 @@ using Microsoft.AspNetCore.Mvc;
 using FBus.API.Utilities.Validation;
 using FBus.Business.DriverManagement.Interfaces;
 using FBus.Business.DriverManagement.Implements;
+using FBus.Business.TripManagement.Interfaces;
+using FBus.Business.TripManagement.Implements;
 
 namespace FBus.API
 {
@@ -203,6 +205,7 @@ namespace FBus.API
             services.AddScoped<IRouteManagementService, RouteManagementService>();
             services.AddScoped<IBusService, BusService>();
             services.AddScoped<IDriverService, DriverService>();
+            services.AddScoped<ITripManagementService, TripManagementService>();
             #endregion
         }
 

@@ -30,5 +30,8 @@ namespace ApiVer1Url
         // Driver
         public const string Driver = BaseApiUrl + "/driver";
 
+        // Trip
+        public const string Trip = BaseApiUrl + "/trip";
+
     }
 }

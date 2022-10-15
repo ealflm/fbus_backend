@@ -1,0 +1,156 @@
+﻿using FBus.Business.BaseBusiness.CommonModel;
+using FBus.Business.BaseBusiness.Configuration;
+using FBus.Business.BaseBusiness.Implements;
+using FBus.Business.BaseBusiness.ViewModel;
+using FBus.Business.BusVehicleManagement.Interfaces;
+using FBus.Business.DriverManagement.Interfaces;
+using FBus.Business.RouteManagement.Interfaces;
+using FBus.Business.StationManagement.Interfaces;
+using FBus.Business.TripManagement.Interfaces;
+using FBus.Business.TripManagement.SearchModel;
+using FBus.Data.Interfaces;
+using FBus.Data.Models;
+using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace FBus.Business.TripManagement.Implements
+{
+    public class TripManagementService : BaseService, ITripManagementService
+    {
+        IBusService _busService;
+        IRouteManagementService _routeManagementService;
+        IDriverService _driveService;
+        public TripManagementService(IUnitOfWork unitOfWork, IDriverService driverService, IRouteManagementService routeManagementService, IBusService busService) : base(unitOfWork)
+        {
+            _busService = busService;
+            _routeManagementService = routeManagementService;
+            _driveService = driverService;   
+        }
+
+        public async Task<Response> Create(TripSearchModel model)
+        {
+            bool already = (await _unitOfWork.TripRepository.Query().Where(x => x.Date.Equals(model.Date) && x.RouteId.Equals(model.RouteId) && x.BusId.Equals(model.BusId) && (x.TimeStart.Subtract(model.TimeStart).Minutes*x.TimeEnd.Subtract(model.TimeEnd).Minutes)<0).FirstOrDefaultAsync())!= null;
+            if (already)
+            {
+                return new()
+                {
+                    StatusCode =(int) StatusCode.BadRequest,
+                    Message = Message.AlreadyExist
+                };
+            }
+            var entity = new Trip()
+            {
+                BusId = model.BusId,
+                DriverId = model.DriverId,
+                RouteId =  model.RouteId,
+                Date = model.Date,
+                TimeEnd = model.TimeEnd,
+                TimeStart = model.TimeStart,
+                Status = 1,
+                TripId = Guid.NewGuid()
+            };
+            await _unitOfWork.TripRepository.Add(entity);
+            await _unitOfWork.SaveChangesAsync();
+            return new()
+            {
+                StatusCode = (int)StatusCode.Success,
+                Message = Message.CreatedSuccess
+            };
+        }
+
+        public async Task<Response> Delete(Guid id)
+        {
+            var entity = await _unitOfWork.TripRepository.GetById(id);
+            if(entity!= null)
+            {
+                entity.Status = 0;
+                _unitOfWork.TripRepository.Update(entity);
+                await _unitOfWork.SaveChangesAsync();
+                return new()
+                {
+                    StatusCode = (int)StatusCode.Success,
+                    Message = Message.UpdatedSuccess
+                };
+            }
+            return new()
+            {
+                StatusCode = (int)StatusCode.NotFound,
+                Message = Message.NotFound
+            };
+        }
+
+        public async Task<Response> Get(Guid id)
+        {
+            var entity = await _unitOfWork.TripRepository.GetById(id);
+            if( entity!= null)
+            {
+                var result = entity.AsViewModel();
+                result.Route = (RouteViewModel)(await _routeManagementService.Get(entity.RouteId)).Data;
+                result.Bus = (BusViewModel)(await _busService.GetDetails(entity.BusId.ToString())).Data;
+                result.Driver = (DriverViewModel)(await _driveService.GetDetails(entity.DriverId.ToString())).Data;
+                return new()
+                {
+                    StatusCode = (int)StatusCode.Ok,
+                    Data = result,
+                    Message= Message.GetDetailsSuccess
+                };
+            }
+            return new()
+            {
+                StatusCode = (int)StatusCode.NotFound,
+                Message = Message.NotFound
+            };
+        }
+
+        public async Task<Response> GetList()
+        {
+            var entities = await _unitOfWork.TripRepository.Query().ToListAsync();
+            var resultList =new List<TripViewModel>();
+            foreach(var entity in entities)
+            {
+                var result = entity.AsViewModel();
+                result.Route = (RouteViewModel)(await _routeManagementService.Get(entity.RouteId)).Data;
+                result.Bus = (BusViewModel)(await _busService.GetDetails(entity.BusId.ToString())).Data;
+                result.Driver = (DriverViewModel)(await _driveService.GetDetails(entity.DriverId.ToString())).Data;
+                resultList.Add(result);
+            }
+            return new()
+            {
+                StatusCode = (int)StatusCode.Ok,
+                Data = resultList,
+                Message= Message.GetListSuccess
+            };
+        }
+
+        public async Task<Response> Update(TripUpdateModel model, Guid id)
+        {
+            var entity= await _unitOfWork.TripRepository.GetById(id);
+            if(entity!= null)
+            {
+                entity.Status = UpdateTypeOfNotNullAbleObject<int>(entity.Status, model.Status);
+                entity.BusId = UpdateTypeOfNullAbleObject<Guid>(entity.BusId, model.BusId);
+                entity.RouteId = UpdateTypeOfNullAbleObject<Guid>(entity.RouteId, model.RouteId);
+                entity.DriverId = UpdateTypeOfNullAbleObject<Guid>(entity.DriverId, model.DriverId);
+                entity.Date = UpdateTypeOfNullAbleObject<DateTime>(entity.Date, model.Date);
+                entity.TimeEnd = UpdateTypeOfNullAbleObject<TimeSpan>(entity.TimeEnd, model.TimeEnd);
+                entity.TimeStart = UpdateTypeOfNullAbleObject<TimeSpan>(entity.TimeStart, model.TimeStart);
+                _unitOfWork.TripRepository.Update(entity);
+                await _unitOfWork.SaveChangesAsync();
+                return new()
+                {
+                    StatusCode= (int)StatusCode.Success,
+                    Message= Message.UpdatedSuccess
+                };
+            }
+            return new()
+            {
+                StatusCode = (int)StatusCode.NotFound,
+                Message = Message.NotFound
+            };
+        }
+    }
+}

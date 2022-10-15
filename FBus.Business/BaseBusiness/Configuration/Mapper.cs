@@ -45,6 +45,18 @@ namespace FBus.Business.BaseBusiness.Configuration
             };
         }
 
+        public static TripViewModel AsViewModel(this Trip item)
+        {
+            return new()
+            {
+                TimeEnd = item.TimeEnd,
+                TimeStart = item.TimeStart,
+                TripId = item.TripId,
+                Date =  item.Date,
+                Status = item.Status
+            };
+        }
+
         public static BusViewModel AsBusViewModel(this FBus.Data.Models.BusVehicle item)
         {
             return new()

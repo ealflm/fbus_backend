@@ -6,12 +6,9 @@ using System.Threading.Tasks;
 
 namespace FBus.Business.RouteManagement.SearchModel
 {
-    public class RouteUpdateModel
+    public class StationSearchModel
     {
-        public string Name { get; set; }
+        public Guid StationId { get; set; }
         public decimal? Distance { get; set; }
-        public int? TotalStation { get; set; }
-        public List<StationSearchModel> StationList { get; set; }
-        public int? Status { get; set; }
     }
 }

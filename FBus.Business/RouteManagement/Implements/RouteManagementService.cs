@@ -13,6 +13,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace FBus.Business.RouteManagement.Implements
@@ -51,10 +52,10 @@ namespace FBus.Business.RouteManagement.Implements
                 {
                     var routeStation = new RouteStation()
                     {
-                        StationId = model.StationList[i],
+                        StationId = model.StationList[i].StationId,
                         RouteId = entity.RouteId,
                         OrderNumber = i,
-                        Distance = 0
+                        Distance = model.StationList[i].Distance.Value
                     };
                     await _unitOfWork.RouteStationRepository.Add(routeStation);
                 }
@@ -118,6 +119,15 @@ namespace FBus.Business.RouteManagement.Implements
         public async Task<Response> GetList()
         {
             var entities = await _unitOfWork.RouteRepository.Query().Select(x => x.AsViewModel()).ToListAsync();
+            foreach(var entity in entities)
+            {
+                var routeStationList = await _unitOfWork.RouteStationRepository.Query().Where(x => x.RouteId.Equals(entity.RouteId)).ToListAsync();
+                entity.StationList = new List<StationViewModel>();
+                foreach (var x in routeStationList)
+                {
+                    entity.StationList.Add((StationViewModel)_stationService.Get(x.StationId).Result.Data);
+                }
+            }
             return new()
             {
                 StatusCode = (int)StatusCode.Ok,
@@ -126,17 +136,32 @@ namespace FBus.Business.RouteManagement.Implements
             };
         }
 
-      /*  public async Task<Response> Update(RouteUpdateModel model, Guid id)
+        public async Task<Response> Update(RouteUpdateModel model, Guid id)
         {
             var entity= await _unitOfWork.RouteRepository.GetById(id);
             if(entity!= null)
             {
-                entity.Longitude= UpdateTypeOfNotNullAbleObject<decimal>(entity.Longitude, model.Longitude);
-                entity.Latitude = UpdateTypeOfNotNullAbleObject<decimal>(entity.Latitude, model.Latitude);
+                entity.TotalStation= UpdateTypeOfNotNullAbleObject<int>(entity.TotalStation, model.TotalStation);
+                entity.Distance = UpdateTypeOfNotNullAbleObject<decimal>(entity.Distance, model.Distance);
                 entity.Status = UpdateTypeOfNotNullAbleObject<int>(entity.Status, model.Status);
                 entity.Name= UpdateTypeOfNullAbleObject<string>(entity.Name, model.Name);
-                entity.Address= UpdateTypeOfNullAbleObject<string>(entity.Address, model.Address);
                 _unitOfWork.RouteRepository.Update(entity);
+                var routeStationList = await _unitOfWork.RouteStationRepository.Query().Where(x => x.RouteId.Equals(id)).ToListAsync();
+                foreach(var x in routeStationList)
+                {
+                    await _unitOfWork.RouteStationRepository.Remove(x);
+                }
+                for(int i=0; i< model.StationList.Count; i++)
+                {
+                    var routeStation = new RouteStation()
+                    {
+                        RouteId= id,
+                        OrderNumber=i,
+                        StationId= model.StationList[i].StationId,
+                        Distance= model.StationList[i].Distance
+                    };
+                    await _unitOfWork.RouteStationRepository.Add(routeStation);
+                }
                 await _unitOfWork.SaveChangesAsync();
                 return new()
                 {
@@ -149,6 +174,6 @@ namespace FBus.Business.RouteManagement.Implements
                 StatusCode = (int)StatusCode.NotFound,
                 Message = Message.NotFound
             };
-        }*/
+        }
     }
 }

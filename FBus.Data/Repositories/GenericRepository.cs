@@ -54,5 +54,10 @@ namespace FBus.Data.Repositories
             var entity = await GetById(id);
             _dbSet.Remove(entity);
         }
+
+        public async Task Remove(TEntity entity)
+        {
+            _dbSet.Remove(entity);
+        }
     }
 }

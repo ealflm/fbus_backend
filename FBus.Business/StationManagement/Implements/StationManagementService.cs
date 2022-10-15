@@ -56,6 +56,18 @@ namespace FBus.Business.StationManagement.Implements
             {
                 entity.Status = 0;
                 _unitOfWork.StationRepository.Update(entity);
+                var routeStation = await _unitOfWork.RouteStationRepository.Query().Where(x => x.StationId == id).ToListAsync();
+                foreach(var x in routeStation)
+                {
+                    var routeStationList = await _unitOfWork.RouteStationRepository.Query().Where(y => y.RouteId == x.RouteId).OrderBy(x=> x.OrderNumber).ToListAsync();
+                    routeStationList.RemoveAt(x.OrderNumber);
+                    await _unitOfWork.RouteStationRepository.Remove(x);
+                    for(int i=0; i<routeStationList.Count;i++)
+                    {
+                        routeStationList[i].OrderNumber = i;
+                        _unitOfWork.RouteStationRepository.Update(routeStationList[i]);
+                    }
+                }
                 await _unitOfWork.SaveChangesAsync();
                 return new()
                 {

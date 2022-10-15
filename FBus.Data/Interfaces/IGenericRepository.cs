@@ -15,5 +15,7 @@ namespace FBus.Data.Interfaces
         void Update(TEntity entity);
 
         Task Remove(Guid id);
+
+        Task Remove(TEntity entity);
     }
 }

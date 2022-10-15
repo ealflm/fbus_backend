@@ -17,6 +17,7 @@ namespace FBus.Data.Repositories
         public IGenericRepository<BusVehicle> BusRepository { get;  }
         public IGenericRepository<Route> RouteRepository { get; }
         public IGenericRepository<RouteStation> RouteStationRepository { get; }
+        public IGenericRepository<Trip> TripRepository { get; }
         public UnitOfWork(FBusContext dbContext,
                         IGenericRepository<Admin> adminRepository,
                         IGenericRepository<Student> studentRepository,
@@ -24,7 +25,8 @@ namespace FBus.Data.Repositories
                         IGenericRepository<Station> stationRepository,
                         IGenericRepository<BusVehicle> busRepository,
                         IGenericRepository<Route> routeRepository,
-                        IGenericRepository<RouteStation> routeStationRepository
+                        IGenericRepository<RouteStation> routeStationRepository,
+                        IGenericRepository<Trip> tripRepository
             )
         {
             _dbContext = dbContext;
@@ -36,6 +38,7 @@ namespace FBus.Data.Repositories
             BusRepository = busRepository;
             RouteRepository = routeRepository;
             RouteStationRepository = routeStationRepository;
+            TripRepository = tripRepository;
         }
 
         public FBusContext Context()
