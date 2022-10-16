@@ -42,7 +42,7 @@ namespace FBus.Business.RouteManagement.Implements
                 Distance = model.Distance,
                 TotalStation= model.TotalStation,
                 Name = model.Name,
-                Status = 1,
+                Status = (int) RouteStatus.Active,
                 RouteId = Guid.NewGuid()
             };
             await _unitOfWork.RouteRepository.Add(entity);
@@ -52,10 +52,10 @@ namespace FBus.Business.RouteManagement.Implements
                 {
                     var routeStation = new RouteStation()
                     {
-                        StationId = model.StationList[i].StationId,
+                        StationId = model.StationList[i],
                         RouteId = entity.RouteId,
                         OrderNumber = i,
-                        Distance = model.StationList[i].Distance.Value
+                        Distance = model.DistanceList[i],
                     };
                     await _unitOfWork.RouteStationRepository.Add(routeStation);
                 }
@@ -73,7 +73,7 @@ namespace FBus.Business.RouteManagement.Implements
             var entity = await _unitOfWork.RouteRepository.GetById(id);
             if(entity!= null)
             {
-                entity.Status = 0;
+                entity.Status = (int) RouteStatus.Disable;
                 _unitOfWork.RouteRepository.Update(entity);
                 await _unitOfWork.SaveChangesAsync();
                 return new()
@@ -157,8 +157,8 @@ namespace FBus.Business.RouteManagement.Implements
                     {
                         RouteId= id,
                         OrderNumber=i,
-                        StationId= model.StationList[i].StationId,
-                        Distance= model.StationList[i].Distance
+                        StationId= model.StationList[i],
+                        Distance= model.DistanceList[i],
                     };
                     await _unitOfWork.RouteStationRepository.Add(routeStation);
                 }
