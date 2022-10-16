@@ -15,6 +15,7 @@ namespace FBus.Data.Interfaces
         IGenericRepository<Route> RouteRepository { get; }
         IGenericRepository<RouteStation> RouteStationRepository { get; }
         IGenericRepository<Trip> TripRepository { get; }
+        IGenericRepository<StudentTrip> StudentTripRepository { get; }
         FBusContext Context();
 
         DatabaseFacade Database();

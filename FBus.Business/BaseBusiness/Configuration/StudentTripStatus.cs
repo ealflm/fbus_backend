@@ -1,9 +1,9 @@
 ﻿namespace FBus.Business.BaseBusiness.Configuration
 {
-    public enum StationStatus
+    public enum StudentTripStatus
     {
-        Disable = 0,
         Active = 1,
-        SchoolStation = 2,
+        passed = 2,
     }
+    
 }
