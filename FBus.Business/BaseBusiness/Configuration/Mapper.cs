@@ -57,6 +57,21 @@ namespace FBus.Business.BaseBusiness.Configuration
             };
         }
 
+        public static StudentTripViewModel AsViewModel(this StudentTrip item)
+        {
+            return new()
+            {
+                 CopyOfRoute = item.CopyOfRoute,
+                 CreateDate = item.CreateDate, 
+                 Feedback = item.Feedback,
+                 ModifyDate = item.ModifyDate,
+                 Rate = item.Rate,
+                 StudentTripId = item.StudentTripId,
+                 Type  = item.Type,
+                 Status = item.Status
+            };
+        }
+
         public static BusViewModel AsBusViewModel(this FBus.Data.Models.BusVehicle item)
         {
             return new()
