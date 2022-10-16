@@ -1,4 +1,4 @@
-﻿using FBus.Business.RouteManagement.SearchModel;
+﻿using FBus.Business.TripManagement.SearchModel;
 using FBus.Business.BaseBusiness.CommonModel;
 using System;
 using System.Collections.Generic;
@@ -6,14 +6,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FBus.Business.RouteManagement.Interfaces
+namespace FBus.Business.TripManagement.Interfaces
 {
-    public interface IRouteManagementService
+    public interface ITripManagementService
     {
-        Task<Response> Create(RouteSearchModel model);
+        Task<Response> Create(TripSearchModel model);
         Task<Response> Get(Guid id);
         Task<Response> GetList();
-        Task<Response> Update(RouteUpdateModel model, Guid id);
+        Task<Response> Update(TripUpdateModel model, Guid id);
         Task<Response> Delete(Guid id);
     }
 }

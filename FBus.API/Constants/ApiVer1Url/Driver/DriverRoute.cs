@@ -22,5 +22,7 @@ namespace ApiVer1Url
 
         // Route
         public const string Route = BaseApiUrl + "/route";
+        // Trip
+        public const string Trip = BaseApiUrl + "/trip";
     }
 }

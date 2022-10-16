@@ -1,5 +1,5 @@
-﻿using FBus.Business.RouteManagement.Interfaces;
-using FBus.Business.RouteManagement.SearchModel;
+﻿using FBus.Business.TripManagement.Interfaces;
+using FBus.Business.TripManagement.SearchModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -7,19 +7,19 @@ using System.Threading.Tasks;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
-namespace FBus.API.Controllers.Admin
+namespace FBus.API.Controllers.Driver
 {
     
     
     [ApiController]
     [Authorize]
-    [Route(ApiVer1Url.Admin.Route)]
-    public class RouteManagementController : BaseController
+    [Route(ApiVer1Url.Driver.Trip)]
+    public class TripManagementController : BaseController
     {
 
-        private readonly IRouteManagementService _service;
+        private readonly ITripManagementService _service;
 
-        public RouteManagementController(IRouteManagementService service)
+        public TripManagementController(ITripManagementService service)
         {
             _service = service;
         }
@@ -36,8 +36,8 @@ namespace FBus.API.Controllers.Admin
             return SendResponse(await _service.GetList());
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Create([FromBody] RouteSearchModel model)
+       /* [HttpPost]
+        public async Task<IActionResult> Create([FromBody] TripSearchModel model)
         {
             return SendResponse(await _service.Create(model));
         }
@@ -48,9 +48,9 @@ namespace FBus.API.Controllers.Admin
             return SendResponse(await _service.Delete(id));
         }
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(Guid id,[FromBody] RouteUpdateModel model)
+        public async Task<IActionResult> Update(Guid id,[FromBody] TripUpdateModel model)
         {
             return SendResponse(await _service.Update(model, id));
-        }
+        }*/
     }
 }
