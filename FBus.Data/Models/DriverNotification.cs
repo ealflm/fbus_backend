@@ -5,7 +5,7 @@ namespace FBus.Data.Models
 {
     public partial class DriverNotification
     {
-        public Guid NotifyId { get; set; }
+        public Guid NotificationId { get; set; }
         public Guid DriverId { get; set; }
         public string Title { get; set; }
         public string Content { get; set; }

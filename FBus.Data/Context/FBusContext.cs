@@ -63,8 +63,7 @@ namespace FBus.Data.Context
 
                 entity.Property(e => e.Color)
                     .IsRequired()
-                    .HasMaxLength(10)
-                    .IsUnicode(false);
+                    .HasMaxLength(50);
 
                 entity.Property(e => e.LicensePlates)
                     .IsRequired()
@@ -108,12 +107,12 @@ namespace FBus.Data.Context
 
             modelBuilder.Entity<DriverNotification>(entity =>
             {
-                entity.HasKey(e => e.NotifyId)
+                entity.HasKey(e => e.NotificationId)
                     .HasName("PK_DriverNotify");
 
                 entity.ToTable("DriverNotification");
 
-                entity.Property(e => e.NotifyId).ValueGeneratedNever();
+                entity.Property(e => e.NotificationId).ValueGeneratedNever();
 
                 entity.Property(e => e.Content).IsRequired();
 
@@ -264,12 +263,12 @@ namespace FBus.Data.Context
 
             modelBuilder.Entity<StudentNotification>(entity =>
             {
-                entity.HasKey(e => e.NotifyId)
+                entity.HasKey(e => e.NotificationId)
                     .HasName("PK_StudentNotify");
 
                 entity.ToTable("StudentNotification");
 
-                entity.Property(e => e.NotifyId).ValueGeneratedNever();
+                entity.Property(e => e.NotificationId).ValueGeneratedNever();
 
                 entity.Property(e => e.Content).IsRequired();
 
