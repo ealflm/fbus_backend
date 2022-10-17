@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using FBus.Business.Authorization.SearchModel;
+using FBus.Business.BaseBusiness.Configuration;
 using FBus.Business.DriverManagement.Interfaces;
 using FBus.Business.DriverManagement.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -30,7 +31,7 @@ namespace FBus.API.Controllers.Driver
         [Route(ApiVer1Url.Driver.ChangePassword)]
         public async Task<IActionResult> ChangePassword(ModifiedPasswordModel model)
         {
-            return SendResponse(await _authorizationService.ChangePassword(model, global::Login.Driver));
+            return SendResponse(await _authorizationService.ChangePassword(model, Role.Driver));
         }
     }
 }

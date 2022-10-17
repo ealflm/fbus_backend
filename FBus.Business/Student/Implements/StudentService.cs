@@ -96,7 +96,8 @@ namespace FBus.Business.StudentManagement.Implements
             stud.FullName = UpdateTypeOfNullAbleObject<string>(stud.FullName, student.FullName);
             stud.Phone = UpdateTypeOfNullAbleObject<string>(stud.Phone, student.Phone);
             stud.Address = UpdateTypeOfNullAbleObject<string>(stud.Address, student.Address);
-            stud.PhotoUrl = await _azureBlobService.UploadFile(student.UploadFile, AzureBlobContainer.Student);
+            stud.PhotoUrl = await _azureBlobService.DeleteFile(student.DeleteFile, AzureBlobContainer.Student, student.PhotoUrl);
+            stud.PhotoUrl += await _azureBlobService.UploadFile(student.UploadFile, AzureBlobContainer.Student);
             stud.NotifyToken = UpdateTypeOfNullAbleObject<string>(stud.NotifyToken, student.NotifyToken);
             stud.AutomaticScheduling = UpdateTypeOfNotNullAbleObject<bool>(stud.AutomaticScheduling, student.AutomaticScheduling);
             stud.Status = UpdateTypeOfNotNullAbleObject<int>(stud.Status, student.Status);

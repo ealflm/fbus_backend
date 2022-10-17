@@ -1,11 +1,6 @@
-﻿using FBus.Business.Authorization.Interfaces;
-using FBus.Business.Authorization.SearchModel;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
+﻿using FBus.Business.Authorization.SearchModel;
+using FBus.Business.BaseBusiness.Configuration;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using IAuthorizationService = FBus.Business.Authorization.Interfaces.IAuthorizationService;
 
@@ -25,7 +20,7 @@ namespace FBus.API.Controllers.Admin
         [Route(ApiVer1Url.Admin.Login)]
         public async Task<IActionResult> Login([FromBody] LoginSearchModel model)
         {
-            return SendResponse( await _authorizationService.Login(model, global::Login.Admin));
+            return SendResponse(await _authorizationService.Login(model, Role.Admin));
         }
 
         [HttpPost]

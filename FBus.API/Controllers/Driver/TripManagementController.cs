@@ -1,4 +1,5 @@
-﻿using FBus.Business.TripManagement.Interfaces;
+﻿using FBus.Business.BaseBusiness.Configuration;
+using FBus.Business.TripManagement.Interfaces;
 using FBus.Business.TripManagement.SearchModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -9,11 +10,10 @@ using System.Threading.Tasks;
 
 namespace FBus.API.Controllers.Driver
 {
-    
-    
+
+
     [ApiController]
     [Authorize]
-    [Route(ApiVer1Url.Driver.Trip)]
     public class TripManagementController : BaseController
     {
 
@@ -24,33 +24,49 @@ namespace FBus.API.Controllers.Driver
             _service = service;
         }
 
-        [HttpGet("{id}")]
+        [HttpGet]
+        [Route(ApiVer1Url.Driver.Trip + "/{id}")]
         public async Task<IActionResult> Get(Guid id)
         {
             return SendResponse(await _service.Get(id));
         }
 
         [HttpGet]
+        [Route(ApiVer1Url.Driver.Trip)]
         public async Task<IActionResult> GetList()
         {
             return SendResponse(await _service.GetList());
         }
 
-       /* [HttpPost]
-        public async Task<IActionResult> Create([FromBody] TripSearchModel model)
+        /* [HttpPost]
+         public async Task<IActionResult> Create([FromBody] TripSearchModel model)
+         {
+             return SendResponse(await _service.Create(model));
+         }
+
+         [HttpDelete("{id}")]
+         public async Task<IActionResult> Delete(Guid id)
+         {
+             return SendResponse(await _service.Delete(id));
+         }
+         [HttpPut("{id}")]
+         public async Task<IActionResult> Update(Guid id,[FromBody] TripUpdateModel model)
+         {
+             return SendResponse(await _service.Update(model, id));
+         }*/
+
+        [HttpGet]
+        [Route(ApiVer1Url.Driver.HistoricalTrip + "/{id}")]
+        public async Task<IActionResult> GetHistoricalTrip(string id)
         {
-            return SendResponse(await _service.Create(model));
+            return SendResponse(await _service.GetHistoricalTrip(id, Role.Driver));
         }
 
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(Guid id)
+        [HttpGet]
+        [Route(ApiVer1Url.Driver.TripSchedules + "/{id}")]
+        public async Task<IActionResult> GetTripSchedules(string id)
         {
-            return SendResponse(await _service.Delete(id));
+            return SendResponse(await _service.GetDriverTripSchedules(id));
         }
-        [HttpPut("{id}")]
-        public async Task<IActionResult> Update(Guid id,[FromBody] TripUpdateModel model)
-        {
-            return SendResponse(await _service.Update(model, id));
-        }*/
     }
 }

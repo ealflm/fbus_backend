@@ -28,17 +28,17 @@ namespace FBus.Business.TripManagement.Implements
         {
             _busService = busService;
             _routeManagementService = routeManagementService;
-            _driveService = driverService;   
+            _driveService = driverService;
         }
 
         public async Task<Response> Create(TripSearchModel model)
         {
-            bool already = (await _unitOfWork.TripRepository.Query().Where(x => x.Date.Equals(model.Date) && x.RouteId.Equals(model.RouteId) && x.BusId.Equals(model.BusId) && (x.TimeStart.Subtract(model.TimeStart).Minutes*x.TimeEnd.Subtract(model.TimeEnd).Minutes)<0).FirstOrDefaultAsync())!= null;
+            bool already = (await _unitOfWork.TripRepository.Query().Where(x => x.Date.Equals(model.Date) && x.RouteId.Equals(model.RouteId) && x.BusId.Equals(model.BusId) && (x.TimeStart.Subtract(model.TimeStart).Minutes * x.TimeEnd.Subtract(model.TimeEnd).Minutes) < 0).FirstOrDefaultAsync()) != null;
             if (already)
             {
                 return new()
                 {
-                    StatusCode =(int) StatusCode.BadRequest,
+                    StatusCode = (int)StatusCode.BadRequest,
                     Message = Message.AlreadyExist
                 };
             }
@@ -46,7 +46,7 @@ namespace FBus.Business.TripManagement.Implements
             {
                 BusId = model.BusId,
                 DriverId = model.DriverId,
-                RouteId =  model.RouteId,
+                RouteId = model.RouteId,
                 Date = model.Date,
                 TimeEnd = model.TimeEnd,
                 TimeStart = model.TimeStart,
@@ -65,7 +65,7 @@ namespace FBus.Business.TripManagement.Implements
         public async Task<Response> Delete(Guid id)
         {
             var entity = await _unitOfWork.TripRepository.GetById(id);
-            if(entity!= null)
+            if (entity != null)
             {
                 entity.Status = 0;
                 _unitOfWork.TripRepository.Update(entity);
@@ -86,7 +86,7 @@ namespace FBus.Business.TripManagement.Implements
         public async Task<Response> Get(Guid id)
         {
             var entity = await _unitOfWork.TripRepository.GetById(id);
-            if( entity!= null)
+            if (entity != null)
             {
                 var result = entity.AsViewModel();
                 result.Route = (RouteViewModel)(await _routeManagementService.Get(entity.RouteId)).Data;
@@ -96,7 +96,7 @@ namespace FBus.Business.TripManagement.Implements
                 {
                     StatusCode = (int)StatusCode.Ok,
                     Data = result,
-                    Message= Message.GetDetailsSuccess
+                    Message = Message.GetDetailsSuccess
                 };
             }
             return new()
@@ -109,8 +109,8 @@ namespace FBus.Business.TripManagement.Implements
         public async Task<Response> GetList()
         {
             var entities = await _unitOfWork.TripRepository.Query().ToListAsync();
-            var resultList =new List<TripViewModel>();
-            foreach(var entity in entities)
+            var resultList = new List<TripViewModel>();
+            foreach (var entity in entities)
             {
                 var result = entity.AsViewModel();
                 result.Route = (RouteViewModel)(await _routeManagementService.Get(entity.RouteId)).Data;
@@ -122,14 +122,14 @@ namespace FBus.Business.TripManagement.Implements
             {
                 StatusCode = (int)StatusCode.Ok,
                 Data = resultList,
-                Message= Message.GetListSuccess
+                Message = Message.GetListSuccess
             };
         }
 
         public async Task<Response> Update(TripUpdateModel model, Guid id)
         {
-            var entity= await _unitOfWork.TripRepository.GetById(id);
-            if(entity!= null)
+            var entity = await _unitOfWork.TripRepository.GetById(id);
+            if (entity != null)
             {
                 entity.Status = UpdateTypeOfNotNullAbleObject<int>(entity.Status, model.Status);
                 entity.BusId = UpdateTypeOfNullAbleObject<Guid>(entity.BusId, model.BusId);
@@ -142,14 +142,70 @@ namespace FBus.Business.TripManagement.Implements
                 await _unitOfWork.SaveChangesAsync();
                 return new()
                 {
-                    StatusCode= (int)StatusCode.Success,
-                    Message= Message.UpdatedSuccess
+                    StatusCode = (int)StatusCode.Success,
+                    Message = Message.UpdatedSuccess
                 };
             }
             return new()
             {
                 StatusCode = (int)StatusCode.NotFound,
                 Message = Message.NotFound
+            };
+        }
+
+        public async Task<Response> GetHistoricalTrip(string id, Role role)
+        {
+            if (role == Role.Driver)
+            {
+                var th = await _unitOfWork.TripRepository
+                            .Query()
+                            .Where(t => t.DriverId == Guid.Parse(id))
+                            .Where(t =>
+                                (t.Date.Day.CompareTo(DateTime.UtcNow.Day) < 0 && t.Date.Month.CompareTo(DateTime.UtcNow.Month) == 0 && t.Date.Year.CompareTo(DateTime.UtcNow.Year) == 0) ||
+                                (t.Date.Month.CompareTo(DateTime.UtcNow.Month) < 0 && t.Date.Year.CompareTo(DateTime.UtcNow.Year) == 0) ||
+                                (t.Date.Year.CompareTo(DateTime.UtcNow.Year) < 0) ||
+                                (
+                                    t.Date.Day.CompareTo(DateTime.UtcNow.Day) == 0 &&
+                                    t.Date.Month.CompareTo(DateTime.UtcNow.Month) == 0 &&
+                                    t.Date.Year.CompareTo(DateTime.UtcNow.Year) == 0 &&
+                                    t.TimeEnd.CompareTo(DateTime.UtcNow.TimeOfDay) < 0
+                                )
+                            )
+                            .Select(t => t.AsViewModel())
+                            .ToListAsync();
+
+                return new()
+                {
+                    StatusCode = (int)StatusCode.Ok,
+                    Message = Message.GetListSuccess,
+                    Data = th,
+                };
+            }
+
+            return new()
+            {
+                StatusCode = (int)StatusCode.Ok,
+                Message = Message.GetListSuccess
+            };
+        }
+
+        public async Task<Response> GetDriverTripSchedules(string id)
+        {
+            var th = await _unitOfWork.TripRepository
+                        .Query()
+                        .Where(t => t.DriverId == Guid.Parse(id))
+                        .Where(t => t.Date.Day.CompareTo(DateTime.UtcNow.Day) >= 0)
+                        .Where(t => t.Date.Month.CompareTo(DateTime.UtcNow.Month) >= 0)
+                        .Where(t => t.Date.Year.CompareTo(DateTime.UtcNow.Year) >= 0)
+                        .Where(t => t.TimeStart.CompareTo(DateTime.UtcNow.TimeOfDay) >= 0)
+                        .Select(t => t.AsViewModel())
+                        .ToListAsync();
+
+            return new()
+            {
+                StatusCode = (int)StatusCode.Ok,
+                Message = Message.GetListSuccess,
+                Data = th,
             };
         }
     }
