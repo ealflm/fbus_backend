@@ -33,7 +33,7 @@ namespace FBus.Business.Authorization.Implements
             _firebaseAuth = FirebaseAuth.GetAuth(_firebaseApp);
         }
 
-        private async Task<Response> LoginUserNamePassword<T>(string userName, string password, T result, Login loginType) where T : class
+        private async Task<Response> LoginUserNamePassword<T>(string userName, string password, T result, Role loginType) where T : class
         {
             string message = null;
             dynamic user = null;
@@ -96,7 +96,7 @@ namespace FBus.Business.Authorization.Implements
             return new Response(200, result, message);
         }
 
-        public async Task<Response> Login(LoginSearchModel model, Login loginType)
+        public async Task<Response> Login(LoginSearchModel model, Role loginType)
         {
             Response resultModel = null;
             string result = null;
@@ -345,7 +345,7 @@ namespace FBus.Business.Authorization.Implements
             return 2;
         }
 
-        public async Task<Response> ChangePassword(ModifiedPasswordModel model, Login role)
+        public async Task<Response> ChangePassword(ModifiedPasswordModel model, Role role)
         {
             int check = -1;
             switch ((int)role)
