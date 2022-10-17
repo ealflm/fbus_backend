@@ -16,10 +16,17 @@ namespace ApiVer1Url
 
         // Route
         public const string Route = BaseApiUrl + "/route";
+
         // Trip
         public const string Trip = BaseApiUrl + "/trip";
 
         // StudentTrip
         public const string StudentTrip = BaseApiUrl + "/student-trip";
+
+        // Notification
+        public const string Notification = BaseApiUrl + "/notification";
+
+        // Notification token
+        public const string NotificationToken = BaseApiUrl + "/noti-token";
     }
 }

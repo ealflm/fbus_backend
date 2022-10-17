@@ -34,5 +34,11 @@ namespace ApiVer1Url
 
         // StudentTrip
         public const string StudentTrip = BaseApiUrl + "/student-trip";
+
+        // Notification token
+        public const string NotificationToken = BaseApiUrl + "/noti-token";
+
+        // Notification
+        public const string Notification = BaseApiUrl + "/notification";
     }
 }

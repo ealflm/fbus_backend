@@ -1,3 +1,5 @@
+using System;
+using FBus.Business.BaseBusiness.Interfaces;
 using FBus.Business.BaseBusiness.ViewModel;
 using FBus.Data.Models;
 
@@ -52,7 +54,7 @@ namespace FBus.Business.BaseBusiness.Configuration
                 TimeEnd = item.TimeEnd,
                 TimeStart = item.TimeStart,
                 TripId = item.TripId,
-                Date =  item.Date,
+                Date = item.Date,
                 Status = item.Status
             };
         }
@@ -61,14 +63,14 @@ namespace FBus.Business.BaseBusiness.Configuration
         {
             return new()
             {
-                 CopyOfRoute = item.CopyOfRoute,
-                 CreateDate = item.CreateDate, 
-                 Feedback = item.Feedback,
-                 ModifyDate = item.ModifyDate,
-                 Rate = item.Rate,
-                 StudentTripId = item.StudentTripId,
-                 Type  = item.Type,
-                 Status = item.Status
+                CopyOfRoute = item.CopyOfRoute,
+                CreateDate = item.CreateDate,
+                Feedback = item.Feedback,
+                ModifyDate = item.ModifyDate,
+                Rate = item.Rate,
+                StudentTripId = item.StudentTripId,
+                Type = item.Type,
+                Status = item.Status
             };
         }
 
@@ -94,6 +96,32 @@ namespace FBus.Business.BaseBusiness.Configuration
                 PhotoUrl = item.PhotoUrl,
                 Address = item.Address,
                 Status = item.Status
+            };
+        }
+
+        public static DriverNotification DriverNotification(this NoticationModel item)
+        {
+            return new()
+            {
+                NotificationId = Guid.NewGuid(),
+                DriverId = Guid.Parse(item.EntityId),
+                Title = item.Title,
+                Content = item.Content,
+                Type = item.Type,
+                CreateDate = DateTime.UtcNow,
+            };
+        }
+
+        public static StudentNotification StudentNotification(this NoticationModel item)
+        {
+            return new()
+            {
+                NotificationId = Guid.NewGuid(),
+                StudentId = Guid.Parse(item.EntityId),
+                Title = item.Title,
+                Content = item.Content,
+                Type = item.Type,
+                CreateDate = DateTime.UtcNow,
             };
         }
     }
