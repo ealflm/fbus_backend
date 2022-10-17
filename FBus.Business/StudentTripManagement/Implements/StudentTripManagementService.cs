@@ -26,19 +26,19 @@ namespace FBus.Business.StudentTripManagement.Implements
         private IStudentService _studentManagementService;
         public StudentTripManagementService(IUnitOfWork unitOfWork, ITripManagementService tripManagementService, IStationManagementService stationManagementService, IStudentService studentManagementService) : base(unitOfWork)
         {
-            _tripManagementService= tripManagementService;
-            _stationManagementService= stationManagementService;
+            _tripManagementService = tripManagementService;
+            _stationManagementService = stationManagementService;
             _studentManagementService = studentManagementService;
         }
 
         public async Task<Response> Create(StudentTripSearchModel model)
         {
-            bool already = (await _unitOfWork.StudentTripRepository.Query().Where(x => x.TripId.Equals(model.TripId)).FirstOrDefaultAsync())!= null;
+            bool already = (await _unitOfWork.StudentTripRepository.Query().Where(x => x.TripId.Equals(model.TripId)).FirstOrDefaultAsync()) != null;
             if (already)
             {
                 return new()
                 {
-                    StatusCode =(int) StatusCode.BadRequest,
+                    StatusCode = (int)StatusCode.BadRequest,
                     Message = Message.AlreadyExist
                 };
             }
@@ -50,11 +50,11 @@ namespace FBus.Business.StudentTripManagement.Implements
                 StudentId = model.StudentId,
                 TripId = model.TripId,
                 Type = model.Type,
-                Status = (int) StudentTripStatus.Active,
+                Status = (int)StudentTripStatus.Active,
                 StudentTripId = Guid.NewGuid()
             };
-            var trip =(TripViewModel) (await _tripManagementService.Get(model.TripId)).Data;
-            var route=  JsonConvert.SerializeObject(trip.Route);
+            var trip = (TripViewModel)(await _tripManagementService.Get(model.TripId)).Data;
+            var route = JsonConvert.SerializeObject(trip.Route);
             entity.CopyOfRoute = route;
             await _unitOfWork.StudentTripRepository.Add(entity);
             await _unitOfWork.SaveChangesAsync();
@@ -68,9 +68,9 @@ namespace FBus.Business.StudentTripManagement.Implements
         public async Task<Response> Delete(Guid id)
         {
             var entity = await _unitOfWork.StudentTripRepository.GetById(id);
-            if(entity!= null)
+            if (entity != null)
             {
-                await _unitOfWork.StudentTripRepository.Remove(entity);
+                _unitOfWork.StudentTripRepository.Remove(entity);
                 await _unitOfWork.SaveChangesAsync();
                 return new()
                 {
@@ -110,17 +110,17 @@ namespace FBus.Business.StudentTripManagement.Implements
         public async Task<Response> Get(Guid id)
         {
             var entity = await _unitOfWork.StudentTripRepository.GetById(id);
-            if( entity!= null)
+            if (entity != null)
             {
                 var result = entity.AsViewModel();
                 result.Station = (StationViewModel)(await _stationManagementService.Get(entity.StationId)).Data;
-                result.Trip= (TripViewModel)(await _tripManagementService.Get(entity.TripId)).Data;
+                result.Trip = (TripViewModel)(await _tripManagementService.Get(entity.TripId)).Data;
                 result.Student = (StudentViewModel)(await _studentManagementService.GetDetails(entity.StudentId.ToString())).Data;
                 return new()
                 {
                     StatusCode = (int)StatusCode.Ok,
                     Data = result,
-                    Message= Message.GetDetailsSuccess
+                    Message = Message.GetDetailsSuccess
                 };
             }
             return new()
@@ -134,7 +134,7 @@ namespace FBus.Business.StudentTripManagement.Implements
         {
             var entities = await _unitOfWork.StudentTripRepository.Query().ToListAsync();
             var resultList = new List<StudentTripViewModel>();
-            foreach(var entity in entities)
+            foreach (var entity in entities)
             {
                 var result = entity.AsViewModel();
                 result.Station = (StationViewModel)(await _stationManagementService.Get(entity.StationId)).Data;
@@ -146,19 +146,19 @@ namespace FBus.Business.StudentTripManagement.Implements
             {
                 StatusCode = (int)StatusCode.Ok,
                 Data = resultList,
-                Message= Message.GetListSuccess
+                Message = Message.GetListSuccess
             };
         }
 
         public async Task<Response> Update(StudentTripUpdateModel model, Guid id)
         {
-            var entity= await _unitOfWork.StudentTripRepository.GetById(id);
-            if(entity!= null)
+            var entity = await _unitOfWork.StudentTripRepository.GetById(id);
+            if (entity != null)
             {
                 entity.ModifyDate = DateTime.UtcNow;
                 entity.StationId = UpdateTypeOfNullAbleObject<Guid>(entity.StationId, model.StationId);
                 entity.Status = UpdateTypeOfNotNullAbleObject<int>(entity.Status, model.Status);
-                entity.TripId= UpdateTypeOfNullAbleObject<Guid>(entity.TripId, model.TripId);
+                entity.TripId = UpdateTypeOfNullAbleObject<Guid>(entity.TripId, model.TripId);
                 var trip = (TripViewModel)(await _tripManagementService.Get(entity.TripId)).Data;
                 var route = JsonConvert.SerializeObject(trip.Route);
                 entity.CopyOfRoute = route;
@@ -167,8 +167,8 @@ namespace FBus.Business.StudentTripManagement.Implements
                 await _unitOfWork.SaveChangesAsync();
                 return new()
                 {
-                    StatusCode= (int)StatusCode.Success,
-                    Message= Message.UpdatedSuccess
+                    StatusCode = (int)StatusCode.Success,
+                    Message = Message.UpdatedSuccess
                 };
             }
             return new()

@@ -41,7 +41,7 @@ namespace FBus.Data.Repositories
             foreach (PropertyInfo prop in entity.GetType().GetProperties())
             {
                 if (prop.GetGetMethod().IsVirtual) continue;
-                if (prop.Name.Equals(name+"Id")) continue;
+                if (prop.Name.Equals(name + "Id")) continue;
                 if (prop.GetValue(entity, null) != null)
                 {
                     _dbContext.Entry(entity).Property(prop.Name).IsModified = true;
@@ -55,7 +55,7 @@ namespace FBus.Data.Repositories
             _dbSet.Remove(entity);
         }
 
-        public async Task Remove(TEntity entity)
+        public void Remove(TEntity entity)
         {
             _dbSet.Remove(entity);
         }
