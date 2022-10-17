@@ -14,11 +14,14 @@ namespace FBus.Data.Repositories
         public IGenericRepository<Student> StudentRepository { get; }
         public IGenericRepository<Driver> DriverRepository { get; }
         public IGenericRepository<Station> StationRepository { get; }
-        public IGenericRepository<BusVehicle> BusRepository { get;  }
+        public IGenericRepository<BusVehicle> BusRepository { get; }
         public IGenericRepository<Route> RouteRepository { get; }
         public IGenericRepository<RouteStation> RouteStationRepository { get; }
         public IGenericRepository<Trip> TripRepository { get; }
         public IGenericRepository<StudentTrip> StudentTripRepository { get; }
+        public IGenericRepository<DriverNotification> DriverNotificationRepository { get; }
+        public IGenericRepository<StudentNotification> StudentNotificationRepository { get; }
+
         public UnitOfWork(FBusContext dbContext,
                         IGenericRepository<Admin> adminRepository,
                         IGenericRepository<Student> studentRepository,
@@ -28,7 +31,9 @@ namespace FBus.Data.Repositories
                         IGenericRepository<Route> routeRepository,
                         IGenericRepository<RouteStation> routeStationRepository,
                         IGenericRepository<Trip> tripRepository,
-                        IGenericRepository<StudentTrip> studentTripRepository
+                        IGenericRepository<StudentTrip> studentTripRepository,
+                        IGenericRepository<DriverNotification> driverNotificationRepository,
+                        IGenericRepository<StudentNotification> studentNotificationRepository
             )
         {
             _dbContext = dbContext;
@@ -41,7 +46,9 @@ namespace FBus.Data.Repositories
             RouteRepository = routeRepository;
             RouteStationRepository = routeStationRepository;
             TripRepository = tripRepository;
-            StudentTripRepository= studentTripRepository;
+            StudentTripRepository = studentTripRepository;
+            DriverNotificationRepository = driverNotificationRepository;
+            StudentNotificationRepository = studentNotificationRepository;
         }
 
         public FBusContext Context()

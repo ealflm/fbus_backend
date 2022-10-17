@@ -206,6 +206,8 @@ namespace FBus.API
             services.AddScoped<IBusService, BusService>();
             services.AddScoped<IDriverService, DriverService>();
             services.AddScoped<ITripManagementService, TripManagementService>();
+            services.AddScoped<INotificationService, NotificationService>();
+
             #endregion
         }
 
