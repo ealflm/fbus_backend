@@ -90,13 +90,13 @@ namespace FBus.Business.BaseBusiness.Implements
             {
                 try
                 {
-                    var blobClient = blobContainer.GetBlobClient(fileName);
+                    var blobClient = blobContainer.GetBlobClient(fileName.Trim());
                     await blobClient.DeleteAsync();
-                    photoUrl = photoUrl.Replace(fileName + " ", "");
+                    photoUrl = photoUrl.Replace(fileName.Trim() + " ", "");
                 }
                 catch
                 {
-                    return photoUrl;
+                    return "";
                 }
             }
             return photoUrl;
