@@ -31,9 +31,9 @@ namespace FBus.API.Controllers.Student
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetList()
+        public async Task<IActionResult> GetList([FromQuery] DateTime? date)
         {
-            return SendResponse(await _service.GetList());
+            return SendResponse(await _service.GetList(date));
         }
 
        /* [HttpPost]

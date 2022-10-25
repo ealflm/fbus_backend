@@ -130,17 +130,30 @@ namespace FBus.Business.StudentTripManagement.Implements
             };
         }
 
-        public async Task<Response> GetList()
+        public async Task<Response> GetList(Guid? id, DateTime? fromDate, DateTime? toDate, int? status)
         {
-            var entities = await _unitOfWork.StudentTripRepository.Query().ToListAsync();
+            var entities = await _unitOfWork.StudentTripRepository.Query()
+                .Where(x=> id == null || (id != null && x.StudentId.Equals(id)))
+                .Where(x=> status == null || (status != null && x.Status.Equals(status))).ToListAsync();
             var resultList = new List<StudentTripViewModel>();
+            if(fromDate == null)
+            {
+                fromDate = DateTime.MinValue;
+            }
+            if(toDate == null)
+            {
+                toDate = DateTime.UtcNow.AddHours(7);
+            }
             foreach (var entity in entities)
             {
                 var result = entity.AsViewModel();
-                result.Station = (StationViewModel)(await _stationManagementService.Get(entity.StationId)).Data;
                 result.Trip = (TripViewModel)(await _tripManagementService.Get(entity.TripId)).Data;
+                result.Station = (StationViewModel)(await _stationManagementService.Get(entity.StationId)).Data;
                 result.Student = (StudentViewModel)(await _studentManagementService.GetDetails(entity.StudentId.ToString())).Data;
-                resultList.Add(result);
+                if(result.Trip.Date.CompareTo(fromDate)>=0 && result.Trip.Date.CompareTo(toDate) <= 0)
+                {
+                    resultList.Add(result);
+                }
             }
             return new()
             {

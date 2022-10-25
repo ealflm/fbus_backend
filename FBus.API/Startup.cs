@@ -43,6 +43,8 @@ using FBus.Business.DriverManagement.Interfaces;
 using FBus.Business.DriverManagement.Implements;
 using FBus.Business.TripManagement.Interfaces;
 using FBus.Business.TripManagement.Implements;
+using FBus.Business.StudentTripManagement.Interfaces;
+using FBus.Business.StudentTripManagement.Implements;
 
 namespace FBus.API
 {
@@ -207,7 +209,7 @@ namespace FBus.API
             services.AddScoped<IDriverService, DriverService>();
             services.AddScoped<ITripManagementService, TripManagementService>();
             services.AddScoped<INotificationService, NotificationService>();
-
+            services.AddScoped<IStudentTripManagementService, StudentTripManagementService>();
             #endregion
         }
 

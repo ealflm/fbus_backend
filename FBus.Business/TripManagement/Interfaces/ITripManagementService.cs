@@ -13,7 +13,7 @@ namespace FBus.Business.TripManagement.Interfaces
     {
         Task<Response> Create(TripSearchModel model);
         Task<Response> Get(Guid id);
-        Task<Response> GetList();
+        Task<Response> GetList(DateTime? date);
         Task<Response> Update(TripUpdateModel model, Guid id);
         Task<Response> Delete(Guid id);
         Task<Response> GetHistoricalTrip(string id, Role role);

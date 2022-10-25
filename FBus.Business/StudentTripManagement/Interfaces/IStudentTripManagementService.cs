@@ -12,7 +12,7 @@ namespace FBus.Business.StudentTripManagement.Interfaces
     {
         Task<Response> Create(StudentTripSearchModel model);
         Task<Response> Get(Guid id);
-        Task<Response> GetList();
+        Task<Response> GetList(Guid? id, DateTime? fromDate, DateTime? toDate, int? status);
         Task<Response> Update(StudentTripUpdateModel model, Guid id);
         Task<Response> FeedBack(FeedBackSearchModel model, Guid id);
         Task<Response> Delete(Guid id);
