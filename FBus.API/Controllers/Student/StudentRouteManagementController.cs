@@ -32,9 +32,9 @@ namespace FBus.API.Controllers.Student
 
 
         [HttpGet]
-        public async Task<IActionResult> GetList()
+        public async Task<IActionResult> GetList([FromQuery] Guid? id, [FromQuery] DateTime? fromDate, [FromQuery] DateTime? toDate, [FromQuery] int? status)
         {
-            return SendResponse(await _service.GetList());
+            return SendResponse(await _service.GetList(id, fromDate, toDate, status));
         }
 
         [HttpPost]

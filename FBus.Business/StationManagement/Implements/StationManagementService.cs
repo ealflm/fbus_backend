@@ -103,7 +103,7 @@ namespace FBus.Business.StationManagement.Implements
 
         public async Task<Response> GetList()
         {
-            var entities = await _unitOfWork.StationRepository.Query().Select(x => x.AsViewModel()).ToListAsync();
+            var entities = await _unitOfWork.StationRepository.Query().Where(x=> x.Status!=0).Select(x => x.AsViewModel()).ToListAsync();
             return new()
             {
                 StatusCode = (int)StatusCode.Ok,
