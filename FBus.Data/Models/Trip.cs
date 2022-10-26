@@ -11,7 +11,7 @@ namespace FBus.Data.Models
         }
 
         public Guid TripId { get; set; }
-        public Guid BusId { get; set; }
+        public Guid BusVehicleId { get; set; }
         public Guid DriverId { get; set; }
         public Guid RouteId { get; set; }
         public DateTime Date { get; set; }
@@ -19,7 +19,7 @@ namespace FBus.Data.Models
         public TimeSpan TimeEnd { get; set; }
         public int Status { get; set; }
 
-        public virtual BusVehicle Bus { get; set; }
+        public virtual BusVehicle BusVehicle { get; set; }
         public virtual Driver Driver { get; set; }
         public virtual Route Route { get; set; }
         public virtual ICollection<StudentTrip> StudentTrips { get; set; }

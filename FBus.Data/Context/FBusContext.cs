@@ -257,8 +257,7 @@ namespace FBus.Data.Context
                 entity.Property(e => e.Uid)
                     .IsRequired()
                     .HasMaxLength(100)
-                    .IsUnicode(false)
-                    .HasColumnName("UId");
+                    .IsUnicode(false);
             });
 
             modelBuilder.Entity<StudentNotification>(entity =>
@@ -333,9 +332,9 @@ namespace FBus.Data.Context
 
                 entity.Property(e => e.TimeStart).HasColumnType("time(0)");
 
-                entity.HasOne(d => d.Bus)
+                entity.HasOne(d => d.BusVehicle)
                     .WithMany(p => p.Trips)
-                    .HasForeignKey(d => d.BusId)
+                    .HasForeignKey(d => d.BusVehicleId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Trip_Bus");
 

@@ -33,7 +33,7 @@ namespace FBus.Business.TripManagement.Implements
 
         public async Task<Response> Create(TripSearchModel model)
         {
-            bool already = (await _unitOfWork.TripRepository.Query().Where(x => x.Date.Equals(model.Date) && x.RouteId.Equals(model.RouteId) && x.BusId.Equals(model.BusId) && (x.TimeStart.Subtract(model.TimeStart).Minutes * x.TimeEnd.Subtract(model.TimeEnd).Minutes) < 0).FirstOrDefaultAsync()) != null;
+            bool already = (await _unitOfWork.TripRepository.Query().Where(x => x.Date.Equals(model.Date) && x.RouteId.Equals(model.RouteId) && x.BusVehicleId.Equals(model.BusId) && (x.TimeStart.Subtract(model.TimeStart).Minutes * x.TimeEnd.Subtract(model.TimeEnd).Minutes) < 0).FirstOrDefaultAsync()) != null;
             if (already)
             {
                 return new()
@@ -44,7 +44,7 @@ namespace FBus.Business.TripManagement.Implements
             }
             var entity = new Trip()
             {
-                BusId = model.BusId,
+                BusVehicleId = model.BusId,
                 DriverId = model.DriverId,
                 RouteId = model.RouteId,
                 Date = model.Date,
@@ -90,7 +90,7 @@ namespace FBus.Business.TripManagement.Implements
             {
                 var result = entity.AsViewModel();
                 result.Route = (RouteViewModel)(await _routeManagementService.Get(entity.RouteId)).Data;
-                result.Bus = (BusViewModel)(await _busService.GetDetails(entity.BusId.ToString())).Data;
+                result.Bus = (BusViewModel)(await _busService.GetDetails(entity.BusVehicleId.ToString())).Data;
                 result.Driver = (DriverViewModel)(await _driveService.GetDetails(entity.DriverId.ToString())).Data;
                 return new()
                 {
@@ -114,7 +114,7 @@ namespace FBus.Business.TripManagement.Implements
             {
                 var result = entity.AsViewModel();
                 result.Route = (RouteViewModel)(await _routeManagementService.Get(entity.RouteId)).Data;
-                result.Bus = (BusViewModel)(await _busService.GetDetails(entity.BusId.ToString())).Data;
+                result.Bus = (BusViewModel)(await _busService.GetDetails(entity.BusVehicleId.ToString())).Data;
                 result.Driver = (DriverViewModel)(await _driveService.GetDetails(entity.DriverId.ToString())).Data;
                 resultList.Add(result);
             }
@@ -132,7 +132,7 @@ namespace FBus.Business.TripManagement.Implements
             if (entity != null)
             {
                 entity.Status = UpdateTypeOfNotNullAbleObject<int>(entity.Status, model.Status);
-                entity.BusId = UpdateTypeOfNullAbleObject<Guid>(entity.BusId, model.BusId);
+                entity.BusVehicleId = UpdateTypeOfNullAbleObject<Guid>(entity.BusVehicleId, model.BusId);
                 entity.RouteId = UpdateTypeOfNullAbleObject<Guid>(entity.RouteId, model.RouteId);
                 entity.DriverId = UpdateTypeOfNullAbleObject<Guid>(entity.DriverId, model.DriverId);
                 entity.Date = UpdateTypeOfNullAbleObject<DateTime>(entity.Date, model.Date);
