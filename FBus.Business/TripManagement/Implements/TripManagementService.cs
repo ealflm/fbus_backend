@@ -106,9 +106,10 @@ namespace FBus.Business.TripManagement.Implements
             };
         }
 
-        public async Task<Response> GetList()
+        public async Task<Response> GetList(DateTime? date)
         {
-            var entities = await _unitOfWork.TripRepository.Query().ToListAsync();
+            var entities = await _unitOfWork.TripRepository.Query()
+                .Where(x=> date == null || (date != null && x.Date.Equals(date))).ToListAsync();
             var resultList = new List<TripViewModel>();
             foreach (var entity in entities)
             {

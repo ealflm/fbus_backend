@@ -1,5 +1,6 @@
 ﻿using FBus.Business.StudentTripManagement.Interfaces;
 using FBus.Business.StudentTripManagement.SearchModel;
+using Google.Apis.Logging;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -34,7 +35,7 @@ namespace FBus.API.Controllers.Driver
         [HttpGet]
         public async Task<IActionResult> GetList()
         {
-            return SendResponse(await _service.GetList());
+            return SendResponse(await _service.GetList(null,null,null,null));
         }
 
        /* [HttpPost]
