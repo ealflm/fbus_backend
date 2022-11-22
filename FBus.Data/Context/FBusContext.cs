@@ -178,7 +178,7 @@ namespace FBus.Data.Context
 
                 entity.Property(e => e.StationId).HasColumnName("StationID");
 
-                entity.Property(e => e.Distance).HasColumnType("decimal(8, 7)");
+                entity.Property(e => e.Distance).HasColumnType("decimal(16, 7)");
 
                 entity.HasOne(d => d.Route)
                     .WithMany(p => p.RouteStations)
