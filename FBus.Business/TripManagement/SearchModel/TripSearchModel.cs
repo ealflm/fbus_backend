@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using FBus.Business.Utils.CustomAnnotation;
 
 namespace FBus.Business.TripManagement.SearchModel
 {
@@ -18,6 +19,7 @@ namespace FBus.Business.TripManagement.SearchModel
         [Required]
         public DateTime Date { get; set; }
         [Required]
+        [TimeSpanComparator("TimeEnd")]
         public string TimeStart { get; set; }
         [Required]
         public string TimeEnd { get; set; }
