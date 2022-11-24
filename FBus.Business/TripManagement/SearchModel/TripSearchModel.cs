@@ -18,8 +18,8 @@ namespace FBus.Business.TripManagement.SearchModel
         [Required]
         public DateTime Date { get; set; }
         [Required]
-        public TimeSpan TimeStart { get; set; }
+        public string TimeStart { get; set; }
         [Required]
-        public TimeSpan TimeEnd { get; set; }
+        public string TimeEnd { get; set; }
     }
 }

@@ -33,7 +33,21 @@ namespace FBus.Business.TripManagement.Implements
 
         public async Task<Response> Create(TripSearchModel model)
         {
-            bool already = (await _unitOfWork.TripRepository.Query().Where(x => x.Date.Equals(model.Date) && x.RouteId.Equals(model.RouteId) && x.BusVehicleId.Equals(model.BusId) && (x.TimeStart.Subtract(model.TimeStart).Minutes * x.TimeEnd.Subtract(model.TimeEnd).Minutes) < 0).FirstOrDefaultAsync()) != null;
+            TimeSpan start = TimeSpan.Parse(model.TimeStart);
+            TimeSpan end = TimeSpan.Parse(model.TimeEnd);
+
+            bool already = (await _unitOfWork.TripRepository
+                            .Query()
+                            .Where(x => x.Date.Equals(model.Date) &&
+                            x.RouteId.Equals(model.RouteId) &&
+                            x.BusVehicleId.Equals(model.BusId) &&
+                            (
+                                (x.TimeStart.CompareTo(start) <= 0 && start.CompareTo(x.TimeEnd) <= 0) ||
+                                (x.TimeStart.CompareTo(end) <= 0 && end.CompareTo(x.TimeEnd) <= 0) ||
+                                (start.CompareTo(x.TimeStart) < 0 && x.TimeStart.CompareTo(end) <= 0)
+                            ))
+                            .FirstOrDefaultAsync()) != null;
+
             if (already)
             {
                 return new()
@@ -48,8 +62,8 @@ namespace FBus.Business.TripManagement.Implements
                 DriverId = model.DriverId,
                 RouteId = model.RouteId,
                 Date = model.Date,
-                TimeEnd = model.TimeEnd,
-                TimeStart = model.TimeStart,
+                TimeEnd = TimeSpan.Parse(model.TimeEnd),
+                TimeStart = TimeSpan.Parse(model.TimeStart),
                 Status = 1,
                 TripId = Guid.NewGuid()
             };
@@ -109,7 +123,7 @@ namespace FBus.Business.TripManagement.Implements
         public async Task<Response> GetList(DateTime? date)
         {
             var entities = await _unitOfWork.TripRepository.Query()
-                .Where(x=> date == null || (date != null && x.Date.Equals(date))).ToListAsync();
+                .Where(x => date == null || (date != null && x.Date.Equals(date))).ToListAsync();
             var resultList = new List<TripViewModel>();
             foreach (var entity in entities)
             {
