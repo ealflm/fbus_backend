@@ -122,6 +122,12 @@ namespace FBus.Business.RouteManagement.Implements
             foreach (var entity in entities)
             {
                 var routeStationList = await _unitOfWork.RouteStationRepository.Query().Where(x => x.RouteId.Equals(entity.RouteId)).ToListAsync();
+
+                routeStationList.Sort(delegate (RouteStation a, RouteStation b)
+                {
+                    return a.OrderNumber.CompareTo(b.OrderNumber);
+                });
+
                 entity.StationList = new List<StationViewModel>();
                 foreach (var x in routeStationList)
                 {
