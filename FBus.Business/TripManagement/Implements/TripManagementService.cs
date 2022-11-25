@@ -64,7 +64,7 @@ namespace FBus.Business.TripManagement.Implements
                 Date = model.Date,
                 TimeEnd = TimeSpan.Parse(model.TimeEnd),
                 TimeStart = TimeSpan.Parse(model.TimeStart),
-                Status = 1,
+                Status = (int)TripStatus.Active,
                 TripId = Guid.NewGuid()
             };
             await _unitOfWork.TripRepository.Add(entity);
@@ -81,7 +81,7 @@ namespace FBus.Business.TripManagement.Implements
             var entity = await _unitOfWork.TripRepository.GetById(id);
             if (entity != null)
             {
-                entity.Status = 0;
+                entity.Status = (int)TripStatus.Disable;
                 _unitOfWork.TripRepository.Update(entity);
                 await _unitOfWork.SaveChangesAsync();
                 return new()
