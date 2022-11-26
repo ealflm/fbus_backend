@@ -118,7 +118,7 @@ namespace FBus.Business.RouteManagement.Implements
 
         public async Task<Response> GetList()
         {
-            var entities = await _unitOfWork.RouteRepository.Query().Select(x => x.AsViewModel()).ToListAsync();
+            var entities = await _unitOfWork.RouteRepository.Query().Where(x => x.Status != (int)RouteStatus.Disable).Select(x => x.AsViewModel()).ToListAsync();
             foreach (var entity in entities)
             {
                 var routeStationList = await _unitOfWork.RouteStationRepository.Query().Where(x => x.RouteId.Equals(entity.RouteId)).ToListAsync();
