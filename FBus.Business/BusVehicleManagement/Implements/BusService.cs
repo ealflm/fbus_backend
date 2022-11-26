@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using FBus.Business.BaseBusiness.CommonModel;
 using FBus.Business.BaseBusiness.Configuration;
@@ -51,9 +52,43 @@ namespace FBus.Business.BusVehicleManagement.Implements
             };
         }
 
-        public Task<Response> Disable(string id)
+        public async Task<Response> Disable(string id)
         {
-            throw new System.NotImplementedException();
+            var bus = await _unitOfWork.BusRepository.GetById(Guid.Parse(id));
+            if (bus == null)
+            {
+                return new()
+                {
+                    StatusCode = (int)StatusCode.NotFound,
+                    Message = Message.NotFound
+                };
+            }
+
+            var isAssignedTrip = await _unitOfWork.TripRepository
+                                .Query()
+                                .Where(x => x.BusVehicleId == Guid.Parse(id))
+                                .Where(CompareTime())
+                                .Where(x => x.TimeStart.CompareTo(DateTime.UtcNow.TimeOfDay) >= 0)
+                                .FirstOrDefaultAsync();
+
+            if (isAssignedTrip != null)
+            {
+                return new()
+                {
+                    StatusCode = (int)StatusCode.BadRequest,
+                    Message = Message.CustomContent("Không thể xóa xe này! Xe đang được sử dụng")
+                };
+            }
+
+            bus.Status = (int)BusStatus.Disable;
+            _unitOfWork.BusRepository.Update(bus);
+            await _unitOfWork.SaveChangesAsync();
+
+            return new()
+            {
+                StatusCode = (int)StatusCode.Success,
+                Message = Message.UpdatedSuccess
+            };
         }
 
         public async Task<Response> GetDetails(string id)
@@ -132,6 +167,17 @@ namespace FBus.Business.BusVehicleManagement.Implements
                 StatusCode = (int)StatusCode.Success,
                 Message = Message.UpdatedSuccess
             };
+        }
+
+        private Expression<Func<Trip, bool>> CompareTime()
+        {
+            var day = DateTime.UtcNow.Day;
+            var month = DateTime.UtcNow.Month;
+            var year = DateTime.UtcNow.Year;
+
+            DateTime now = new DateTime(year, month, day);
+
+            return x => x.Date.CompareTo(now) >= 0;
         }
     }
 }

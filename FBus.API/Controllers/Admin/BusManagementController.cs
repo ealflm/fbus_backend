@@ -41,5 +41,11 @@ namespace FBus.API.Controllers.Admin
         {
             return SendResponse(await _busService.GetList());
         }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(string id)
+        {
+            return SendResponse(await _busService.Disable(id));
+        }
     }
 }
