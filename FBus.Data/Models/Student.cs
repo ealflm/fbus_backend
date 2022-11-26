@@ -23,6 +23,8 @@ namespace FBus.Data.Models
         public string Uid { get; set; }
         public bool AutomaticScheduling { get; set; }
         public int Status { get; set; }
+        public DateTime? CreatedDate { get; set; }
+        public DateTime? ModifiedDate { get; set; }
 
         public virtual ICollection<FavoriteTrip> FavoriteTrips { get; set; }
         public virtual ICollection<StartLocation> StartLocations { get; set; }

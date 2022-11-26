@@ -23,10 +23,10 @@ namespace ApiVer1Url
 
         // Bus vehicle
         public const string BusVehicle = BaseApiUrl + "/bus";
-        
+
         // Route
         public const string Route = BaseApiUrl + "/route";
-        
+
         // Driver
         public const string Driver = BaseApiUrl + "/driver";
 
@@ -36,5 +36,11 @@ namespace ApiVer1Url
         // StudentTrip
         public const string StudentTrip = BaseApiUrl + "/student-trip";
 
+        // Dashboard
+        public const string Dashboard = BaseApiUrl + "/dashboard";
+        public const string Dasboard_Student = Dashboard + "/students";
+        public const string Dasboard_Driver = Dashboard + "/drivers";
+        public const string Dasboard_New_Student = Dashboard + "/new-students";
+        public const string Dasboard_Bus = Dashboard + "/bus-vehicles";
     }
 }

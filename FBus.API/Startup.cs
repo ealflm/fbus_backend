@@ -45,6 +45,8 @@ using FBus.Business.TripManagement.Interfaces;
 using FBus.Business.TripManagement.Implements;
 using FBus.Business.StudentTripManagement.Interfaces;
 using FBus.Business.StudentTripManagement.Implements;
+using FBus.Business.DashboardManagement.Interface;
+using FBus.Business.DashboardManagement.Implements;
 
 namespace FBus.API
 {
@@ -210,6 +212,7 @@ namespace FBus.API
             services.AddScoped<ITripManagementService, TripManagementService>();
             services.AddScoped<INotificationService, NotificationService>();
             services.AddScoped<IStudentTripManagementService, StudentTripManagementService>();
+            services.AddScoped<IDashboardService, DashboardService>();
             #endregion
         }
 
