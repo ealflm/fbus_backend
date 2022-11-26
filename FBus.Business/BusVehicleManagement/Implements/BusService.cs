@@ -68,7 +68,10 @@ namespace FBus.Business.BusVehicleManagement.Implements
                                 .Query()
                                 .Where(x => x.BusVehicleId == Guid.Parse(id))
                                 .Where(CompareTime())
-                                .Where(x => x.TimeStart.CompareTo(DateTime.UtcNow.AddHours(7).TimeOfDay) >= 0)
+                                .Where(x =>
+                                        x.TimeStart.CompareTo(DateTime.UtcNow.AddHours(7).TimeOfDay) >= 0 ||
+                                        (x.TimeStart.CompareTo(DateTime.UtcNow.AddHours(7).TimeOfDay) <= 0 && x.TimeEnd.CompareTo(DateTime.UtcNow.AddHours(7).TimeOfDay) >= 0)
+                                    )
                                 .FirstOrDefaultAsync();
 
             if (isAssignedTrip != null)
