@@ -252,6 +252,7 @@ namespace FBus.Business.Authorization.Implements
                         model.Phone = userInfo.PhoneNumber;
                         model.PhotoUrl = userInfo.PhotoUrl;
                         model.Uid = userInfo.Uid;
+                        model.ModifiedDate = DateTime.UtcNow;
                         status = model.Status;
 
                         _unitOfWork.StudentRepository.Update(model);
@@ -277,6 +278,8 @@ namespace FBus.Business.Authorization.Implements
                             PhotoUrl = userInfo.PhotoUrl,
                             AutomaticScheduling = false,
                             Uid = userInfo.Uid,
+                            CreatedDate = DateTime.UtcNow,
+                            ModifiedDate = DateTime.UtcNow,
                             Status = 0
                         };
                         await _unitOfWork.StudentRepository.Add(studentModel);

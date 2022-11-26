@@ -235,6 +235,8 @@ namespace FBus.Data.Context
 
                 entity.Property(e => e.StudentId).ValueGeneratedNever();
 
+                entity.Property(e => e.CreatedDate).HasColumnType("date");
+
                 entity.Property(e => e.Email)
                     .IsRequired()
                     .HasMaxLength(100)
@@ -243,6 +245,8 @@ namespace FBus.Data.Context
                 entity.Property(e => e.FullName)
                     .IsRequired()
                     .HasMaxLength(100);
+
+                entity.Property(e => e.ModifiedDate).HasColumnType("date");
 
                 entity.Property(e => e.NotifyToken).IsUnicode(false);
 
