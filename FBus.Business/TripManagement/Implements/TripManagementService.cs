@@ -151,8 +151,8 @@ namespace FBus.Business.TripManagement.Implements
                 entity.RouteId = UpdateTypeOfNullAbleObject<Guid>(entity.RouteId, model.RouteId);
                 entity.DriverId = UpdateTypeOfNullAbleObject<Guid>(entity.DriverId, model.DriverId);
                 entity.Date = UpdateTypeOfNullAbleObject<DateTime>(entity.Date, model.Date);
-                entity.TimeEnd = UpdateTypeOfNullAbleObject<TimeSpan>(entity.TimeEnd, model.TimeEnd);
-                entity.TimeStart = UpdateTypeOfNullAbleObject<TimeSpan>(entity.TimeStart, model.TimeStart);
+                entity.TimeEnd = UpdateTypeOfNullAbleObject<TimeSpan>(entity.TimeEnd, TimeSpan.Parse(model.TimeEnd));
+                entity.TimeStart = UpdateTypeOfNullAbleObject<TimeSpan>(entity.TimeStart, TimeSpan.Parse(model.TimeStart));
                 _unitOfWork.TripRepository.Update(entity);
                 await _unitOfWork.SaveChangesAsync();
                 return new()
