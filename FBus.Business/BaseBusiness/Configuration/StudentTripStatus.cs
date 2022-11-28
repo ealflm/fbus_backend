@@ -2,8 +2,9 @@
 {
     public enum StudentTripStatus
     {
-        Active = 1,
-        passed = 2,
+        Active = 1, // đã đặt vé
+        Passed = 2, // hoàn thành vé
+        Canceled = 3, // hủy vé
     }
-    
+
 }

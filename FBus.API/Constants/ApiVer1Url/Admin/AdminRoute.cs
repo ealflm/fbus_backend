@@ -42,5 +42,9 @@ namespace ApiVer1Url
         public const string Dasboard_Driver = Dashboard + "/drivers";
         public const string Dasboard_New_Student = Dashboard + "/new-students";
         public const string Dasboard_Bus = Dashboard + "/bus-vehicles";
+        public const string Dasboard_Booking_Ticket = Dashboard + "/booking-tickets";
+        public const string Dasboard_Complete_Ticket = Dashboard + "/complete-tickets";
+        public const string Dasboard_Cancel_Ticket = Dashboard + "/cancel-tickets";
+        public const string Dasboard_Ticket_By_Day = Dashboard + "/ticket-by-day";
     }
 }

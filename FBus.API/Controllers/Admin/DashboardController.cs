@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using FBus.Business.DashboardManagement.Interface;
+using FBus.Business.DashboardManagement.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -42,6 +43,34 @@ namespace FBus.API.Controllers.Admin
         public async Task<IActionResult> GetNumberOfNewUsers()
         {
             return SendResponse(await _dashboardService.GetNumberOfNewUsers());
+        }
+
+        [HttpGet]
+        [Route(ApiVer1Url.Admin.Dasboard_Booking_Ticket)]
+        public async Task<IActionResult> GetNumberOfBookingTickets()
+        {
+            return SendResponse(await _dashboardService.GetNumberOfBookingTickets());
+        }
+
+        [HttpGet]
+        [Route(ApiVer1Url.Admin.Dasboard_Complete_Ticket)]
+        public async Task<IActionResult> GetNumberOfCompletedTrip()
+        {
+            return SendResponse(await _dashboardService.GetNumberOfCompletedTrip());
+        }
+
+        [HttpGet]
+        [Route(ApiVer1Url.Admin.Dasboard_Cancel_Ticket)]
+        public async Task<IActionResult> GetNumberOfCancelBookingTickets()
+        {
+            return SendResponse(await _dashboardService.GetNumberOfCancelBookingTickets());
+        }
+
+        [HttpGet]
+        [Route(ApiVer1Url.Admin.Dasboard_Ticket_By_Day)]
+        public async Task<IActionResult> GetNumberOfTicketsByDay([FromQuery] TicketByDay model)
+        {
+            return SendResponse(await _dashboardService.GetNumberOfTicketsByDay(model));
         }
     }
 }
