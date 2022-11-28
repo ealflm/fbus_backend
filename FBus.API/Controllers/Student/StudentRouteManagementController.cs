@@ -30,6 +30,12 @@ namespace FBus.API.Controllers.Student
             return SendResponse(await _service.Get(id));
         }
 
+        [HttpGet("current/{id}")]
+        public async Task<IActionResult> GetCurrent(Guid id)
+        {
+            return SendResponse(await _service.GetCurrent(id));
+        }
+
 
         [HttpGet]
         public async Task<IActionResult> GetList([FromQuery] Guid? id, [FromQuery] DateTime? fromDate, [FromQuery] DateTime? toDate, [FromQuery] int? status)
@@ -59,6 +65,12 @@ namespace FBus.API.Controllers.Student
         public async Task<IActionResult> Feedback(Guid id, [FromBody] FeedBackSearchModel model)
         {
             return SendResponse(await _service.FeedBack(model, id));
+        }
+
+        [HttpPatch("checkin/{qrCode}")]
+        public async Task<IActionResult> CheckIn(string qrCode)
+        {
+            return SendResponse(await _service.CheckIn(qrCode));
         }
     }
 }
