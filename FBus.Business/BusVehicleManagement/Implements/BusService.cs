@@ -1,12 +1,15 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using FBus.Business.BaseBusiness.CommonModel;
 using FBus.Business.BaseBusiness.Configuration;
 using FBus.Business.BaseBusiness.Implements;
+using FBus.Business.BaseBusiness.ViewModel;
 using FBus.Business.BusVehicleManagement.Interfaces;
 using FBus.Business.BusVehicleManagement.Models;
+using FBus.Business.TripManagement.Interfaces;
 using FBus.Data.Interfaces;
 using FBus.Data.Models;
 using Microsoft.EntityFrameworkCore;
@@ -15,8 +18,10 @@ namespace FBus.Business.BusVehicleManagement.Implements
 {
     public class BusService : BaseService, IBusService
     {
-        public BusService(IUnitOfWork unitOfWork) : base(unitOfWork)
+        ITripManagementService _tripService;
+        public BusService(IUnitOfWork unitOfWork, ITripManagementService tripManagementService) : base(unitOfWork)
         {
+            _tripService = tripManagementService;
         }
 
         public async Task<Response> Create(CreateBusModel model)
@@ -96,6 +101,7 @@ namespace FBus.Business.BusVehicleManagement.Implements
 
         public async Task<Response> GetDetails(string id)
         {
+            BusVehicleDetailModel result= new BusVehicleDetailModel();
             var bus = await _unitOfWork.BusRepository.GetById(Guid.Parse(id));
             if (bus == null)
             {
@@ -106,11 +112,13 @@ namespace FBus.Business.BusVehicleManagement.Implements
                 };
             }
 
+            result.BusVehicle = bus.AsBusViewModel();
+            result.Trips = (List<TripViewModel>)_tripService.GetList(bus.BusVehicleId, null).Result.Data;
             return new()
             {
                 StatusCode = (int)StatusCode.Ok,
                 Message = Message.GetDetailsSuccess,
-                Data = bus.AsBusViewModel()
+                Data = result
             };
         }
 

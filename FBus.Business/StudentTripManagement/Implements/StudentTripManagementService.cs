@@ -10,10 +10,13 @@ using FBus.Business.TripManagement.Interfaces;
 using FBus.Data.Interfaces;
 using FBus.Data.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -24,11 +27,13 @@ namespace FBus.Business.StudentTripManagement.Implements
         private ITripManagementService _tripManagementService;
         private IStationManagementService _stationManagementService;
         private IStudentService _studentManagementService;
-        public StudentTripManagementService(IUnitOfWork unitOfWork, ITripManagementService tripManagementService, IStationManagementService stationManagementService, IStudentService studentManagementService) : base(unitOfWork)
+        private static IConfiguration _configuration;
+        public StudentTripManagementService(IUnitOfWork unitOfWork, ITripManagementService tripManagementService, IStationManagementService stationManagementService, IStudentService studentManagementService, IConfiguration configuration) : base(unitOfWork)
         {
             _tripManagementService = tripManagementService;
             _stationManagementService = stationManagementService;
             _studentManagementService = studentManagementService;
+            _configuration = configuration;
         }
 
         public async Task<Response> Create(StudentTripSearchModel model)
@@ -163,6 +168,35 @@ namespace FBus.Business.StudentTripManagement.Implements
             };
         }
 
+
+        public async Task<Response> GetCurrent(Guid id)
+        {
+            var entities = await _unitOfWork.StudentTripRepository.Query()
+                .Where(x => x.StudentId.Equals(id)).ToListAsync();
+            var resultList = new List<StudentTripViewModel>();
+            var  fromDate = DateTime.UtcNow.AddHours(6);
+            var  toDate = DateTime.UtcNow.AddHours(7).AddDays(7);
+            foreach (var entity in entities)
+            {
+                var result = entity.AsViewModel();
+                result.Trip = (TripViewModel)(await _tripManagementService.Get(entity.TripId)).Data;
+                result.Station = (StationViewModel)(await _stationManagementService.Get(entity.StationId)).Data;
+                result.Student = (StudentViewModel)(await _studentManagementService.GetDetails(entity.StudentId.ToString())).Data;
+                if (result.Trip.Date.CompareTo(fromDate) >= 0 && result.Trip.Date.CompareTo(toDate) <= 0)
+                {
+                    resultList.Add(result);
+                }
+            }
+            resultList.OrderBy(x => x.Trip.Date).OrderBy(x => x.Trip.TimeEnd);
+            return new()
+            {
+                StatusCode = (int)StatusCode.Ok,
+                Data = resultList.FirstOrDefault(),
+                Message = Message.GetListSuccess
+            };
+        }
+
+
         public async Task<Response> Update(StudentTripUpdateModel model, Guid id)
         {
             var entity = await _unitOfWork.StudentTripRepository.GetById(id);
@@ -189,6 +223,54 @@ namespace FBus.Business.StudentTripManagement.Implements
                 StatusCode = (int)StatusCode.NotFound,
                 Message = Message.NotFound
             };
+        }
+
+
+        public async Task<Response> CheckIn(string qrCode)
+        {
+            var StudentTripID=new Guid( DecryptString(qrCode));
+            var entity= await _unitOfWork.StudentTripRepository.GetById(StudentTripID);
+            if (entity == null)
+            {
+                return new()
+                {
+                    StatusCode = (int)StatusCode.NotFound,
+                    Message = Message.NotFound
+                };
+            }
+            entity.Status =(int) StudentTripStatus.Passed;
+            _unitOfWork.StudentTripRepository.Update(entity);
+            await _unitOfWork.SaveChangesAsync();
+            return new()
+            {
+                StatusCode = (int)StatusCode.Success,
+                Message = Message.UpdatedSuccess
+            };
+        }
+
+        public static string DecryptString(string cipherText)
+        {
+            string key = _configuration["QRKey"];
+            byte[] iv = new byte[16];
+            byte[] buffer = Convert.FromBase64String(cipherText);
+
+            using (Aes aes = Aes.Create())
+            {
+                aes.Key = Encoding.UTF8.GetBytes(key);
+                aes.IV = iv;
+                ICryptoTransform decryptor = aes.CreateDecryptor(aes.Key, aes.IV);
+
+                using (MemoryStream memoryStream = new MemoryStream(buffer))
+                {
+                    using (CryptoStream cryptoStream = new CryptoStream((Stream)memoryStream, decryptor, CryptoStreamMode.Read))
+                    {
+                        using (StreamReader streamReader = new StreamReader((Stream)cryptoStream))
+                        {
+                            return streamReader.ReadToEnd();
+                        }
+                    }
+                }
+            }
         }
     }
 }

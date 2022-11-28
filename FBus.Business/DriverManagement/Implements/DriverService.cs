@@ -1,12 +1,15 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FBus.Business.BaseBusiness.CommonModel;
 using FBus.Business.BaseBusiness.Configuration;
 using FBus.Business.BaseBusiness.Implements;
 using FBus.Business.BaseBusiness.Interfaces;
+using FBus.Business.BaseBusiness.ViewModel;
 using FBus.Business.DriverManagement.Interfaces;
 using FBus.Business.DriverManagement.Models;
+using FBus.Business.TripManagement.Interfaces;
 using FBus.Data.Interfaces;
 using FBus.Data.Models;
 using Microsoft.EntityFrameworkCore;
@@ -19,11 +22,13 @@ namespace FBus.Business.DriverManagement.Implements
         private readonly IConfiguration _configuration;
         private readonly IAzureBlobService _azureBlobService;
         private readonly ISMSService _smsService;
-        public DriverService(IUnitOfWork unitOfWork, IConfiguration configuration, IAzureBlobService azureBlobService, ISMSService smsService) : base(unitOfWork)
+        ITripManagementService _tripService;
+        public DriverService(IUnitOfWork unitOfWork, IConfiguration configuration, IAzureBlobService azureBlobService, ISMSService smsService, ITripManagementService tripManagementService) : base(unitOfWork)
         {
             _configuration = configuration;
             _azureBlobService = azureBlobService;
             _smsService = smsService;
+            _tripService = tripManagementService;   
         }
 
         public async Task<Response> Create(CreateDriverModel model)
@@ -83,12 +88,15 @@ namespace FBus.Business.DriverManagement.Implements
                     Message = Message.NotFound
                 };
             }
-
+            DriverDetailModel result = new DriverDetailModel();
+            result.Driver = driver.AsDriverViewModel();
+            result.Trips = (List<TripViewModel>) _tripService.GetList(null, driver.DriverId).Result.Data;
+            result.Rate = (float?)result.Trips.Average(x => x.Rate);
             return new()
             {
                 StatusCode = (int)StatusCode.Ok,
                 Message = Message.GetDetailsSuccess,
-                Data = driver.AsDriverViewModel()
+                Data = result
             };
         }
 

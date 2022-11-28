@@ -16,5 +16,6 @@ namespace FBus.Business.BaseBusiness.ViewModel
         public TimeSpan TimeStart { get; set; }
         public TimeSpan TimeEnd { get; set; }
         public int Status { get; set; }
+        public float? Rate { get; set; }
     }
 }

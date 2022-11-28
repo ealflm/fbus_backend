@@ -21,14 +21,10 @@ namespace FBus.Business.TripManagement.Implements
 {
     public class TripManagementService : BaseService, ITripManagementService
     {
-        IBusService _busService;
         IRouteManagementService _routeManagementService;
-        IDriverService _driveService;
-        public TripManagementService(IUnitOfWork unitOfWork, IDriverService driverService, IRouteManagementService routeManagementService, IBusService busService) : base(unitOfWork)
+        public TripManagementService(IUnitOfWork unitOfWork, IRouteManagementService routeManagementService) : base(unitOfWork)
         {
-            _busService = busService;
             _routeManagementService = routeManagementService;
-            _driveService = driverService;
         }
 
         public async Task<Response> Create(TripSearchModel model)
@@ -104,8 +100,8 @@ namespace FBus.Business.TripManagement.Implements
             {
                 var result = entity.AsViewModel();
                 result.Route = (RouteViewModel)(await _routeManagementService.Get(entity.RouteId)).Data;
-                result.Bus = (BusViewModel)(await _busService.GetDetails(entity.BusVehicleId.ToString())).Data;
-                result.Driver = (DriverViewModel)(await _driveService.GetDetails(entity.DriverId.ToString())).Data;
+                result.Bus = await _unitOfWork.BusRepository.Query().Where(x => x.BusVehicleId == entity.BusVehicleId).Select(x => x.AsBusViewModel()).FirstOrDefaultAsync();
+                result.Driver = await _unitOfWork.DriverRepository.Query().Where(x => x.DriverId == entity.DriverId).Select(x => x.AsDriverViewModel()).FirstOrDefaultAsync();
                 return new()
                 {
                     StatusCode = (int)StatusCode.Ok,
@@ -129,8 +125,34 @@ namespace FBus.Business.TripManagement.Implements
             {
                 var result = entity.AsViewModel();
                 result.Route = (RouteViewModel)(await _routeManagementService.Get(entity.RouteId)).Data;
-                result.Bus = (BusViewModel)(await _busService.GetDetails(entity.BusVehicleId.ToString())).Data;
-                result.Driver = (DriverViewModel)(await _driveService.GetDetails(entity.DriverId.ToString())).Data;
+                result.Bus = await _unitOfWork.BusRepository.Query().Where(x => x.BusVehicleId == entity.BusVehicleId).Select(x=> x.AsBusViewModel()).FirstOrDefaultAsync();
+                result.Driver = await _unitOfWork.DriverRepository.Query().Where(x => x.DriverId == entity.DriverId).Select(x => x.AsDriverViewModel()).FirstOrDefaultAsync();
+                var studentTrips= await _unitOfWork.StudentTripRepository.Query().Where(x => x.TripId == entity.TripId && x.Rate != null).ToListAsync();
+                result.Rate = (float?) studentTrips.Average(x => x.Rate);
+                resultList.Add(result);
+            }
+            return new()
+            {
+                StatusCode = (int)StatusCode.Ok,
+                Data = resultList,
+                Message = Message.GetListSuccess
+            };
+        }
+
+        public async Task<Response> GetList(Guid? busID, Guid? driverID)
+        {
+            var entities = await _unitOfWork.TripRepository.Query()
+                .Where(x =>busID  == null || (busID != null && x.BusVehicleId.Equals(busID)))
+                .Where(x => driverID == null || (driverID != null && x.DriverId.Equals(driverID))).ToListAsync();
+            var resultList = new List<TripViewModel>();
+            foreach (var entity in entities)
+            {
+                var result = entity.AsViewModel();
+                result.Route = (RouteViewModel)(await _routeManagementService.Get(entity.RouteId)).Data;
+                result.Bus = await _unitOfWork.BusRepository.Query().Where(x => x.BusVehicleId == entity.BusVehicleId).Select(x => x.AsBusViewModel()).FirstOrDefaultAsync();
+                result.Driver = await _unitOfWork.DriverRepository.Query().Where(x => x.DriverId == entity.DriverId).Select(x => x.AsDriverViewModel()).FirstOrDefaultAsync(); 
+                var studentTrips = await _unitOfWork.StudentTripRepository.Query().Where(x => x.TripId == entity.TripId && x.Rate != null).ToListAsync();
+                result.Rate = (float?)studentTrips.Average(x => x.Rate);
                 resultList.Add(result);
             }
             return new()
