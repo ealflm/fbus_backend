@@ -130,6 +130,21 @@ namespace FBus.Business.DriverManagement.Implements
             result.Driver = driver.AsDriverViewModel();
             result.Trips = (List<TripViewModel>)_tripService.GetList(null, driver.DriverId).Result.Data;
             result.Rate = (float?)result.Trips.Average(x => x.Rate);
+
+
+            var studentTrips = await _unitOfWork.StudentTripRepository
+                                .Query()
+                                .Where(x => x.TripId == result.Trips[0].TripId)
+                                .ToListAsync();
+
+            List<string> feedbacks = new List<string>();
+            foreach (var item in studentTrips)
+            {
+                feedbacks.Add(item.Feedback);
+            }
+
+            result.Feedback = feedbacks;
+
             return new()
             {
                 StatusCode = (int)StatusCode.Ok,

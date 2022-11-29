@@ -12,5 +12,6 @@ namespace FBus.Business.DriverManagement.Models
         public DriverViewModel Driver { get; set; }
         public List<TripViewModel> Trips { get; set; }
         public float? Rate { get; set; }
+        public List<string> Feedback { get; set; }
     }
 }
