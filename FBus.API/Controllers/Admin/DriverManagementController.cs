@@ -43,5 +43,12 @@ namespace FBus.API.Controllers.Admin
         {
             return SendResponse(await _driverService.Update(id, model, isAdminRole: true));
         }
+
+        [HttpDelete]
+        [Route(ApiVer1Url.Admin.Driver + "/{id}")]
+        public async Task<IActionResult> DeleteDriver(string id)
+        {
+            return SendResponse(await _driverService.Disable(id));
+        }
     }
 }

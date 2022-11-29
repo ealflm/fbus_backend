@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using FBus.Business.BaseBusiness.CommonModel;
 using FBus.Business.BaseBusiness.Configuration;
@@ -28,7 +29,7 @@ namespace FBus.Business.DriverManagement.Implements
             _configuration = configuration;
             _azureBlobService = azureBlobService;
             _smsService = smsService;
-            _tripService = tripManagementService;   
+            _tripService = tripManagementService;
         }
 
         public async Task<Response> Create(CreateDriverModel model)
@@ -72,9 +73,46 @@ namespace FBus.Business.DriverManagement.Implements
             };
         }
 
-        public Task<Response> Disable(string id)
+        public async Task<Response> Disable(string id)
         {
-            throw new System.NotImplementedException();
+            var driver = await _unitOfWork.DriverRepository.GetById(Guid.Parse(id));
+            if (driver == null)
+            {
+                return new()
+                {
+                    StatusCode = (int)StatusCode.NotFound,
+                    Message = Message.NotFound
+                };
+            }
+
+            var isAssignedTrip = await _unitOfWork.TripRepository
+                                .Query()
+                                .Where(x => x.DriverId == Guid.Parse(id))
+                                .Where(CompareTime())
+                                .Where(x =>
+                                        x.TimeStart.CompareTo(DateTime.UtcNow.AddHours(7).TimeOfDay) >= 0 ||
+                                        (x.TimeStart.CompareTo(DateTime.UtcNow.AddHours(7).TimeOfDay) <= 0 && x.TimeEnd.CompareTo(DateTime.UtcNow.AddHours(7).TimeOfDay) >= 0)
+                                    )
+                                .FirstOrDefaultAsync();
+
+            if (isAssignedTrip != null)
+            {
+                return new()
+                {
+                    StatusCode = (int)StatusCode.BadRequest,
+                    Message = Message.CustomContent("Không thể xóa tài xế này! Tài xế đã được lập lịch chạy")
+                };
+            }
+
+            driver.Status = (int)DriverStatus.Disable;
+            _unitOfWork.DriverRepository.Update(driver);
+            await _unitOfWork.SaveChangesAsync();
+
+            return new()
+            {
+                StatusCode = (int)StatusCode.Success,
+                Message = Message.UpdatedSuccess
+            };
         }
 
         public async Task<Response> GetDetails(string id)
@@ -90,7 +128,7 @@ namespace FBus.Business.DriverManagement.Implements
             }
             DriverDetailModel result = new DriverDetailModel();
             result.Driver = driver.AsDriverViewModel();
-            result.Trips = (List<TripViewModel>) _tripService.GetList(null, driver.DriverId).Result.Data;
+            result.Trips = (List<TripViewModel>)_tripService.GetList(null, driver.DriverId).Result.Data;
             result.Rate = (float?)result.Trips.Average(x => x.Rate);
             return new()
             {
@@ -145,6 +183,17 @@ namespace FBus.Business.DriverManagement.Implements
                 StatusCode = (int)StatusCode.Success,
                 Message = Message.UpdatedSuccess
             };
+        }
+
+        private Expression<Func<Trip, bool>> CompareTime()
+        {
+            var day = DateTime.UtcNow.Day;
+            var month = DateTime.UtcNow.Month;
+            var year = DateTime.UtcNow.Year;
+
+            DateTime now = new DateTime(year, month, day);
+
+            return x => x.Date.CompareTo(now) >= 0;
         }
     }
 }
