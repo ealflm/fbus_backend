@@ -30,16 +30,10 @@ namespace FBus.API.Controllers.Student
             return SendResponse(await _service.Get(id));
         }
 
-        [HttpGet("route/{id}")]
-        public async Task<IActionResult> GetByRouteID(Guid id)
-        {
-            return SendResponse(await _service.GetListByRouteID(id));
-        }
-
         [HttpGet]
-        public async Task<IActionResult> GetList([FromQuery] DateTime? date)
+        public async Task<IActionResult> GetList([FromQuery] DateTime? date, [FromQuery] Guid id)
         {
-            return SendResponse(await _service.GetList(date));
+            return SendResponse(await _service.GetListByRoute(id,date));
         }
 
        /* [HttpPost]

@@ -33,7 +33,7 @@ namespace FBus.API.Controllers.Admin
         [HttpGet]
         public async Task<IActionResult> GetList()
         {
-            return SendResponse(await _service.GetList(null));
+            return SendResponse(await _service.GetList(null, null));
         }
 
         [HttpPost]
