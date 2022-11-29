@@ -8,6 +8,7 @@ namespace FBus.Data.Models
         public Driver()
         {
             DriverNotifications = new HashSet<DriverNotification>();
+            Shifts = new HashSet<Shift>();
             Trips = new HashSet<Trip>();
         }
 
@@ -22,6 +23,7 @@ namespace FBus.Data.Models
         public int Status { get; set; }
 
         public virtual ICollection<DriverNotification> DriverNotifications { get; set; }
+        public virtual ICollection<Shift> Shifts { get; set; }
         public virtual ICollection<Trip> Trips { get; set; }
     }
 }

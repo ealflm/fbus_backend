@@ -7,7 +7,7 @@ namespace FBus.Data.Models
     {
         public Route()
         {
-            FavoriteTrips = new HashSet<FavoriteTrip>();
+            FavoriteRoutes = new HashSet<FavoriteRoute>();
             RouteStations = new HashSet<RouteStation>();
             Trips = new HashSet<Trip>();
         }
@@ -18,7 +18,7 @@ namespace FBus.Data.Models
         public int TotalStation { get; set; }
         public int Status { get; set; }
 
-        public virtual ICollection<FavoriteTrip> FavoriteTrips { get; set; }
+        public virtual ICollection<FavoriteRoute> FavoriteRoutes { get; set; }
         public virtual ICollection<RouteStation> RouteStations { get; set; }
         public virtual ICollection<Trip> Trips { get; set; }
     }

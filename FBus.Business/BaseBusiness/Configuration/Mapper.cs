@@ -31,7 +31,10 @@ namespace FBus.Business.BaseBusiness.Configuration
                 Longitude = item.Longitude,
                 Name = item.Name,
                 StationId = item.StationId,
-                Status = item.Status
+                Status = item.Status,
+                Province = item.Province,
+                District = item.District,
+                Ward = item.Ward
             };
         }
 
