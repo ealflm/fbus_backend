@@ -116,10 +116,11 @@ namespace FBus.Business.TripManagement.Implements
             };
         }
 
-        public async Task<Response> GetList(DateTime? date)
+        public async Task<Response> GetListByRoute(Guid? routeID, DateTime? date)
         {
             var entities = await _unitOfWork.TripRepository.Query()
-                .Where(x => date == null || (date != null && x.Date.Equals(date))).ToListAsync();
+                .Where(x => date == null || (date != null && x.Date.Equals(date)))
+                .Where(x => routeID == null || (routeID != null && x.RouteId.Equals(routeID))).ToListAsync();
             var resultList = new List<TripViewModel>();
             foreach (var entity in entities)
             {
@@ -163,28 +164,6 @@ namespace FBus.Business.TripManagement.Implements
             };
         }
 
-        public async Task<Response> GetListByRouteID(Guid? routeID)
-        {
-            var entities = await _unitOfWork.TripRepository.Query()
-                .Where(x => routeID == null || (routeID != null && x.RouteId.Equals(routeID))).ToListAsync();
-            var resultList = new List<TripViewModel>();
-            foreach (var entity in entities)
-            {
-                var result = entity.AsViewModel();
-                result.Route = (RouteViewModel)(await _routeManagementService.Get(entity.RouteId)).Data;
-                result.Bus = await _unitOfWork.BusRepository.Query().Where(x => x.BusVehicleId == entity.BusVehicleId).Select(x => x.AsBusViewModel()).FirstOrDefaultAsync();
-                result.Driver = await _unitOfWork.DriverRepository.Query().Where(x => x.DriverId == entity.DriverId).Select(x => x.AsDriverViewModel()).FirstOrDefaultAsync();
-                var studentTrips = await _unitOfWork.StudentTripRepository.Query().Where(x => x.TripId == entity.TripId && x.Rate != null).ToListAsync();
-                result.Rate = (float?)studentTrips.Average(x => x.Rate);
-                resultList.Add(result);
-            }
-            return new()
-            {
-                StatusCode = (int)StatusCode.Ok,
-                Data = resultList,
-                Message = Message.GetListSuccess
-            };
-        }
 
         public async Task<Response> Update(TripUpdateModel model, Guid id)
         {

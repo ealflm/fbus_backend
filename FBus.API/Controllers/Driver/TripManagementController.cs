@@ -35,7 +35,7 @@ namespace FBus.API.Controllers.Driver
         [Route(ApiVer1Url.Driver.Trip)]
         public async Task<IActionResult> GetList()
         {
-            return SendResponse(await _service.GetList(null));
+            return SendResponse(await _service.GetList(null, null));
         }
 
         /* [HttpPost]
