@@ -42,6 +42,10 @@ namespace FBus.Data.Repositories
             {
                 if (prop.GetGetMethod().IsVirtual) continue;
                 if (prop.Name.Equals(name + "Id")) continue;
+                if (prop.Name.Contains("Id"))
+                {
+                    if (name.Contains(prop.Name.Substring(0, prop.Name.Length - 2))) continue;
+                };
                 if (prop.GetValue(entity, null) != null)
                 {
                     _dbContext.Entry(entity).Property(prop.Name).IsModified = true;
