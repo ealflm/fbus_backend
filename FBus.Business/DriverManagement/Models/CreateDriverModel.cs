@@ -10,6 +10,7 @@ namespace FBus.Business.DriverManagement.Models
         public string FullName { get; set; }
 
         [Required]
+        [Phone]
         public string Phone { get; set; }
 
         [Required]
