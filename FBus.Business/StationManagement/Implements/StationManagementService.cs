@@ -38,7 +38,10 @@ namespace FBus.Business.StationManagement.Implements
                 Longitude = model.Longitude,
                 Name = model.Name,
                 Status = (int)StationStatus.Active,
-                StationId = Guid.NewGuid()
+                StationId = Guid.NewGuid(),
+                Province = model.Province,
+                District = model.District,
+                Ward = model.Ward
             };
             await _unitOfWork.StationRepository.Add(entity);
             await _unitOfWork.SaveChangesAsync();
@@ -122,6 +125,10 @@ namespace FBus.Business.StationManagement.Implements
                 entity.Status = UpdateTypeOfNotNullAbleObject<int>(entity.Status, model.Status);
                 entity.Name = UpdateTypeOfNullAbleObject<string>(entity.Name, model.Name);
                 entity.Address = UpdateTypeOfNullAbleObject<string>(entity.Address, model.Address);
+                entity.Province = UpdateTypeOfNullAbleObject<string>(entity.Province, model.Province);
+                entity.District = UpdateTypeOfNullAbleObject<string>(entity.District, model.District);
+                entity.Ward = UpdateTypeOfNullAbleObject<string>(entity.Ward, model.Ward);
+
                 _unitOfWork.StationRepository.Update(entity);
                 await _unitOfWork.SaveChangesAsync();
                 return new()

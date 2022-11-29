@@ -17,5 +17,11 @@ namespace FBus.Business.StationManagement.SearchModel
         public decimal Longitude { get; set; }
         [Required]
         public decimal Latitude { get; set; }
+        [Required]
+        public string Province { get; set; }
+        [Required]
+        public string District { get; set; }
+        [Required]
+        public string Ward { get; set; }
     }
 }

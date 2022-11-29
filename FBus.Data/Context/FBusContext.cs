@@ -21,9 +21,10 @@ namespace FBus.Data.Context
         public virtual DbSet<BusVehicle> BusVehicles { get; set; }
         public virtual DbSet<Driver> Drivers { get; set; }
         public virtual DbSet<DriverNotification> DriverNotifications { get; set; }
-        public virtual DbSet<FavoriteTrip> FavoriteTrips { get; set; }
+        public virtual DbSet<FavoriteRoute> FavoriteRoutes { get; set; }
         public virtual DbSet<Route> Routes { get; set; }
         public virtual DbSet<RouteStation> RouteStations { get; set; }
+        public virtual DbSet<Shift> Shifts { get; set; }
         public virtual DbSet<StartLocation> StartLocations { get; set; }
         public virtual DbSet<Station> Stations { get; set; }
         public virtual DbSet<Student> Students { get; set; }
@@ -132,11 +133,12 @@ namespace FBus.Data.Context
                     .HasConstraintName("FK_DriverNotify_Driver");
             });
 
-            modelBuilder.Entity<FavoriteTrip>(entity =>
+            modelBuilder.Entity<FavoriteRoute>(entity =>
             {
-                entity.HasKey(e => new { e.RouteId, e.StudentId });
+                entity.HasKey(e => new { e.RouteId, e.StudentId })
+                    .HasName("PK_FavoriteTrip");
 
-                entity.ToTable("FavoriteTrip");
+                entity.ToTable("FavoriteRoute");
 
                 entity.Property(e => e.Name)
                     .IsRequired()
@@ -145,13 +147,13 @@ namespace FBus.Data.Context
                 entity.Property(e => e.Time).HasColumnType("time(0)");
 
                 entity.HasOne(d => d.Route)
-                    .WithMany(p => p.FavoriteTrips)
+                    .WithMany(p => p.FavoriteRoutes)
                     .HasForeignKey(d => d.RouteId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_FavoriteTrip_Route");
 
                 entity.HasOne(d => d.Student)
-                    .WithMany(p => p.FavoriteTrips)
+                    .WithMany(p => p.FavoriteRoutes)
                     .HasForeignKey(d => d.StudentId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_FavoriteTrip_Student");
@@ -191,6 +193,27 @@ namespace FBus.Data.Context
                     .HasForeignKey(d => d.StationId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_RouteStation_Station");
+            });
+
+            modelBuilder.Entity<Shift>(entity =>
+            {
+                entity.ToTable("Shift");
+
+                entity.Property(e => e.ShiftId)
+                    .ValueGeneratedNever()
+                    .HasColumnName("ShiftID");
+
+                entity.Property(e => e.DriverId).HasColumnName("DriverID");
+
+                entity.Property(e => e.TimeEnd).HasColumnType("datetime");
+
+                entity.Property(e => e.TimeStart).HasColumnType("datetime");
+
+                entity.HasOne(d => d.Driver)
+                    .WithMany(p => p.Shifts)
+                    .HasForeignKey(d => d.DriverId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Shift_Driver");
             });
 
             modelBuilder.Entity<StartLocation>(entity =>

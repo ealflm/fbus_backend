@@ -17,6 +17,9 @@ namespace FBus.Data.Models
         public decimal Longitude { get; set; }
         public decimal Latitude { get; set; }
         public int Status { get; set; }
+        public string Province { get; set; }
+        public string District { get; set; }
+        public string Ward { get; set; }
 
         public virtual ICollection<RouteStation> RouteStations { get; set; }
         public virtual ICollection<StudentTrip> StudentTrips { get; set; }

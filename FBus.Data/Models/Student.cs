@@ -7,7 +7,7 @@ namespace FBus.Data.Models
     {
         public Student()
         {
-            FavoriteTrips = new HashSet<FavoriteTrip>();
+            FavoriteRoutes = new HashSet<FavoriteRoute>();
             StartLocations = new HashSet<StartLocation>();
             StudentNotifications = new HashSet<StudentNotification>();
             StudentTrips = new HashSet<StudentTrip>();
@@ -26,7 +26,7 @@ namespace FBus.Data.Models
         public DateTime? CreatedDate { get; set; }
         public DateTime? ModifiedDate { get; set; }
 
-        public virtual ICollection<FavoriteTrip> FavoriteTrips { get; set; }
+        public virtual ICollection<FavoriteRoute> FavoriteRoutes { get; set; }
         public virtual ICollection<StartLocation> StartLocations { get; set; }
         public virtual ICollection<StudentNotification> StudentNotifications { get; set; }
         public virtual ICollection<StudentTrip> StudentTrips { get; set; }
