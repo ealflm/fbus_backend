@@ -31,39 +31,36 @@ namespace FBus.Business.TripManagement.Implements
         {
             TimeSpan start = TimeSpan.Parse(model.TimeStart);
             TimeSpan end = TimeSpan.Parse(model.TimeEnd);
-
-            bool already = (await _unitOfWork.TripRepository
-                            .Query()
-                            .Where(x => x.Date.Equals(model.Date) &&
-                            x.RouteId.Equals(model.RouteId) &&
-                            x.BusVehicleId.Equals(model.BusId) &&
-                            (
-                                (x.TimeStart.CompareTo(start) <= 0 && start.CompareTo(x.TimeEnd) <= 0) ||
-                                (x.TimeStart.CompareTo(end) <= 0 && end.CompareTo(x.TimeEnd) <= 0) ||
-                                (start.CompareTo(x.TimeStart) < 0 && x.TimeStart.CompareTo(end) <= 0)
-                            ))
-                            .FirstOrDefaultAsync()) != null;
-
-            if (already)
+            for (int i = 0; i < (model.DateEnd - model.DateStart).Days; i++)
             {
-                return new()
+                bool already = (await _unitOfWork.TripRepository
+                                .Query()
+                                .Where(x => x.Date.Equals(model.DateStart.AddDays(i)) &&
+                                x.RouteId.Equals(model.RouteId) &&
+                                x.BusVehicleId.Equals(model.BusId) &&
+                                (
+                                    (x.TimeStart.CompareTo(start) <= 0 && start.CompareTo(x.TimeEnd) <= 0) ||
+                                    (x.TimeStart.CompareTo(end) <= 0 && end.CompareTo(x.TimeEnd) <= 0) ||
+                                    (start.CompareTo(x.TimeStart) < 0 && x.TimeStart.CompareTo(end) <= 0)
+                                ))
+                                .FirstOrDefaultAsync()) != null;
+
+                if (!already && model.DateStart.AddDays(i).DayOfWeek != DayOfWeek.Sunday)
                 {
-                    StatusCode = (int)StatusCode.BadRequest,
-                    Message = Message.AlreadyExist
-                };
+                    var entity = new Trip()
+                    {
+                        BusVehicleId = model.BusId,
+                        DriverId = model.DriverId,
+                        RouteId = model.RouteId,
+                        Date = model.DateStart.AddDays(i),
+                        TimeEnd = TimeSpan.Parse(model.TimeEnd),
+                        TimeStart = TimeSpan.Parse(model.TimeStart),
+                        Status = (int)TripStatus.Active,
+                        TripId = Guid.NewGuid()
+                    };
+                    await _unitOfWork.TripRepository.Add(entity);
+                }
             }
-            var entity = new Trip()
-            {
-                BusVehicleId = model.BusId,
-                DriverId = model.DriverId,
-                RouteId = model.RouteId,
-                Date = model.Date,
-                TimeEnd = TimeSpan.Parse(model.TimeEnd),
-                TimeStart = TimeSpan.Parse(model.TimeStart),
-                Status = (int)TripStatus.Active,
-                TripId = Guid.NewGuid()
-            };
-            await _unitOfWork.TripRepository.Add(entity);
             await _unitOfWork.SaveChangesAsync();
             return new()
             {
