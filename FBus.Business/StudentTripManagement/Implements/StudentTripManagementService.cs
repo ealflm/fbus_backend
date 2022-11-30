@@ -1,6 +1,7 @@
 ﻿using FBus.Business.BaseBusiness.CommonModel;
 using FBus.Business.BaseBusiness.Configuration;
 using FBus.Business.BaseBusiness.Implements;
+using FBus.Business.BaseBusiness.Interfaces;
 using FBus.Business.BaseBusiness.ViewModel;
 using FBus.Business.StationManagement.Interfaces;
 using FBus.Business.StudentManagement.Interface;
@@ -28,12 +29,16 @@ namespace FBus.Business.StudentTripManagement.Implements
         private IStationManagementService _stationManagementService;
         private IStudentService _studentManagementService;
         private static IConfiguration _configuration;
-        public StudentTripManagementService(IUnitOfWork unitOfWork, ITripManagementService tripManagementService, IStationManagementService stationManagementService, IStudentService studentManagementService, IConfiguration configuration) : base(unitOfWork)
+        private INotificationService _notificationService;
+        public StudentTripManagementService(IUnitOfWork unitOfWork, ITripManagementService tripManagementService,
+                                                IStationManagementService stationManagementService, IStudentService studentManagementService,
+                                                IConfiguration configuration, INotificationService notificationService) : base(unitOfWork)
         {
             _tripManagementService = tripManagementService;
             _stationManagementService = stationManagementService;
             _studentManagementService = studentManagementService;
             _configuration = configuration;
+            _notificationService = notificationService;
         }
 
         public async Task<Response> Create(StudentTripSearchModel model)
@@ -63,6 +68,31 @@ namespace FBus.Business.StudentTripManagement.Implements
             entity.CopyOfRoute = route;
             await _unitOfWork.StudentTripRepository.Add(entity);
             await _unitOfWork.SaveChangesAsync();
+
+            var student = await _unitOfWork.StudentRepository.GetById(model.StudentId);
+            if (student != null)
+            {
+                // Save notification to db
+                NoticationModel saveNoti = new NoticationModel
+                {
+                    EntityId = student.StudentId.ToString(),
+                    Title = "Đặt vé xe buýt",
+                    Content = "Đặt vé xe buýt thành công!",
+                    Type = "Booking",
+                };
+                await _notificationService.SaveNotification(saveNoti, Role.Student);
+
+                // Send notification to client
+                await _notificationService.SendNotification(
+                    student.NotifyToken,
+                    "Đặt vé xe buýt",
+                    "Bạn đã đặt vé thành công!"
+                );
+
+                // Xử lý cho phần tài xế
+                // ... code 
+            }
+
             return new()
             {
                 StatusCode = (int)StatusCode.Success,
@@ -138,14 +168,14 @@ namespace FBus.Business.StudentTripManagement.Implements
         public async Task<Response> GetList(Guid? id, DateTime? fromDate, DateTime? toDate, int? status)
         {
             var entities = await _unitOfWork.StudentTripRepository.Query()
-                .Where(x=> id == null || (id != null && x.StudentId.Equals(id)))
-                .Where(x=> status == null || (status != null && x.Status.Equals(status))).ToListAsync();
+                .Where(x => id == null || (id != null && x.StudentId.Equals(id)))
+                .Where(x => status == null || (status != null && x.Status.Equals(status))).ToListAsync();
             var resultList = new List<StudentTripViewModel>();
-            if(fromDate == null)
+            if (fromDate == null)
             {
                 fromDate = DateTime.MinValue;
             }
-            if(toDate == null)
+            if (toDate == null)
             {
                 toDate = DateTime.UtcNow.AddHours(7);
             }
@@ -155,7 +185,7 @@ namespace FBus.Business.StudentTripManagement.Implements
                 result.Trip = (TripViewModel)(await _tripManagementService.Get(entity.TripId)).Data;
                 result.Station = (StationViewModel)(await _stationManagementService.Get(entity.StationId)).Data;
                 result.Student = (StudentViewModel)(await _studentManagementService.GetDetails(entity.StudentId.ToString())).Data;
-                if(result.Trip.Date.CompareTo(fromDate)>=0 && result.Trip.Date.CompareTo(toDate) <= 0)
+                if (result.Trip.Date.CompareTo(fromDate) >= 0 && result.Trip.Date.CompareTo(toDate) <= 0)
                 {
                     resultList.Add(result);
                 }
@@ -174,8 +204,8 @@ namespace FBus.Business.StudentTripManagement.Implements
             var entities = await _unitOfWork.StudentTripRepository.Query()
                 .Where(x => x.StudentId.Equals(id)).ToListAsync();
             var resultList = new List<StudentTripViewModel>();
-            var  fromDate = DateTime.UtcNow.AddHours(6);
-            var  toDate = DateTime.UtcNow.AddHours(7).AddDays(7);
+            var fromDate = DateTime.UtcNow.AddHours(6);
+            var toDate = DateTime.UtcNow.AddHours(7).AddDays(7);
             foreach (var entity in entities)
             {
                 var result = entity.AsViewModel();
@@ -228,8 +258,8 @@ namespace FBus.Business.StudentTripManagement.Implements
 
         public async Task<Response> CheckIn(string qrCode)
         {
-            var StudentTripID=new Guid( DecryptString(qrCode));
-            var entity= await _unitOfWork.StudentTripRepository.GetById(StudentTripID);
+            var StudentTripID = new Guid(DecryptString(qrCode));
+            var entity = await _unitOfWork.StudentTripRepository.GetById(StudentTripID);
             if (entity == null)
             {
                 return new()
@@ -238,9 +268,34 @@ namespace FBus.Business.StudentTripManagement.Implements
                     Message = Message.NotFound
                 };
             }
-            entity.Status =(int) StudentTripStatus.Passed;
+            entity.Status = (int)StudentTripStatus.Passed;
             _unitOfWork.StudentTripRepository.Update(entity);
             await _unitOfWork.SaveChangesAsync();
+
+            var student = await _unitOfWork.StudentRepository.GetById(entity.StudentId);
+            if (student != null)
+            {
+                // Save notification to db
+                NoticationModel saveNoti = new NoticationModel
+                {
+                    EntityId = student.StudentId.ToString(),
+                    Title = "Checkin",
+                    Content = "Bạn vừa checkin thành công!",
+                    Type = "Checkin",
+                };
+                await _notificationService.SaveNotification(saveNoti, Role.Student);
+
+                // Send notification to client
+                await _notificationService.SendNotification(
+                    student.NotifyToken,
+                    "Checkin",
+                    "Bạn vừa checkin thành công!"
+                );
+
+                // Xử lý cho phần tài xế
+                // ... code 
+            }
+
             return new()
             {
                 StatusCode = (int)StatusCode.Success,
