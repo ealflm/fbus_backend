@@ -43,7 +43,7 @@ namespace FBus.Business.StudentTripManagement.Implements
 
         public async Task<Response> Create(StudentTripSearchModel model)
         {
-            bool already = (await _unitOfWork.StudentTripRepository.Query().Where(x => x.TripId.Equals(model.TripId)).FirstOrDefaultAsync()) != null;
+            bool already = (await _unitOfWork.StudentTripRepository.Query().Where(x => x.TripId.Equals(model.TripId) && x.StudentId.Equals(model.StudentId)).FirstOrDefaultAsync()) != null;
             if (already)
             {
                 return new()
