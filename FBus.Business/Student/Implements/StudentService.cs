@@ -23,6 +23,14 @@ namespace FBus.Business.StudentManagement.Implements
             _azureBlobService = azureBlobService;
         }
 
+       
+
+        /*public async Task<Response> Statistics(string id)
+        {
+            var student = await _unitOfWork.StudentRepository.GetById(Guid.Parse(id));
+            var StartDate = DateTime.Now.
+        }*/
+
         public async Task<Response> Disable(string id)
         {
             var student = await _unitOfWork.StudentRepository.GetById(Guid.Parse(id));

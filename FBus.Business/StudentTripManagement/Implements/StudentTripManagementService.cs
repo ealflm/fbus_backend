@@ -177,7 +177,7 @@ namespace FBus.Business.StudentTripManagement.Implements
             }
             if (toDate == null)
             {
-                toDate = DateTime.UtcNow.AddHours(7);
+                toDate = DateTime.UtcNow.AddHours(7).AddDays(360);
             }
             foreach (var entity in entities)
             {
