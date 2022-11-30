@@ -105,7 +105,7 @@ namespace FBus.Business.RouteManagement.Implements
                 return new()
                 {
                     StatusCode = (int)StatusCode.Ok,
-                    Data = entity.AsViewModel(),
+                    Data = result,
                     Message = Message.GetDetailsSuccess
                 };
             }
