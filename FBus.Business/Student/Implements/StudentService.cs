@@ -46,7 +46,27 @@ namespace FBus.Business.StudentManagement.Implements
             };
         }
 
-        public async Task<Response> GetDetails(string id)
+        public async Task<Response> GetByID(string id)
+        {
+            var student = await _unitOfWork.StudentRepository.GetById(Guid.Parse(id));
+            if (student == null)
+            {
+                return new()
+                {
+                    StatusCode = (int)StatusCode.NotFound,
+                    Message = Message.NotFound
+                };
+            }
+
+            return new()
+            {
+                StatusCode = (int)StatusCode.Ok,
+                Message = Message.GetDetailsSuccess,
+                Data = student.AsStudentViewModel()
+            };
+        }
+
+            public async Task<Response> GetDetails(string id)
         {
             var student = await _unitOfWork.StudentRepository.GetById(Guid.Parse(id));
             if (student == null)
