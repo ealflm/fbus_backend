@@ -37,5 +37,13 @@ namespace FBus.API.Controllers.Student
         {
             return SendResponse(await _notificationService.SaveNotification(model, Role.Student));
         }
+
+        [HttpPost]
+        [Route(ApiVer1Url.Student.SendNotification)]
+        public async Task<IActionResult> SendNotification(SendNotificationModel model)
+        {
+            await _notificationService.SendNotification(model.NotificationToken, model.Title, model.Content);
+            return Ok();
+        }
     }
 }

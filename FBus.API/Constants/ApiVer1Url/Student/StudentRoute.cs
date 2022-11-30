@@ -28,5 +28,8 @@ namespace ApiVer1Url
 
         // Notification token
         public const string NotificationToken = BaseApiUrl + "/noti-token";
+
+        // Send notification
+        public const string SendNotification = BaseApiUrl + "/send-notification";
     }
 }
