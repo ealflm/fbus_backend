@@ -154,7 +154,7 @@ namespace FBus.Business.StudentTripManagement.Implements
                 var result = entity.AsViewModel();
                 result.Trip = (TripViewModel)(await _tripManagementService.Get(entity.TripId)).Data;
                 result.Station = (StationViewModel)(await _stationManagementService.Get(entity.StationId)).Data;
-                result.Student = (StudentViewModel)(await _studentManagementService.GetDetails(entity.StudentId.ToString())).Data;
+                result.Student = (StudentViewModel)(await _studentManagementService.GetByID(entity.StudentId.ToString())).Data;
                 if(result.Trip.Date.CompareTo(fromDate)>=0 && result.Trip.Date.CompareTo(toDate) <= 0)
                 {
                     resultList.Add(result);
@@ -181,7 +181,7 @@ namespace FBus.Business.StudentTripManagement.Implements
                 var result = entity.AsViewModel();
                 result.Trip = (TripViewModel)(await _tripManagementService.Get(entity.TripId)).Data;
                 result.Station = (StationViewModel)(await _stationManagementService.Get(entity.StationId)).Data;
-                result.Student = (StudentViewModel)(await _studentManagementService.GetDetails(entity.StudentId.ToString())).Data;
+                result.Student = (StudentViewModel)(await _studentManagementService.GetByID(entity.StudentId.ToString())).Data;
                 if (result.Trip.Date.CompareTo(fromDate) >= 0 && result.Trip.Date.CompareTo(toDate) <= 0)
                 {
                     resultList.Add(result);

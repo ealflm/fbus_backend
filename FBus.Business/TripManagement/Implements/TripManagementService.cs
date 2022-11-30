@@ -31,7 +31,7 @@ namespace FBus.Business.TripManagement.Implements
         {
             TimeSpan start = TimeSpan.Parse(model.TimeStart);
             TimeSpan end = TimeSpan.Parse(model.TimeEnd);
-            for (int i = 0; i < (model.DateEnd - model.DateStart).Days; i++)
+            for (int i = 0; i <= (model.DateEnd - model.DateStart).Days; i++)
             {
                 bool already = (await _unitOfWork.TripRepository
                                 .Query()

@@ -7,6 +7,7 @@ namespace FBus.Business.StudentManagement.Interface
     public interface IStudentService
     {
         Task<Response> GetDetails(string id);
+        Task<Response> GetByID(string id);
         Task<Response> GetList();
         Task<Response> Update(string id, UpdateStudentModel student);
         Task<Response> Disable(string id);
