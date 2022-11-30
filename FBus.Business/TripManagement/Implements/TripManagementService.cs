@@ -31,11 +31,11 @@ namespace FBus.Business.TripManagement.Implements
         {
             TimeSpan start = TimeSpan.Parse(model.TimeStart);
             TimeSpan end = TimeSpan.Parse(model.TimeEnd);
-            for (int i = 0; i <= (model.DateEnd - model.DateStart).Days; i++)
+            for (int i = 0; i <= (model.EndDate - model.StartDate).Days; i++)
             {
                 bool already = (await _unitOfWork.TripRepository
                                 .Query()
-                                .Where(x => x.Date.Equals(model.DateStart.AddDays(i)) &&
+                                .Where(x => x.Date.Equals(model.StartDate.AddDays(i)) &&
                                 x.RouteId.Equals(model.RouteId) &&
                                 x.BusVehicleId.Equals(model.BusId) &&
                                 (
@@ -45,14 +45,14 @@ namespace FBus.Business.TripManagement.Implements
                                 ))
                                 .FirstOrDefaultAsync()) != null;
 
-                if (!already && model.DateStart.AddDays(i).DayOfWeek != DayOfWeek.Sunday)
+                if (!already && model.StartDate.AddDays(i).DayOfWeek != DayOfWeek.Sunday)
                 {
                     var entity = new Trip()
                     {
                         BusVehicleId = model.BusId,
                         DriverId = model.DriverId,
                         RouteId = model.RouteId,
-                        Date = model.DateStart.AddDays(i),
+                        Date = model.StartDate.AddDays(i),
                         TimeEnd = TimeSpan.Parse(model.TimeEnd),
                         TimeStart = TimeSpan.Parse(model.TimeStart),
                         Status = (int)TripStatus.Active,

@@ -17,9 +17,9 @@ namespace FBus.Business.TripManagement.SearchModel
         [Required]
         public Guid RouteId { get; set; }
         [Required]
-        public DateTime DateStart { get; set; }
+        public DateTime StartDate { get; set; }
         [Required]
-        public DateTime DateEnd { get; set; }
+        public DateTime EndDate { get; set; }
         [Required]
         [TimeSpanComparator("TimeEnd")]
         public string TimeStart { get; set; }
