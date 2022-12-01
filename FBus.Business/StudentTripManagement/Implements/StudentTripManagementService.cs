@@ -135,6 +135,45 @@ namespace FBus.Business.StudentTripManagement.Implements
                     Message = Message.UpdatedSuccess
                 };
             }
+
+            // Get driver
+            var driver = await _unitOfWork.TripRepository
+                        .Query()
+                        .Where(x => x.TripId == entity.TripId)
+                        .Join(_unitOfWork.DriverRepository.Query(),
+                            _ => _.DriverId,
+                            driver => driver.DriverId,
+                            (_, driver) => new Driver
+                            {
+                                DriverId = driver.DriverId,
+                                NotifyToken = driver.NotifyToken
+                            }
+                        )
+                        .FirstOrDefaultAsync();
+
+            string content = model.Feedback;
+            if (model.Rate != 0)
+            {
+                content = $"Bạn vừa được đánh giá {model.Rate} sao. {model.Feedback}";
+            }
+
+            // Save notification to db
+            NoticationModel saveNoti = new NoticationModel
+            {
+                EntityId = driver.DriverId.ToString(),
+                Title = "Đánh giá chuyến đi",
+                Content = content,
+                Type = NotificationType.FeedBack,
+            };
+            await _notificationService.SaveNotification(saveNoti, Role.Student);
+
+            // Send notification to client
+            await _notificationService.SendNotification(
+                driver.NotifyToken,
+                "Đánh giá chuyến đi",
+                content
+            );
+
             return new()
             {
                 StatusCode = (int)StatusCode.NotFound,
