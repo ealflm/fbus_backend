@@ -30,6 +30,7 @@ namespace FBus.Data.Context
         public virtual DbSet<Student> Students { get; set; }
         public virtual DbSet<StudentNotification> StudentNotifications { get; set; }
         public virtual DbSet<StudentTrip> StudentTrips { get; set; }
+        public virtual DbSet<TrackingLocation> TrackingLocations { get; set; }
         public virtual DbSet<Trip> Trips { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -358,6 +359,25 @@ namespace FBus.Data.Context
                     .HasForeignKey(d => d.TripId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_StudentTrip_Trip");
+            });
+
+            modelBuilder.Entity<TrackingLocation>(entity =>
+            {
+                entity.ToTable("TrackingLocation");
+
+                entity.Property(e => e.TrackingLocationId).ValueGeneratedNever();
+
+                entity.Property(e => e.CreatedDate).HasColumnType("datetime");
+
+                entity.Property(e => e.Latitude).HasColumnType("decimal(18, 7)");
+
+                entity.Property(e => e.Longitude).HasColumnType("decimal(18, 7)");
+
+                entity.HasOne(d => d.Driver)
+                    .WithMany(p => p.TrackingLocations)
+                    .HasForeignKey(d => d.DriverId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_TrackingLocation_Driver");
             });
 
             modelBuilder.Entity<Trip>(entity =>

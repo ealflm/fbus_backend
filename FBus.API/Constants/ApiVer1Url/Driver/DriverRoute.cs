@@ -46,5 +46,8 @@ namespace ApiVer1Url
 
         // Send request
         public const string SendRequestToSwapDriver = BaseApiUrl + "/send-swap-request";
+
+        // Tracking location
+        public const string TrackingLocation = BaseApiUrl + "/tracking-location";
     }
 }
