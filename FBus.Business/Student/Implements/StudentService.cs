@@ -24,29 +24,29 @@ namespace FBus.Business.StudentManagement.Implements
             _azureBlobService = azureBlobService;
         }
 
-       
+
 
         public async Task<Response> Statistics(string id)
         {
             var student = await _unitOfWork.StudentRepository.GetById(Guid.Parse(id));
             DateTime fd = DateTime.Now.StartOfWeek(DayOfWeek.Monday);
             DateTime td = fd.AddDays(7);
-            var studentTripList= await _unitOfWork.StudentTripRepository.Query().ToListAsync();
+            var studentTripList = await _unitOfWork.StudentTripRepository.Query().ToListAsync();
             int studentTripCount = 0;
             int studentTripNotUse = 0;
             double distance = 0;
-            foreach(var item in studentTripList)
+            foreach (var item in studentTripList)
             {
                 var trip = await _unitOfWork.TripRepository.GetById(item.TripId);
-                if(trip.Date>= fd && trip.Date<= td)
+                if (trip.Date >= fd && trip.Date <= td)
                 {
                     studentTripCount++;
-                    if(item.Status == (int)StudentTripStatus.Passed)
+                    if (item.Status == (int)StudentTripStatus.Passed)
                     {
                         studentTripNotUse++;
-                        var stationRoute= await _unitOfWork.RouteStationRepository.Query().Where(x=> x.StationId== item.StationId && x.RouteId == trip.RouteId).FirstOrDefaultAsync();
+                        var stationRoute = await _unitOfWork.RouteStationRepository.Query().Where(x => x.StationId == item.StationId && x.RouteId == trip.RouteId).FirstOrDefaultAsync();
                         var route = await _unitOfWork.RouteRepository.GetById(trip.RouteId);
-                        distance += Convert.ToDouble(route.Distance)- Convert.ToDouble(stationRoute.Distance);
+                        distance += Convert.ToDouble(route.Distance) - Convert.ToDouble(stationRoute.Distance);
                     }
                 }
             }
@@ -106,7 +106,7 @@ namespace FBus.Business.StudentManagement.Implements
             };
         }
 
-            public async Task<Response> GetDetails(string id)
+        public async Task<Response> GetDetails(string id)
         {
             var student = await _unitOfWork.StudentRepository.GetById(Guid.Parse(id));
             if (student == null)
@@ -306,6 +306,39 @@ namespace FBus.Business.StudentManagement.Implements
             {
                 StatusCode = (int)StatusCode.Success,
                 Message = Message.UpdatedSuccess,
+            };
+        }
+
+        public async Task<Response> GetDriverLocation(string tripId)
+        {
+            var trip = await _unitOfWork.TripRepository.GetById(Guid.Parse(tripId));
+            if (trip == null)
+            {
+                return new()
+                {
+                    StatusCode = (int)StatusCode.BadRequest,
+                    Message = Message.CustomContent("Thông tin tuyến không hợp lệ!")
+                };
+            }
+
+            var location = await _unitOfWork.TrackingLocationRepository.Query().Where(x => x.DriverId == trip.DriverId).FirstOrDefaultAsync();
+            dynamic result = new { };
+            if (location != null)
+            {
+                result = new
+                {
+                    DriverId = location.DriverId,
+                    Longitude = location.Longitude,
+                    Latitude = location.Latitude,
+                    CreatedDate = location.CreatedDate
+                };
+            }
+
+            return new()
+            {
+                StatusCode = (int)StatusCode.Ok,
+                Message = Message.CustomContent("Lấy vị trí thành công"),
+                Data = result
             };
         }
     }
