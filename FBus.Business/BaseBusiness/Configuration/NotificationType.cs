@@ -6,5 +6,6 @@ namespace FBus.Business.BaseBusiness.Configuration
         public static readonly string SendRequest = "SendRequest";
         public static readonly string Booking = "Booking";
         public static readonly string Checkin = "Checkin";
+        public static readonly string FeedBack = "Feedback";
     }
 }
