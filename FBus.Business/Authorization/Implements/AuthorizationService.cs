@@ -264,7 +264,8 @@ namespace FBus.Business.Authorization.Implements
                             Phone = userInfo.PhoneNumber,
                             PhotoUrl = userInfo.PhotoUrl,
                             AutomaticScheduling = model.AutomaticScheduling,
-                            Status = model.Status
+                            Status = model.Status,
+                            StudentId = model.StudentId
                         };
                     }
                     else
@@ -286,6 +287,7 @@ namespace FBus.Business.Authorization.Implements
 
                         result = new StudentViewModel()
                         {
+                            StudentId = studentModel.StudentId,
                             FullName = userInfo.DisplayName,
                             Email = userInfo.Email,
                             Phone = userInfo.PhoneNumber,
