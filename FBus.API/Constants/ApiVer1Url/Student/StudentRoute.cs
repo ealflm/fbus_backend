@@ -31,5 +31,8 @@ namespace ApiVer1Url
 
         // Send notification
         public const string SendNotification = BaseApiUrl + "/send-notification";
+
+        // Location
+        public const string Location = BaseApiUrl + "/location";
     }
 }

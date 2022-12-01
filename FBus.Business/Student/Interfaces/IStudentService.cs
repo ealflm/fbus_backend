@@ -12,5 +12,6 @@ namespace FBus.Business.StudentManagement.Interface
         Task<Response> Update(string id, UpdateStudentModel student);
         Task<Response> Statistics(string id);
         Task<Response> Disable(string id);
+        Task<Response> GetDriverLocation(string tripId);
     }
 }
