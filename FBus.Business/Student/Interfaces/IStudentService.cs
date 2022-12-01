@@ -10,6 +10,7 @@ namespace FBus.Business.StudentManagement.Interface
         Task<Response> GetByID(string id);
         Task<Response> GetList();
         Task<Response> Update(string id, UpdateStudentModel student);
+        Task<Response> Statistics(string id);
         Task<Response> Disable(string id);
     }
 }
