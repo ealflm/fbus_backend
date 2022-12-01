@@ -40,5 +40,11 @@ namespace ApiVer1Url
 
         // Notification
         public const string Notification = BaseApiUrl + "/notification";
+
+        // Check available request time
+        public const string CheckAvailableRequestTime = BaseApiUrl + "/check-request-time";
+
+        // Send request
+        public const string SendRequestToSwapDriver = BaseApiUrl + "/send-swap-request";
     }
 }

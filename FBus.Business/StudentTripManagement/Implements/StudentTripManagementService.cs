@@ -78,7 +78,7 @@ namespace FBus.Business.StudentTripManagement.Implements
                     EntityId = student.StudentId.ToString(),
                     Title = "Đặt vé xe buýt",
                     Content = "Đặt vé xe buýt thành công!",
-                    Type = "Booking",
+                    Type = NotificationType.Booking,
                 };
                 await _notificationService.SaveNotification(saveNoti, Role.Student);
 
@@ -185,7 +185,7 @@ namespace FBus.Business.StudentTripManagement.Implements
                 result.Trip = (TripViewModel)(await _tripManagementService.Get(entity.TripId)).Data;
                 result.Station = (StationViewModel)(await _stationManagementService.Get(entity.StationId)).Data;
                 result.Student = (StudentViewModel)(await _studentManagementService.GetByID(entity.StudentId.ToString())).Data;
-                if(result.Trip.Date.CompareTo(fromDate)>=0 && result.Trip.Date.CompareTo(toDate) <= 0)
+                if (result.Trip.Date.CompareTo(fromDate) >= 0 && result.Trip.Date.CompareTo(toDate) <= 0)
                 {
                     resultList.Add(result);
                 }
@@ -281,7 +281,7 @@ namespace FBus.Business.StudentTripManagement.Implements
                     EntityId = student.StudentId.ToString(),
                     Title = "Checkin",
                     Content = "Bạn vừa checkin thành công!",
-                    Type = "Checkin",
+                    Type = NotificationType.Checkin,
                 };
                 await _notificationService.SaveNotification(saveNoti, Role.Student);
 

@@ -1,6 +1,7 @@
 ﻿using FBus.Business.BaseBusiness.CommonModel;
 using FBus.Business.BaseBusiness.Configuration;
 using FBus.Business.BaseBusiness.Implements;
+using FBus.Business.BaseBusiness.Interfaces;
 using FBus.Business.BaseBusiness.ViewModel;
 using FBus.Business.BusVehicleManagement.Interfaces;
 using FBus.Business.DriverManagement.Interfaces;
@@ -22,9 +23,12 @@ namespace FBus.Business.TripManagement.Implements
     public class TripManagementService : BaseService, ITripManagementService
     {
         IRouteManagementService _routeManagementService;
-        public TripManagementService(IUnitOfWork unitOfWork, IRouteManagementService routeManagementService) : base(unitOfWork)
+        private INotificationService _notificationService;
+
+        public TripManagementService(IUnitOfWork unitOfWork, IRouteManagementService routeManagementService, INotificationService notificationService) : base(unitOfWork)
         {
             _routeManagementService = routeManagementService;
+            _notificationService = notificationService;
         }
 
         public async Task<Response> Create(TripSearchModel model)
@@ -61,6 +65,12 @@ namespace FBus.Business.TripManagement.Implements
                     await _unitOfWork.TripRepository.Add(entity);
                 }
             }
+
+            // update status driver for being assign trip
+            var driver = await _unitOfWork.DriverRepository.GetById(model.DriverId);
+            driver.Status = (int)DriverStatus.Assigned;
+            _unitOfWork.DriverRepository.Update(driver);
+
             await _unitOfWork.SaveChangesAsync();
             return new()
             {
@@ -242,6 +252,209 @@ namespace FBus.Business.TripManagement.Implements
                 StatusCode = (int)StatusCode.Ok,
                 Message = Message.GetListSuccess,
                 Data = th,
+            };
+        }
+
+        public async Task<Response> DoSwapDriver(SwapDriverModel model)
+        {
+            var tripInfo = await _unitOfWork.TripRepository.GetById(Guid.Parse(model.TripId));
+            if (tripInfo == null)
+            {
+                return new()
+                {
+                    StatusCode = (int)StatusCode.BadRequest,
+                    Message = Message.CustomContent("Thông tin chuyến đi không hợp lệ!")
+                };
+            }
+
+            // Update new driver for trip
+            tripInfo.DriverId = Guid.Parse(model.SwappedDriverId);
+            _unitOfWork.TripRepository.Update(tripInfo);
+
+            // Update status driver to Assigned
+            var swapDriver = await _unitOfWork.DriverRepository.GetById(Guid.Parse(model.SwappedDriverId));
+            swapDriver.Status = (int)DriverStatus.Assigned;
+            _unitOfWork.DriverRepository.Update(swapDriver);
+
+            await _unitOfWork.SaveChangesAsync();
+
+            // Send notification to client
+            NoticationModel saveNoti = new NoticationModel
+            {
+                EntityId = model.RequestDriverId,
+                Title = "Yêu cầu đổi tài xế cho tuyến xe buýt",
+                Content = "Yêu cầu đổi tài xế cho tuyến của bạn đã thành công",
+                Type = NotificationType.SwapDriver
+            };
+            await _notificationService.SaveNotification(saveNoti, Role.Driver);
+
+            // Send notification to client
+            NoticationModel saveNoti1 = new NoticationModel
+            {
+                EntityId = swapDriver.DriverId.ToString(),
+                Title = "Yêu cầu đổi tài xế cho tuyến xe buýt",
+                Content = "Bạn vừa được cập nhật thông tin chuyến mới. Vui lòng kiểm tra lịch trình di chuyển",
+                Type = NotificationType.SwapDriver
+            };
+            await _notificationService.SaveNotification(saveNoti1, Role.Driver);
+
+            var requestDriver = await _unitOfWork.DriverRepository.GetById(Guid.Parse(model.RequestDriverId));
+
+            await _notificationService.SendNotification(
+                swapDriver.NotifyToken,
+                "Yêu cầu đổi tài xế",
+                "Bạn vừa được cập nhật thông tin chuyến mới. Vui lòng kiểm tra lịch trình di chuyển"
+            );
+
+            await _notificationService.SendNotification(
+                requestDriver.NotifyToken,
+                "Yêu cầu đổi tài xế",
+                "Yêu cầu đổi tài xế cho tuyến của bạn đã thành công"
+            );
+
+            return new()
+            {
+                StatusCode = (int)StatusCode.Success,
+                Message = Message.CustomContent("Đổi tài xế thành công!")
+            };
+        }
+
+        public async Task<Response> CheckAvailableRequestTime(RequestTimeModel model)
+        {
+            var tripInfo = await _unitOfWork.TripRepository.GetById(Guid.Parse(model.TripId));
+            if (tripInfo == null)
+            {
+                return new()
+                {
+                    StatusCode = (int)StatusCode.BadRequest,
+                    Message = Message.CustomContent("Thông tin chuyến đi không hợp lệ!")
+                };
+            }
+
+            var isAvailiableTime = model.RequestTime.CompareTo(tripInfo.TimeStart.Subtract(TimeSpan.FromMinutes(30))) <= 0;
+
+            if (!isAvailiableTime)
+            {
+                return new()
+                {
+                    StatusCode = (int)StatusCode.BadRequest,
+                    Message = Message.CustomContent("Đã quá thời hạn yêu cầu đổi tài xế cho chuyến của bạn!")
+                };
+            }
+
+            return new()
+            {
+                StatusCode = (int)StatusCode.Ok,
+                Message = Message.CustomContent("Thời gian hợp lệ!")
+            };
+        }
+
+        public async Task<Response> GetAvailabelSwappingDriverList(AvailableSwappingDriverModel model)
+        {
+            var trip = await _unitOfWork.TripRepository.GetById(Guid.Parse(model.TripId));
+            var driver = await _unitOfWork.DriverRepository.GetById(Guid.Parse(model.DriverId));
+
+            var driverLst = await _unitOfWork.DriverRepository
+                            .Query()
+                            .Where(x => x.DriverId != driver.DriverId)
+                            .Where(x => x.Status == (int)DriverStatus.Active)
+                            .Select(x => x.AsDriverViewModel())
+                            .ToListAsync();
+
+            dynamic lst = null;
+            if (trip != null && driver != null)
+            {
+                lst = await _unitOfWork.TripRepository
+                            .Query()
+                            .Where(x =>
+                                    x.DriverId != driver.DriverId &&
+                                    (
+                                        !(
+                                            trip.TimeStart.CompareTo(x.TimeStart) <= 0 &&
+                                            x.TimeStart.CompareTo(trip.TimeEnd) <= 0
+                                        )
+                                        ||
+                                        !(
+                                            trip.TimeStart.CompareTo(x.TimeEnd) <= 0 &&
+                                            x.TimeEnd.CompareTo(trip.TimeEnd) <= 0
+                                        )
+
+                                    )
+                                // &&
+                                // (
+                                //     x.TimeEnd.Subtract(TimeSpan.FromMinutes(10)).CompareTo(trip.TimeStart) <= 0 ||
+                                //     trip.TimeEnd.CompareTo(x.TimeStart.Subtract(TimeSpan.FromMinutes(10))) <= 0
+                                // )
+                                )
+                            .Join(_unitOfWork.DriverRepository.Query(),
+                                _ => _.DriverId,
+                                driver => driver.DriverId,
+                                (_, driver) => driver.AsDriverViewModel()
+                            )
+                            .ToListAsync();
+
+
+            }
+
+            return new()
+            {
+                StatusCode = (int)StatusCode.Ok,
+                Message = Message.CustomContent("Thành công!"),
+                Data = new
+                {
+                    HasNoTrip = driverLst,
+                    HasTrip = lst
+                }
+            };
+        }
+
+        public async Task<Response> SendRequestToSwapDriver(RequestSwapDriverModel model)
+        {
+            RequestTimeModel checktimeModel = new RequestTimeModel
+            {
+                TripId = model.TripId,
+                RequestTime = model.RequestTime
+            };
+            var checkRequestTime = await CheckAvailableRequestTime(checktimeModel);
+            if (checkRequestTime.StatusCode != (int)StatusCode.Ok)
+            {
+                return checkRequestTime;
+            }
+
+            Shift shift = new Shift
+            {
+                ShiftId = Guid.NewGuid(),
+                DriverId = Guid.Parse(model.DriverId),
+                TripId = Guid.Parse(model.TripId),
+                RequestTime = model.RequestTime,
+                Content = model.Content,
+                Type = "SendRequest",
+                Status = (int)ShiftStatus.UnChecked
+            };
+
+            await _unitOfWork.ShiftRepository.Add(shift);
+            await _unitOfWork.SaveChangesAsync();
+
+            NoticationModel saveNoti = new NoticationModel
+            {
+                EntityId = model.DriverId,
+                Title = "Gửi yêu cầu đổi tài xế cho tuyến",
+                Content = "Bạn vừa gửi thành công yêu cầu đổi tài cho tuyến",
+                Type = NotificationType.SendRequest
+            };
+            await _notificationService.SaveNotification(saveNoti, Role.Driver);
+
+            var driver = await _unitOfWork.DriverRepository.GetById(Guid.Parse(model.DriverId));
+            await _notificationService.SendNotification(
+                driver.NotifyToken,
+                "Gửi yêu cầu đổi tài xế cho tuyến",
+                "Bạn vừa gửi thành công yêu cầu đổi tài cho tuyến"
+            );
+
+            return new()
+            {
+                StatusCode = (int)StatusCode.Ok,
+                Message = Message.CustomContent("Thành công!"),
             };
         }
     }

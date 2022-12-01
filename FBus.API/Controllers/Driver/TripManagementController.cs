@@ -68,5 +68,19 @@ namespace FBus.API.Controllers.Driver
         {
             return SendResponse(await _service.GetDriverTripSchedules(id));
         }
+
+        [HttpGet]
+        [Route(ApiVer1Url.Driver.CheckAvailableRequestTime)]
+        public async Task<IActionResult> CheckAvailableRequestTime(RequestTimeModel model)
+        {
+            return SendResponse(await _service.CheckAvailableRequestTime(model));
+        }
+
+        [HttpPost]
+        [Route(ApiVer1Url.Driver.SendRequestToSwapDriver)]
+        public async Task<IActionResult> SendRequestToSwapDriver([FromBody] RequestSwapDriverModel model)
+        {
+            return SendResponse(await _service.SendRequestToSwapDriver(model));
+        }
     }
 }

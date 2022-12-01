@@ -203,17 +203,30 @@ namespace FBus.Data.Context
                     .ValueGeneratedNever()
                     .HasColumnName("ShiftID");
 
+                entity.Property(e => e.Content)
+                    .IsRequired()
+                    .IsUnicode(false);
+
                 entity.Property(e => e.DriverId).HasColumnName("DriverID");
 
-                entity.Property(e => e.TimeEnd).HasColumnType("datetime");
+                entity.Property(e => e.RequestTime).HasColumnType("datetime");
 
-                entity.Property(e => e.TimeStart).HasColumnType("datetime");
+                entity.Property(e => e.Type)
+                    .IsRequired()
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
 
                 entity.HasOne(d => d.Driver)
                     .WithMany(p => p.Shifts)
                     .HasForeignKey(d => d.DriverId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Shift_Driver");
+
+                entity.HasOne(d => d.Trip)
+                    .WithMany(p => p.Shifts)
+                    .HasForeignKey(d => d.TripId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Shift_Trip");
             });
 
             modelBuilder.Entity<StartLocation>(entity =>
