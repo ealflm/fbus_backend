@@ -9,11 +9,8 @@ using System.Threading.Tasks;
 
 namespace FBus.API.Controllers.Admin
 {
-    
-    
     [ApiController]
     [Authorize]
-    [Route(ApiVer1Url.Admin.Trip)]
     public class TripManagementController : BaseController
     {
 
@@ -24,33 +21,53 @@ namespace FBus.API.Controllers.Admin
             _service = service;
         }
 
-        [HttpGet("{id}")]
+        [HttpGet]
+        [Route(ApiVer1Url.Admin.Trip + "/{id}")]
         public async Task<IActionResult> Get(Guid id)
         {
             return SendResponse(await _service.Get(id));
         }
 
         [HttpGet]
+        [Route(ApiVer1Url.Admin.Trip)]
         public async Task<IActionResult> GetList()
         {
             return SendResponse(await _service.GetList(null, null));
         }
 
         [HttpPost]
+        [Route(ApiVer1Url.Admin.Trip)]
         public async Task<IActionResult> Create([FromBody] TripSearchModel model)
         {
             return SendResponse(await _service.Create(model));
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete]
+        [Route(ApiVer1Url.Admin.Trip + "/{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
             return SendResponse(await _service.Delete(id));
         }
-        [HttpPut("{id}")]
-        public async Task<IActionResult> Update(Guid id,[FromBody] TripUpdateModel model)
+
+        [HttpPut]
+        [Route(ApiVer1Url.Admin.Trip + "/{id}")]
+        public async Task<IActionResult> Update(Guid id, [FromBody] TripUpdateModel model)
         {
             return SendResponse(await _service.Update(model, id));
+        }
+
+        [HttpGet]
+        [Route(ApiVer1Url.Admin.AvailableSwappingDriver)]
+        public async Task<IActionResult> GetAvailableDriver([FromQuery] AvailableSwappingDriverModel model)
+        {
+            return SendResponse(await _service.GetAvailabelSwappingDriverList(model));
+        }
+
+        [HttpPost]
+        [Route(ApiVer1Url.Admin.DoSwapDriver)]
+        public async Task<IActionResult> DoSwapDriver([FromBody] SwapDriverModel model)
+        {
+            return SendResponse(await _service.DoSwapDriver(model));
         }
     }
 }

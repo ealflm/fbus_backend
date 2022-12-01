@@ -21,6 +21,7 @@ namespace FBus.Data.Repositories
         public IGenericRepository<StudentTrip> StudentTripRepository { get; }
         public IGenericRepository<DriverNotification> DriverNotificationRepository { get; }
         public IGenericRepository<StudentNotification> StudentNotificationRepository { get; }
+        public IGenericRepository<Shift> ShiftRepository { get; }
 
         public UnitOfWork(FBusContext dbContext,
                         IGenericRepository<Admin> adminRepository,
@@ -33,7 +34,8 @@ namespace FBus.Data.Repositories
                         IGenericRepository<Trip> tripRepository,
                         IGenericRepository<StudentTrip> studentTripRepository,
                         IGenericRepository<DriverNotification> driverNotificationRepository,
-                        IGenericRepository<StudentNotification> studentNotificationRepository
+                        IGenericRepository<StudentNotification> studentNotificationRepository,
+                        IGenericRepository<Shift> shiftRepository
             )
         {
             _dbContext = dbContext;
@@ -49,6 +51,7 @@ namespace FBus.Data.Repositories
             StudentTripRepository = studentTripRepository;
             DriverNotificationRepository = driverNotificationRepository;
             StudentNotificationRepository = studentNotificationRepository;
+            ShiftRepository = shiftRepository;
         }
 
         public FBusContext Context()

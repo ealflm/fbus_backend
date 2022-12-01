@@ -13,11 +13,15 @@ namespace FBus.Business.TripManagement.Interfaces
     {
         Task<Response> Create(TripSearchModel model);
         Task<Response> Get(Guid id);
-        Task<Response> GetListByRoute( Guid? id, DateTime? date);
+        Task<Response> GetListByRoute(Guid? id, DateTime? date);
         Task<Response> GetList(Guid? busId, Guid? driverId);
         Task<Response> Update(TripUpdateModel model, Guid id);
         Task<Response> Delete(Guid id);
         Task<Response> GetHistoricalTrip(string id, Role role);
         Task<Response> GetDriverTripSchedules(string id);
+        Task<Response> SendRequestToSwapDriver(RequestSwapDriverModel model);
+        Task<Response> DoSwapDriver(SwapDriverModel model);
+        Task<Response> CheckAvailableRequestTime(RequestTimeModel model);
+        Task<Response> GetAvailabelSwappingDriverList(AvailableSwappingDriverModel model);
     }
 }

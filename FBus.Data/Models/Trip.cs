@@ -7,6 +7,7 @@ namespace FBus.Data.Models
     {
         public Trip()
         {
+            Shifts = new HashSet<Shift>();
             StudentTrips = new HashSet<StudentTrip>();
         }
 
@@ -22,6 +23,7 @@ namespace FBus.Data.Models
         public virtual BusVehicle BusVehicle { get; set; }
         public virtual Driver Driver { get; set; }
         public virtual Route Route { get; set; }
+        public virtual ICollection<Shift> Shifts { get; set; }
         public virtual ICollection<StudentTrip> StudentTrips { get; set; }
     }
 }

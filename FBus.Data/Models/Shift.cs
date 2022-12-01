@@ -7,10 +7,13 @@ namespace FBus.Data.Models
     {
         public Guid ShiftId { get; set; }
         public Guid DriverId { get; set; }
-        public DateTime TimeStart { get; set; }
-        public DateTime TimeEnd { get; set; }
+        public Guid TripId { get; set; }
+        public DateTime RequestTime { get; set; }
+        public string Content { get; set; }
+        public string Type { get; set; }
         public int Status { get; set; }
 
         public virtual Driver Driver { get; set; }
+        public virtual Trip Trip { get; set; }
     }
 }

@@ -29,6 +29,8 @@ namespace ApiVer1Url
 
         // Driver
         public const string Driver = BaseApiUrl + "/driver";
+        public const string AvailableSwappingDriver = BaseApiUrl + "/available-drivers";
+        public const string DoSwapDriver = BaseApiUrl + "/swap-driver";
 
         // Trip
         public const string Trip = BaseApiUrl + "/trip";

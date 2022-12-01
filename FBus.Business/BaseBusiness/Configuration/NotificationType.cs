@@ -1,0 +1,10 @@
+namespace FBus.Business.BaseBusiness.Configuration
+{
+    public static class NotificationType
+    {
+        public static readonly string SwapDriver = "SwapDriver";
+        public static readonly string SendRequest = "SendRequest";
+        public static readonly string Booking = "Booking";
+        public static readonly string Checkin = "Checkin";
+    }
+}
