@@ -95,7 +95,7 @@ namespace FBus.Business.RouteManagement.Implements
 
             if (entity != null)
             {
-                var routeStationList = await _unitOfWork.RouteStationRepository.Query().Where(x => x.RouteId.Equals(entity.RouteId)).ToListAsync();
+                var routeStationList = await _unitOfWork.RouteStationRepository.Query().Where(x => x.RouteId.Equals(entity.RouteId)).OrderBy(x=> x.OrderNumber).ToListAsync();
                 var result = entity.AsViewModel();
                 result.StationList = new List<StationViewModel>();
                 foreach (var x in routeStationList)
