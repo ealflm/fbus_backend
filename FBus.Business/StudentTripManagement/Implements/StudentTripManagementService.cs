@@ -193,7 +193,7 @@ namespace FBus.Business.StudentTripManagement.Implements
             return new()
             {
                 StatusCode = (int)StatusCode.Ok,
-                Data = resultList,
+                Data = resultList.OrderBy(x=>x.Trip.Date),
                 Message = Message.GetListSuccess
             };
         }
@@ -221,7 +221,7 @@ namespace FBus.Business.StudentTripManagement.Implements
             return new()
             {
                 StatusCode = (int)StatusCode.Ok,
-                Data = resultList.FirstOrDefault(),
+                Data = resultList.OrderBy(x=>x.Trip.Date).FirstOrDefault(),
                 Message = Message.GetListSuccess
             };
         }
