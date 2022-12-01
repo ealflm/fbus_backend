@@ -31,6 +31,14 @@ namespace FBus.API.Controllers.Student
             return SendResponse(await _studentService.GetDetails(id));
         }
 
+
+        [HttpGet]
+        [Route(ApiVer1Url.Student.BaseApiUrl + "/statistics/{id}")]
+        public async Task<IActionResult> GetDetailStatistics(string id)
+        {
+            return SendResponse(await _studentService.Statistics(id));
+        }
+
         [HttpGet]
         [Route(ApiVer1Url.Admin.StudentList)]
         public async Task<IActionResult> GetList()

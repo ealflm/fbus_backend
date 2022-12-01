@@ -7,7 +7,15 @@ namespace FBus.Business.BaseBusiness.Configuration
 {
     public static class EntitiesMapper
     {
-        public static StudentViewModel AsStudentViewModel(this Student student)
+
+        public static DateTime StartOfWeek(this DateTime dt, DayOfWeek startOfWeek)
+        {
+            int diff = (7 + (dt.DayOfWeek - startOfWeek)) % 7;
+            return dt.AddDays(-1 * diff).Date;
+        }
+
+
+        public static StudentViewModel AsStudentViewModel(this FBus.Data.Models.Student student)
         {
             return new()
             {

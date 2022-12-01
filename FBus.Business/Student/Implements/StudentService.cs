@@ -7,6 +7,7 @@ using FBus.Business.BaseBusiness.CommonModel;
 using FBus.Business.BaseBusiness.Configuration;
 using FBus.Business.BaseBusiness.Implements;
 using FBus.Business.BaseBusiness.Interfaces;
+using FBus.Business.Student.Models;
 using FBus.Business.StudentManagement.Interface;
 using FBus.Business.StudentManagement.Models;
 using FBus.Data.Interfaces;
@@ -25,11 +26,42 @@ namespace FBus.Business.StudentManagement.Implements
 
        
 
-        /*public async Task<Response> Statistics(string id)
+        public async Task<Response> Statistics(string id)
         {
             var student = await _unitOfWork.StudentRepository.GetById(Guid.Parse(id));
-            var StartDate = DateTime.Now.
-        }*/
+            DateTime fd = DateTime.Now.StartOfWeek(DayOfWeek.Monday);
+            DateTime td = fd.AddDays(7);
+            var studentTripList= await _unitOfWork.StudentTripRepository.Query().ToListAsync();
+            int studentTripCount = 0;
+            int studentTripNotUse = 0;
+            double distance = 0;
+            foreach(var item in studentTripList)
+            {
+                var trip = await _unitOfWork.TripRepository.GetById(item.TripId);
+                if(trip.Date>= fd && trip.Date<= td)
+                {
+                    studentTripCount++;
+                    if(item.Status == (int)StudentTripStatus.Passed)
+                    {
+                        studentTripNotUse++;
+                        var stationRoute= await _unitOfWork.RouteStationRepository.Query().Where(x=> x.StationId== item.StationId && x.RouteId == trip.RouteId).FirstOrDefaultAsync();
+                        var route = await _unitOfWork.RouteRepository.GetById(trip.RouteId);
+                        distance += Convert.ToDouble(route.Distance)- Convert.ToDouble(stationRoute.Distance);
+                    }
+                }
+            }
+            var result = new StudentStatisticsModel();
+            result.Distance = distance;
+            result.StudentTripCount = studentTripCount;
+            result.StudentTripNotUseCount = studentTripNotUse;
+            return new()
+            {
+                StatusCode = (int)StatusCode.Ok,
+                Message = Message.GetDetailsSuccess,
+                Data = result
+            };
+
+        }
 
         public async Task<Response> Disable(string id)
         {

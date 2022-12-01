@@ -269,7 +269,7 @@ namespace FBus.Business.Authorization.Implements
                     }
                     else
                     {
-                        var studentModel = new Student()
+                        var studentModel = new FBus.Data.Models.Student()
                         {
                             StudentId = Guid.NewGuid(),
                             FullName = userInfo.DisplayName,
