@@ -19,6 +19,7 @@ namespace FBus.Data.Interfaces
         IGenericRepository<DriverNotification> DriverNotificationRepository { get; }
         IGenericRepository<StudentNotification> StudentNotificationRepository { get; }
         IGenericRepository<Shift> ShiftRepository { get; }
+        IGenericRepository<TrackingLocation> TrackingLocationRepository { get; }
         FBusContext Context();
 
         DatabaseFacade Database();

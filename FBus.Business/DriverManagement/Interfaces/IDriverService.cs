@@ -11,5 +11,6 @@ namespace FBus.Business.DriverManagement.Interfaces
         Task<Response> Disable(string id);
         Task<Response> GetDetails(string id);
         Task<Response> GetList();
+        Task<Response> TrackingLocation(TrackingLocationModel model);
     }
 }

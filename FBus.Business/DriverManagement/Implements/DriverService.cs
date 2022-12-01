@@ -171,6 +171,34 @@ namespace FBus.Business.DriverManagement.Implements
             };
         }
 
+        public async Task<Response> TrackingLocation(TrackingLocationModel model)
+        {
+            var tr = await _unitOfWork.TrackingLocationRepository.Query().Where(x => x.DriverId == Guid.Parse(model.DriverId)).FirstOrDefaultAsync();
+            if (tr != null)
+            {
+                _unitOfWork.TrackingLocationRepository.Remove(tr);
+            }
+
+            var entity = new TrackingLocation
+            {
+                TrackingLocationId = Guid.NewGuid(),
+                DriverId = Guid.Parse(model.DriverId),
+                Longitude = model.Longitude,
+                Latitude = model.Latitude,
+                CreatedDate = DateTime.UtcNow
+            };
+
+            await _unitOfWork.TrackingLocationRepository.Add(entity);
+
+            await _unitOfWork.SaveChangesAsync();
+
+            return new()
+            {
+                StatusCode = (int)StatusCode.Success,
+                Message = Message.CustomContent("Lưu vị trí thành công")
+            };
+        }
+
         public async Task<Response> Update(string id, UpdateDriverModel model, bool isAdminRole = false)
         {
             var driver = await _unitOfWork.DriverRepository.GetById(Guid.Parse(id));
