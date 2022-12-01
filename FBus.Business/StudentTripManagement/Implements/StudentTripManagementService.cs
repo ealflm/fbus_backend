@@ -270,7 +270,9 @@ namespace FBus.Business.StudentTripManagement.Implements
         {
             var BusID = new Guid(DecryptString(qrCode));
             var currentDate = DateTime.UtcNow.AddHours(7);
-            var tripList = await _unitOfWork.TripRepository.Query().Where(x=>x.BusVehicleId == BusID && x.Date == currentDate.Date && x.TimeStart<= currentDate.TimeOfDay && x.TimeEnd>= currentDate.TimeOfDay).ToListAsync();
+            var dateCheck = currentDate.Date;
+            var timeCheck = currentDate.TimeOfDay;
+            var tripList = await _unitOfWork.TripRepository.Query().Where(x=>x.BusVehicleId == BusID && x.Date == dateCheck && x.TimeStart<= timeCheck && x.TimeEnd>= timeCheck ).ToListAsync();
             StudentTrip entity = null;
             foreach(var x in tripList)
             {

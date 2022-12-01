@@ -218,6 +218,9 @@ namespace FBus.Business.Authorization.Implements
 
                 if (user != null)
                 {
+
+
+
                     if (user.Status == 0)
                     {
                         result = new StudentViewModel()

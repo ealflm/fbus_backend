@@ -67,10 +67,10 @@ namespace FBus.API.Controllers.Student
             return SendResponse(await _service.FeedBack(model, id));
         }
 
-        [HttpPatch("checkin/{qrCode}")]
-        public async Task<IActionResult> CheckIn(string qrCode,[FromQuery] Guid studentID)
+        [HttpPatch("checkin")]
+        public async Task<IActionResult> CheckIn([FromBody] StudentCheckInModel model)
         {
-            return SendResponse(await _service.CheckIn(qrCode, studentID));
+            return SendResponse(await _service.CheckIn(model.QRCode, model.StudentID));
         }
     }
 }
