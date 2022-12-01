@@ -295,10 +295,20 @@ namespace FBus.Business.StudentTripManagement.Implements
         }
 
 
-        public async Task<Response> CheckIn(string qrCode)
+        public async Task<Response> CheckIn(string qrCode, Guid studentID)
         {
-            var StudentTripID = new Guid(DecryptString(qrCode));
-            var entity = await _unitOfWork.StudentTripRepository.GetById(StudentTripID);
+            var BusID = new Guid(DecryptString(qrCode));
+            var currentDate = DateTime.UtcNow.AddHours(7);
+            var tripList = await _unitOfWork.TripRepository.Query().Where(x=>x.BusVehicleId == BusID && x.Date == currentDate.Date && x.TimeStart<= currentDate.TimeOfDay && x.TimeEnd>= currentDate.TimeOfDay).ToListAsync();
+            StudentTrip entity = null;
+            foreach(var x in tripList)
+            {
+                entity = await _unitOfWork.StudentTripRepository.Query().Where(y => y.TripId == x.TripId && y.StudentId == studentID).FirstOrDefaultAsync();
+                if(entity != null)
+                {
+                    break;
+                }
+            }
             if (entity == null)
             {
                 return new()
