@@ -217,11 +217,21 @@ namespace FBus.Business.StudentTripManagement.Implements
                     resultList.Add(result);
                 }
             }
-            resultList.OrderBy(x => x.Trip.Date).OrderBy(x => x.Trip.TimeEnd);
+            resultList.OrderBy(x => x.Trip.Date);
+            int i = 1;
+            DateTime checkdate = resultList[0].Trip.Date;
+            for (; i < resultList.Count; i++)
+            {
+                if (resultList[i].Trip.Date != checkdate)
+                {
+                    break;
+                }
+            }
+            resultList = resultList.GetRange(0, i);
             return new()
             {
                 StatusCode = (int)StatusCode.Ok,
-                Data = resultList.OrderBy(x=>x.Trip.Date).FirstOrDefault(),
+                Data = resultList.OrderBy(x=> x.Trip.TimeStart).FirstOrDefault(),
                 Message = Message.GetListSuccess
             };
         }
