@@ -68,9 +68,9 @@ namespace FBus.API.Controllers.Student
         }
 
         [HttpPatch("checkin/{qrCode}")]
-        public async Task<IActionResult> CheckIn(string qrCode)
+        public async Task<IActionResult> CheckIn(string qrCode,[FromQuery] Guid studentID)
         {
-            return SendResponse(await _service.CheckIn(qrCode));
+            return SendResponse(await _service.CheckIn(qrCode, studentID));
         }
     }
 }
