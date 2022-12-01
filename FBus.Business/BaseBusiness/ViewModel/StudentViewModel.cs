@@ -16,5 +16,8 @@ namespace FBus.Business.BaseBusiness.ViewModel
         public string PhotoUrl { get; set; }
         public bool AutomaticScheduling { get; set; }
         public int Status { get; set; }
+        public bool IsBan { get; set; }
+        public DateTime? DateBan { get; set; }
+        public int CountBan { get; set; }
     }
 }

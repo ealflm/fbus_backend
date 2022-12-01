@@ -274,6 +274,8 @@ namespace FBus.Data.Context
 
                 entity.Property(e => e.CreatedDate).HasColumnType("date");
 
+                entity.Property(e => e.DateBan).HasColumnType("datetime");
+
                 entity.Property(e => e.Email)
                     .IsRequired()
                     .HasMaxLength(100)
