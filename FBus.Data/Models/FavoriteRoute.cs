@@ -9,7 +9,7 @@ namespace FBus.Data.Models
         public Guid StudentId { get; set; }
         public TimeSpan Time { get; set; }
         public string Name { get; set; }
-        public string Desciption { get; set; }
+        public string Description { get; set; }
 
         public virtual Route Route { get; set; }
         public virtual Student Student { get; set; }

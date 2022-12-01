@@ -30,6 +30,7 @@ namespace FBus.Data.Context
         public virtual DbSet<Student> Students { get; set; }
         public virtual DbSet<StudentNotification> StudentNotifications { get; set; }
         public virtual DbSet<StudentTrip> StudentTrips { get; set; }
+        public virtual DbSet<TrackingLocation> TrackingLocations { get; set; }
         public virtual DbSet<Trip> Trips { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -203,17 +204,30 @@ namespace FBus.Data.Context
                     .ValueGeneratedNever()
                     .HasColumnName("ShiftID");
 
+                entity.Property(e => e.Content)
+                    .IsRequired()
+                    .IsUnicode(false);
+
                 entity.Property(e => e.DriverId).HasColumnName("DriverID");
 
-                entity.Property(e => e.TimeEnd).HasColumnType("datetime");
+                entity.Property(e => e.RequestTime).HasColumnType("datetime");
 
-                entity.Property(e => e.TimeStart).HasColumnType("datetime");
+                entity.Property(e => e.Type)
+                    .IsRequired()
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
 
                 entity.HasOne(d => d.Driver)
                     .WithMany(p => p.Shifts)
                     .HasForeignKey(d => d.DriverId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Shift_Driver");
+
+                entity.HasOne(d => d.Trip)
+                    .WithMany(p => p.Shifts)
+                    .HasForeignKey(d => d.TripId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Shift_Trip");
             });
 
             modelBuilder.Entity<StartLocation>(entity =>
@@ -259,6 +273,8 @@ namespace FBus.Data.Context
                 entity.Property(e => e.StudentId).ValueGeneratedNever();
 
                 entity.Property(e => e.CreatedDate).HasColumnType("date");
+
+                entity.Property(e => e.DateBan).HasColumnType("datetime");
 
                 entity.Property(e => e.Email)
                     .IsRequired()
@@ -345,6 +361,25 @@ namespace FBus.Data.Context
                     .HasForeignKey(d => d.TripId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_StudentTrip_Trip");
+            });
+
+            modelBuilder.Entity<TrackingLocation>(entity =>
+            {
+                entity.ToTable("TrackingLocation");
+
+                entity.Property(e => e.TrackingLocationId).ValueGeneratedNever();
+
+                entity.Property(e => e.CreatedDate).HasColumnType("datetime");
+
+                entity.Property(e => e.Latitude).HasColumnType("decimal(18, 7)");
+
+                entity.Property(e => e.Longitude).HasColumnType("decimal(18, 7)");
+
+                entity.HasOne(d => d.Driver)
+                    .WithMany(p => p.TrackingLocations)
+                    .HasForeignKey(d => d.DriverId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_TrackingLocation_Driver");
             });
 
             modelBuilder.Entity<Trip>(entity =>

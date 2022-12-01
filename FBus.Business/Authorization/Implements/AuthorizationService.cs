@@ -219,8 +219,44 @@ namespace FBus.Business.Authorization.Implements
                 if (user != null)
                 {
 
-
-
+                    var studentTripList = await _unitOfWork.StudentTripRepository.Query().Where(x => x.Status == (int)StudentTripStatus.Active).ToListAsync();
+                    int countBan = 0;
+                    var dateBan = DateTime.MinValue;
+                    foreach(var studentTrip in studentTripList)
+                    {
+                        var trip = await _unitOfWork.TripRepository.GetById(studentTrip.TripId);
+                        if(trip.Date< DateTime.UtcNow.AddHours(7))
+                        {
+                            countBan++;
+                            if(trip.Date> dateBan)
+                            {
+                                dateBan = trip.Date;
+                            }
+                        }
+                    }
+                    if(countBan> user.CountBan)
+                    {
+                        if(countBan == 3)
+                        {
+                            dateBan = dateBan.AddDays(7);
+                        }else if(countBan == 4)
+                        {
+                            dateBan = dateBan.AddDays(14);
+                        }else if(countBan == 5)
+                        {
+                            dateBan = dateBan.AddYears(20);
+                        }
+                        user.DateBan = dateBan;
+                        user.CountBan = countBan;
+                        _unitOfWork.StudentRepository.Update(user);
+                        
+                    }
+                    if(user.DateBan< DateTime.UtcNow.AddHours(7))
+                    {
+                        user.DateBan = null;
+                        _unitOfWork.StudentRepository.Update(user);
+                    }
+                    await _unitOfWork.SaveChangesAsync();
                     if (user.Status == 0)
                     {
                         result = new StudentViewModel()
@@ -231,7 +267,10 @@ namespace FBus.Business.Authorization.Implements
                             Phone = user.Phone,
                             PhotoUrl = user.PhotoUrl,
                             AutomaticScheduling = user.AutomaticScheduling,
-                            Status = user.Status
+                            Status = user.Status,
+                            IsBan = DateTime.UtcNow.AddHours(7)<= user.DateBan,
+                            DateBan = user.DateBan,
+                            CountBan= user.CountBan
                         };
                     }
                     else
@@ -284,7 +323,8 @@ namespace FBus.Business.Authorization.Implements
                             Uid = userInfo.Uid,
                             CreatedDate = DateTime.UtcNow,
                             ModifiedDate = DateTime.UtcNow,
-                            Status = 0
+                            Status = 0,
+                            CountBan = 0
                         };
                         await _unitOfWork.StudentRepository.Add(studentModel);
 
