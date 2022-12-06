@@ -15,6 +15,7 @@ namespace FBus.Business.RouteManagement.SearchModel
         public decimal Distance { get; set; }
         [Required]
         public int TotalStation { get; set; }
+        public int? EstimatedTime { get; set; }
         [Required]
         public List<Guid> StationList { get; set; }
         [Required]

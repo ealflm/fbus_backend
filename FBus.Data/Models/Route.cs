@@ -16,6 +16,7 @@ namespace FBus.Data.Models
         public string Name { get; set; }
         public decimal Distance { get; set; }
         public int TotalStation { get; set; }
+        public int? EstimatedTime { get; set; }
         public int Status { get; set; }
 
         public virtual ICollection<FavoriteRoute> FavoriteRoutes { get; set; }

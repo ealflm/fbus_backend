@@ -42,6 +42,7 @@ namespace FBus.Business.RouteManagement.Implements
                 Distance = model.Distance,
                 TotalStation = model.TotalStation,
                 Name = model.Name,
+                EstimatedTime = model.EstimatedTime,
                 Status = (int)RouteStatus.Active,
                 RouteId = Guid.NewGuid()
             };
@@ -95,7 +96,7 @@ namespace FBus.Business.RouteManagement.Implements
 
             if (entity != null)
             {
-                var routeStationList = await _unitOfWork.RouteStationRepository.Query().Where(x => x.RouteId.Equals(entity.RouteId)).OrderBy(x=> x.OrderNumber).ToListAsync();
+                var routeStationList = await _unitOfWork.RouteStationRepository.Query().Where(x => x.RouteId.Equals(entity.RouteId)).OrderBy(x => x.OrderNumber).ToListAsync();
                 var result = entity.AsViewModel();
                 result.StationList = new List<StationViewModel>();
                 foreach (var x in routeStationList)
@@ -151,6 +152,8 @@ namespace FBus.Business.RouteManagement.Implements
                 entity.Distance = UpdateTypeOfNotNullAbleObject<decimal>(entity.Distance, model.Distance);
                 entity.Status = UpdateTypeOfNotNullAbleObject<int>(entity.Status, model.Status);
                 entity.Name = UpdateTypeOfNullAbleObject<string>(entity.Name, model.Name);
+                entity.EstimatedTime = UpdateTypeOfNotNullAbleObject<int>(entity.EstimatedTime, model.EstimatedTime);
+
                 _unitOfWork.RouteRepository.Update(entity);
                 var routeStationList = await _unitOfWork.RouteStationRepository.Query().Where(x => x.RouteId.Equals(id)).ToListAsync();
                 foreach (var x in routeStationList)

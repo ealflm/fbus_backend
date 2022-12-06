@@ -52,6 +52,7 @@ namespace FBus.Business.BaseBusiness.Configuration
             {
                 Distance = item.Distance,
                 TotalStation = item.TotalStation,
+                EstimatedTime = item.EstimatedTime != null ? item.EstimatedTime.Value : -1,
                 RouteId = item.RouteId,
                 Name = item.Name,
                 Status = item.Status
