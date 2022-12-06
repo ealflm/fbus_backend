@@ -11,7 +11,7 @@ namespace FBus.Business.TripManagement.SearchModel
     {
         public Guid BusId { get; set; }
 
-        public Guid DriverId { get; set; }
+        public Guid? DriverId { get; set; }
 
         public Guid RouteId { get; set; }
 

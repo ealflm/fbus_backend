@@ -403,7 +403,6 @@ namespace FBus.Data.Context
                 entity.HasOne(d => d.Driver)
                     .WithMany(p => p.Trips)
                     .HasForeignKey(d => d.DriverId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Trip_Driver");
 
                 entity.HasOne(d => d.Route)

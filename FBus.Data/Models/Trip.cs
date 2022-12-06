@@ -13,7 +13,7 @@ namespace FBus.Data.Models
 
         public Guid TripId { get; set; }
         public Guid BusVehicleId { get; set; }
-        public Guid DriverId { get; set; }
+        public Guid? DriverId { get; set; }
         public Guid RouteId { get; set; }
         public DateTime Date { get; set; }
         public TimeSpan TimeStart { get; set; }

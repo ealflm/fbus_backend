@@ -138,7 +138,7 @@ namespace FBus.Business.StudentManagement.Implements
                                     (_, route) => new { StudentTrip = _.StudentTrip, Trip = _.Trip, Station = _.Station, Route = route }
                                 )
                                 .Join(_unitOfWork.DriverRepository.Query(),
-                                    _ => _.Trip.DriverId,
+                                    _ => _.Trip.DriverId.Value,
                                     driver => driver.DriverId,
                                     (_, driver) => new { StudentTrip = _.StudentTrip, Trip = _.Trip, Station = _.Station, Route = _.Route, Driver = driver }
                                 )
@@ -321,7 +321,7 @@ namespace FBus.Business.StudentManagement.Implements
                 };
             }
 
-            var location = await _unitOfWork.TrackingLocationRepository.Query().Where(x => x.DriverId == trip.DriverId).FirstOrDefaultAsync();
+            var location = await _unitOfWork.TrackingLocationRepository.Query().Where(x => trip.DriverId != null && x.DriverId == trip.DriverId.Value).FirstOrDefaultAsync();
             dynamic result = new { };
             if (location != null)
             {

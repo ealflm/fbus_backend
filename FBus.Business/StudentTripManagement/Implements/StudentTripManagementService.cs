@@ -64,6 +64,16 @@ namespace FBus.Business.StudentTripManagement.Implements
                 StudentTripId = Guid.NewGuid()
             };
             var trip = (TripViewModel)(await _tripManagementService.Get(model.TripId)).Data;
+
+            if (trip.Driver == null)
+            {
+                return new()
+                {
+                    StatusCode = (int)StatusCode.BadRequest,
+                    Message = Message.CustomContent("Không thể đặt vé với tuyến xe chưa có tài xế!")
+                };
+            }
+
             var route = JsonConvert.SerializeObject(trip.Route);
             entity.CopyOfRoute = route;
             await _unitOfWork.StudentTripRepository.Add(entity);
@@ -141,7 +151,7 @@ namespace FBus.Business.StudentTripManagement.Implements
                         .Query()
                         .Where(x => x.TripId == entity.TripId)
                         .Join(_unitOfWork.DriverRepository.Query(),
-                            _ => _.DriverId,
+                            _ => _.DriverId.Value,
                             driver => driver.DriverId,
                             (_, driver) => new Driver
                             {
@@ -232,7 +242,7 @@ namespace FBus.Business.StudentTripManagement.Implements
             return new()
             {
                 StatusCode = (int)StatusCode.Ok,
-                Data = resultList.OrderBy(x=>x.Trip.Date),
+                Data = resultList.OrderBy(x => x.Trip.Date),
                 Message = Message.GetListSuccess
             };
         }
@@ -270,7 +280,7 @@ namespace FBus.Business.StudentTripManagement.Implements
             return new()
             {
                 StatusCode = (int)StatusCode.Ok,
-                Data = resultList.OrderBy(x=> x.Trip.TimeStart).FirstOrDefault(),
+                Data = resultList.OrderBy(x => x.Trip.TimeStart).FirstOrDefault(),
                 Message = Message.GetListSuccess
             };
         }
@@ -311,12 +321,12 @@ namespace FBus.Business.StudentTripManagement.Implements
             var currentDate = DateTime.UtcNow.AddHours(7);
             var dateCheck = currentDate.Date;
             var timeCheck = currentDate.TimeOfDay;
-            var tripList = await _unitOfWork.TripRepository.Query().Where(x=>x.BusVehicleId == BusID && x.Date == dateCheck && x.TimeStart<= timeCheck && x.TimeEnd>= timeCheck ).ToListAsync();
+            var tripList = await _unitOfWork.TripRepository.Query().Where(x => x.BusVehicleId == BusID && x.Date == dateCheck && x.TimeStart <= timeCheck && x.TimeEnd >= timeCheck).ToListAsync();
             StudentTrip entity = null;
-            foreach(var x in tripList)
+            foreach (var x in tripList)
             {
                 entity = await _unitOfWork.StudentTripRepository.Query().Where(y => y.TripId == x.TripId && y.StudentId == studentID).FirstOrDefaultAsync();
-                if(entity != null)
+                if (entity != null)
                 {
                     break;
                 }
