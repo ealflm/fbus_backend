@@ -87,7 +87,7 @@ namespace FBus.Business.DriverManagement.Implements
 
             var isAssignedTrip = await _unitOfWork.TripRepository
                                 .Query()
-                                .Where(x => x.DriverId == Guid.Parse(id))
+                                .Where(x => x.DriverId != null && x.DriverId.Value == Guid.Parse(id))
                                 .Where(CompareTime())
                                 .Where(x =>
                                         x.TimeStart.CompareTo(DateTime.UtcNow.AddHours(7).TimeOfDay) >= 0 ||

@@ -59,7 +59,7 @@ namespace FBus.Business.TripManagement.Implements
                         Date = model.StartDate.AddDays(i),
                         TimeEnd = TimeSpan.Parse(model.TimeEnd),
                         TimeStart = TimeSpan.Parse(model.TimeStart),
-                        Status = (int)TripStatus.Active,
+                        Status = model.DriverId != null ? (int)TripStatus.Active : (int)TripStatus.NoDriver,
                         TripId = Guid.NewGuid()
                     };
                     await _unitOfWork.TripRepository.Add(entity);
@@ -67,9 +67,12 @@ namespace FBus.Business.TripManagement.Implements
             }
 
             // update status driver for being assign trip
-            var driver = await _unitOfWork.DriverRepository.GetById(model.DriverId);
-            driver.Status = (int)DriverStatus.Assigned;
-            _unitOfWork.DriverRepository.Update(driver);
+            if (model.DriverId != null)
+            {
+                var driver = await _unitOfWork.DriverRepository.GetById(model.DriverId.Value);
+                driver.Status = (int)DriverStatus.Assigned;
+                _unitOfWork.DriverRepository.Update(driver);
+            }
 
             await _unitOfWork.SaveChangesAsync();
             return new()
@@ -108,7 +111,7 @@ namespace FBus.Business.TripManagement.Implements
                 var result = entity.AsViewModel();
                 result.Route = (RouteViewModel)(await _routeManagementService.Get(entity.RouteId)).Data;
                 result.Bus = await _unitOfWork.BusRepository.Query().Where(x => x.BusVehicleId == entity.BusVehicleId).Select(x => x.AsBusViewModel()).FirstOrDefaultAsync();
-                result.Driver = await _unitOfWork.DriverRepository.Query().Where(x => x.DriverId == entity.DriverId).Select(x => x.AsDriverViewModel()).FirstOrDefaultAsync();
+                result.Driver = await _unitOfWork.DriverRepository.Query().Where(x => entity.DriverId != null && x.DriverId == entity.DriverId.Value).Select(x => x.AsDriverViewModel()).FirstOrDefaultAsync();
                 return new()
                 {
                     StatusCode = (int)StatusCode.Ok,
@@ -134,7 +137,7 @@ namespace FBus.Business.TripManagement.Implements
                 var result = entity.AsViewModel();
                 result.Route = (RouteViewModel)(await _routeManagementService.Get(entity.RouteId)).Data;
                 result.Bus = await _unitOfWork.BusRepository.Query().Where(x => x.BusVehicleId == entity.BusVehicleId).Select(x => x.AsBusViewModel()).FirstOrDefaultAsync();
-                result.Driver = await _unitOfWork.DriverRepository.Query().Where(x => x.DriverId == entity.DriverId).Select(x => x.AsDriverViewModel()).FirstOrDefaultAsync();
+                result.Driver = await _unitOfWork.DriverRepository.Query().Where(x => entity.DriverId != null && x.DriverId == entity.DriverId.Value).Select(x => x.AsDriverViewModel()).FirstOrDefaultAsync();
                 var studentTrips = await _unitOfWork.StudentTripRepository.Query().Where(x => x.TripId == entity.TripId && x.Rate != null).ToListAsync();
                 result.Rate = (float?)studentTrips.Average(x => x.Rate);
                 resultList.Add(result);
@@ -151,14 +154,14 @@ namespace FBus.Business.TripManagement.Implements
         {
             var entities = await _unitOfWork.TripRepository.Query()
                 .Where(x => busID == null || (busID != null && x.BusVehicleId.Equals(busID)))
-                .Where(x => driverID == null || (driverID != null && x.DriverId.Equals(driverID))).ToListAsync();
+                .Where(x => driverID == null || (driverID != null && x.DriverId != null && x.DriverId.Value.Equals(driverID))).ToListAsync();
             var resultList = new List<TripViewModel>();
             foreach (var entity in entities)
             {
                 var result = entity.AsViewModel();
                 result.Route = (RouteViewModel)(await _routeManagementService.Get(entity.RouteId)).Data;
                 result.Bus = await _unitOfWork.BusRepository.Query().Where(x => x.BusVehicleId == entity.BusVehicleId).Select(x => x.AsBusViewModel()).FirstOrDefaultAsync();
-                result.Driver = await _unitOfWork.DriverRepository.Query().Where(x => x.DriverId == entity.DriverId).Select(x => x.AsDriverViewModel()).FirstOrDefaultAsync();
+                result.Driver = await _unitOfWork.DriverRepository.Query().Where(x => entity.DriverId != null && x.DriverId == entity.DriverId.Value).Select(x => x.AsDriverViewModel()).FirstOrDefaultAsync();
                 var studentTrips = await _unitOfWork.StudentTripRepository.Query().Where(x => x.TripId == entity.TripId && x.Rate != null).ToListAsync();
                 result.Rate = (float?)studentTrips.Average(x => x.Rate);
                 resultList.Add(result);
@@ -177,10 +180,21 @@ namespace FBus.Business.TripManagement.Implements
             var entity = await _unitOfWork.TripRepository.GetById(id);
             if (entity != null)
             {
-                entity.Status = UpdateTypeOfNotNullAbleObject<int>(entity.Status, model.Status);
+                if (entity.Status == (int)TripStatus.NoDriver &&
+                    entity.DriverId == null &&
+                    model.DriverId != null
+                )
+                {
+                    entity.Status = (int)TripStatus.Active;
+                }
+                else
+                {
+                    entity.Status = UpdateTypeOfNotNullAbleObject<int>(entity.Status, model.Status);
+                }
+
                 entity.BusVehicleId = UpdateTypeOfNullAbleObject<Guid>(entity.BusVehicleId, model.BusId);
                 entity.RouteId = UpdateTypeOfNullAbleObject<Guid>(entity.RouteId, model.RouteId);
-                entity.DriverId = UpdateTypeOfNullAbleObject<Guid>(entity.DriverId, model.DriverId);
+                entity.DriverId = UpdateTypeOfNotNullAbleObject<Guid>(entity.DriverId, model.DriverId);
                 entity.Date = UpdateTypeOfNullAbleObject<DateTime>(entity.Date, model.Date);
                 entity.TimeEnd = UpdateTypeOfNullAbleObject<TimeSpan>(entity.TimeEnd, TimeSpan.Parse(model.TimeEnd));
                 entity.TimeStart = UpdateTypeOfNullAbleObject<TimeSpan>(entity.TimeStart, TimeSpan.Parse(model.TimeStart));
@@ -205,7 +219,7 @@ namespace FBus.Business.TripManagement.Implements
             {
                 var th = await _unitOfWork.TripRepository
                             .Query()
-                            .Where(t => t.DriverId == Guid.Parse(id))
+                            .Where(t => t.DriverId != null && t.DriverId.Value == Guid.Parse(id))
                             .Where(t =>
                                 (t.Date.Day.CompareTo(DateTime.UtcNow.Day) < 0 && t.Date.Month.CompareTo(DateTime.UtcNow.Month) == 0 && t.Date.Year.CompareTo(DateTime.UtcNow.Year) == 0) ||
                                 (t.Date.Month.CompareTo(DateTime.UtcNow.Month) < 0 && t.Date.Year.CompareTo(DateTime.UtcNow.Year) == 0) ||
@@ -239,7 +253,7 @@ namespace FBus.Business.TripManagement.Implements
         {
             var th = await _unitOfWork.TripRepository
                         .Query()
-                        .Where(t => t.DriverId == Guid.Parse(id))
+                        .Where(t => t.DriverId != null && t.DriverId.Value == Guid.Parse(id))
                         .Where(t => t.Date.Day.CompareTo(DateTime.UtcNow.Day) >= 0)
                         .Where(t => t.Date.Month.CompareTo(DateTime.UtcNow.Month) >= 0)
                         .Where(t => t.Date.Year.CompareTo(DateTime.UtcNow.Year) >= 0)
@@ -367,7 +381,7 @@ namespace FBus.Business.TripManagement.Implements
                 lst = await _unitOfWork.TripRepository
                             .Query()
                             .Where(x =>
-                                    x.DriverId != driver.DriverId &&
+                                    x.DriverId != null && x.DriverId.Value != driver.DriverId &&
                                     (
                                         !(
                                             trip.TimeStart.CompareTo(x.TimeStart) <= 0 &&
@@ -387,7 +401,7 @@ namespace FBus.Business.TripManagement.Implements
                                 // )
                                 )
                             .Join(_unitOfWork.DriverRepository.Query(),
-                                _ => _.DriverId,
+                                _ => _.DriverId.Value,
                                 driver => driver.DriverId,
                                 (_, driver) => driver.AsDriverViewModel()
                             )
