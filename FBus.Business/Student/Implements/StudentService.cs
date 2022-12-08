@@ -321,7 +321,22 @@ namespace FBus.Business.StudentManagement.Implements
                 };
             }
 
-            var location = await _unitOfWork.TrackingLocationRepository.Query().Where(x => trip.DriverId != null && x.DriverId == trip.DriverId.Value).FirstOrDefaultAsync();
+            if (trip.Status != (int)TripStatus.Active)
+            {
+                return new()
+                {
+                    StatusCode = (int)StatusCode.BadRequest,
+                    Message = Message.CustomContent("Tuyến chưa hoạt động")
+                };
+            }
+
+            var location = await _unitOfWork.TrackingLocationRepository
+                            .Query()
+                            .Where(x =>
+                                trip.DriverId != null && x.DriverId == trip.DriverId.Value
+                            )
+                            .FirstOrDefaultAsync();
+
             dynamic result = new { };
             if (location != null)
             {

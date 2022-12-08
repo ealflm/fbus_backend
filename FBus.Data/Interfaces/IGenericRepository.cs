@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 
 namespace FBus.Data.Interfaces
@@ -17,5 +18,7 @@ namespace FBus.Data.Interfaces
         Task Remove(Guid id);
 
         void Remove(TEntity entity);
+
+        void UpdateFieldsChange(TEntity entity, params Expression<Func<TEntity, object>>[] includeProperties);
     }
 }

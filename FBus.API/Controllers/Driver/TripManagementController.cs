@@ -82,5 +82,12 @@ namespace FBus.API.Controllers.Driver
         {
             return SendResponse(await _service.SendRequestToSwapDriver(model));
         }
+
+        [HttpPatch]
+        [Route(ApiVer1Url.Driver.CheckIn)]
+        public async Task<IActionResult> CheckInTripForDriver([FromBody] DriverCheckinModel model)
+        {
+            return SendResponse(await _service.CheckInTripForDriver(model.QRCode, model.DriverId));
+        }
     }
 }

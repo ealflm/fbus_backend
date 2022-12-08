@@ -6,11 +6,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FBus.Business.BaseBusiness.Configuration;
+using FBus.Data.Interfaces;
 
 namespace FBus.Business.TripManagement.Interfaces
 {
     public interface ITripManagementService
     {
+        public IUnitOfWork UnitOfWork { get; }
         Task<Response> Create(TripSearchModel model);
         Task<Response> Get(Guid id);
         Task<Response> GetListByRoute(Guid? id, DateTime? date);
@@ -23,5 +25,6 @@ namespace FBus.Business.TripManagement.Interfaces
         Task<Response> DoSwapDriver(SwapDriverModel model);
         Task<Response> CheckAvailableRequestTime(RequestTimeModel model);
         Task<Response> GetAvailabelSwappingDriverList(AvailableSwappingDriverModel model);
+        Task<Response> CheckInTripForDriver(string qrCode, string driverId);
     }
 }

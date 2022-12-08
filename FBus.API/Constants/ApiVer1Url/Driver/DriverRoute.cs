@@ -32,6 +32,9 @@ namespace ApiVer1Url
         // Trip Schedules
         public const string TripSchedules = Trip + "/schedule";
 
+        // Trip Checkin
+        public const string CheckIn = Trip + "/checkin";
+
         // StudentTrip
         public const string StudentTrip = BaseApiUrl + "/student-trip";
 
