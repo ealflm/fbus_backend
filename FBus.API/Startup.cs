@@ -47,6 +47,7 @@ using FBus.Business.StudentTripManagement.Interfaces;
 using FBus.Business.StudentTripManagement.Implements;
 using FBus.Business.DashboardManagement.Interface;
 using FBus.Business.DashboardManagement.Implements;
+using TourismSmartTransportation.API;
 
 namespace FBus.API
 {
@@ -62,6 +63,9 @@ namespace FBus.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            // Background service
+            services.AddHostedService<FbusBackgroundService>();
+
             //Database EF
             services.AddDbContext<FBusContext>(
                options => options.UseSqlServer(Configuration.GetConnectionString("FBus")));

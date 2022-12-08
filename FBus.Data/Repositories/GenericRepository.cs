@@ -4,6 +4,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using FBus.Data.Context;
 using FBus.Data.Interfaces;
+using System.Linq.Expressions;
 
 namespace FBus.Data.Repositories
 {
@@ -62,6 +63,15 @@ namespace FBus.Data.Repositories
         public void Remove(TEntity entity)
         {
             _dbSet.Remove(entity);
+        }
+
+        public void UpdateFieldsChange(TEntity entity, params Expression<Func<TEntity, object>>[] includeProperties)
+        {
+            _dbSet.Attach(entity);
+            foreach (var prop in includeProperties)
+            {
+                _dbContext.Entry(entity).Property(prop).IsModified = true;
+            }
         }
     }
 }

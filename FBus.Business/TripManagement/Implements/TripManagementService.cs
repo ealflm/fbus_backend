@@ -12,9 +12,12 @@ using FBus.Business.TripManagement.SearchModel;
 using FBus.Data.Interfaces;
 using FBus.Data.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -24,11 +27,17 @@ namespace FBus.Business.TripManagement.Implements
     {
         IRouteManagementService _routeManagementService;
         private INotificationService _notificationService;
+        private IConfiguration _configuration;
 
-        public TripManagementService(IUnitOfWork unitOfWork, IRouteManagementService routeManagementService, INotificationService notificationService) : base(unitOfWork)
+        public IUnitOfWork UnitOfWork { get; }
+
+        public TripManagementService(IUnitOfWork unitOfWork, IRouteManagementService routeManagementService,
+                                    INotificationService notificationService, IConfiguration configuration) : base(unitOfWork)
         {
             _routeManagementService = routeManagementService;
             _notificationService = notificationService;
+            _configuration = configuration;
+            UnitOfWork = unitOfWork;
         }
 
         public async Task<Response> Create(TripSearchModel model)
@@ -59,7 +68,7 @@ namespace FBus.Business.TripManagement.Implements
                         Date = model.StartDate.AddDays(i),
                         TimeEnd = TimeSpan.Parse(model.TimeEnd),
                         TimeStart = TimeSpan.Parse(model.TimeStart),
-                        Status = model.DriverId != null ? (int)TripStatus.Active : (int)TripStatus.NoDriver,
+                        Status = model.DriverId != null ? (int)TripStatus.Waiting : (int)TripStatus.NoDriver,
                         TripId = Guid.NewGuid()
                     };
                     await _unitOfWork.TripRepository.Add(entity);
@@ -185,7 +194,7 @@ namespace FBus.Business.TripManagement.Implements
                     model.DriverId != null
                 )
                 {
-                    entity.Status = (int)TripStatus.Active;
+                    entity.Status = (int)TripStatus.Waiting;
                 }
                 else
                 {
@@ -394,11 +403,6 @@ namespace FBus.Business.TripManagement.Implements
                                         )
 
                                     )
-                                // &&
-                                // (
-                                //     x.TimeEnd.Subtract(TimeSpan.FromMinutes(10)).CompareTo(trip.TimeStart) <= 0 ||
-                                //     trip.TimeEnd.CompareTo(x.TimeStart.Subtract(TimeSpan.FromMinutes(10))) <= 0
-                                // )
                                 )
                             .Join(_unitOfWork.DriverRepository.Query(),
                                 _ => _.DriverId.Value,
@@ -442,7 +446,7 @@ namespace FBus.Business.TripManagement.Implements
                 TripId = Guid.Parse(model.TripId),
                 RequestTime = model.RequestTime,
                 Content = model.Content,
-                Type = "SendRequest",
+                Type = NotificationType.SendRequest,
                 Status = (int)ShiftStatus.UnChecked
             };
 
@@ -470,6 +474,114 @@ namespace FBus.Business.TripManagement.Implements
                 StatusCode = (int)StatusCode.Ok,
                 Message = Message.CustomContent("Thành công!"),
             };
+        }
+
+        public async Task<Response> CheckInTripForDriver(string qrCode, string driverId)
+        {
+            var driver = await _unitOfWork.DriverRepository.GetById(Guid.Parse(driverId));
+            if (driver == null)
+            {
+                return new()
+                {
+                    StatusCode = (int)StatusCode.BadRequest,
+                    Message = Message.CustomContent("Tài xế không hợp lệ!")
+                };
+            }
+
+            var busId = new Guid(DecryptString(qrCode));
+            var bus = await _unitOfWork.BusRepository.GetById(busId);
+            if (bus == null)
+            {
+                return new()
+                {
+                    StatusCode = (int)StatusCode.BadRequest,
+                    Message = Message.CustomContent("Xe buýt không hợp lệ!")
+                };
+            }
+
+            var currentDate = DateTime.UtcNow.AddHours(7);
+            var dateCheck = currentDate.Date;
+            var timeCheck = currentDate.TimeOfDay;
+
+            var availableTrip = await _unitOfWork.TripRepository
+                                .Query()
+                                .Where(x =>
+                                    x.BusVehicleId == busId &&
+                                    x.DriverId != null && x.DriverId.Value == Guid.Parse(driverId) &&
+                                    x.Date == dateCheck &&
+                                    x.TimeStart <= timeCheck &&
+                                    x.TimeEnd >= timeCheck &&
+                                    x.Status == (int)TripStatus.Waiting
+                                )
+                                .FirstOrDefaultAsync();
+
+            if (availableTrip == null)
+            {
+                return new()
+                {
+                    StatusCode = (int)StatusCode.BadRequest,
+                    Message = Message.CustomContent("Không tìm thấy tuyến phù hợp!")
+                };
+            }
+
+            availableTrip.Status = (int)TripStatus.Active;
+            _unitOfWork.TripRepository.Update(availableTrip);
+
+            driver.Status = (int)DriverStatus.Running;
+            _unitOfWork.DriverRepository.Update(driver);
+
+            bus.Status = (int)BusStatus.Running;
+            _unitOfWork.BusRepository.Update(bus);
+
+            await _unitOfWork.SaveChangesAsync();
+
+            // Send notification to driver
+            NoticationModel saveNoti = new NoticationModel
+            {
+                EntityId = driverId,
+                Title = "Checkin",
+                Content = "Bạn vừa checkin thành công!",
+                Type = NotificationType.Checkin,
+            };
+            await _notificationService.SaveNotification(saveNoti, Role.Student);
+
+            // Send notification to client
+            await _notificationService.SendNotification(
+                driver.NotifyToken,
+                "Checkin",
+                "Bạn vừa checkin thành công!"
+            );
+
+            return new()
+            {
+                StatusCode = (int)StatusCode.BadRequest,
+                Message = Message.CustomContent("Tuyến không hợp lệ!")
+            };
+        }
+
+        public string DecryptString(string cipherText)
+        {
+            string key = _configuration["QRKey"];
+            byte[] iv = new byte[16];
+            byte[] buffer = Convert.FromBase64String(cipherText);
+
+            using (Aes aes = Aes.Create())
+            {
+                aes.Key = Encoding.UTF8.GetBytes(key);
+                aes.IV = iv;
+                ICryptoTransform decryptor = aes.CreateDecryptor(aes.Key, aes.IV);
+
+                using (MemoryStream memoryStream = new MemoryStream(buffer))
+                {
+                    using (CryptoStream cryptoStream = new CryptoStream((Stream)memoryStream, decryptor, CryptoStreamMode.Read))
+                    {
+                        using (StreamReader streamReader = new StreamReader((Stream)cryptoStream))
+                        {
+                            return streamReader.ReadToEnd();
+                        }
+                    }
+                }
+            }
         }
     }
 }
