@@ -20,7 +20,6 @@ namespace FBus.Business.BaseBusiness.Interfaces
         [Required]
         public string Id { get; set; }
 
-        [Required]
         public string NotificationToken { get; set; }
     }
 
