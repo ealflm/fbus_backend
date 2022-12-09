@@ -12,6 +12,9 @@ namespace ApiVer1Url
         public const string Login = BaseApiUrl + "/authorization/login";
         public const string Register = BaseApiUrl + "/authorization/register";
 
+        // Notification
+        public const string NotificationToken = BaseApiUrl + "/noti-token";
+
         // Station
         public const string Station = BaseApiUrl + "/station";
 
