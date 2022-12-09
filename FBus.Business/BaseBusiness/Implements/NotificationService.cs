@@ -21,6 +21,17 @@ namespace FBus.Business.BaseBusiness.Implements
             switch (role)
             {
                 case Role.Admin:
+                    var admin = await _unitOfWork.AdminRepository.GetById(Guid.Parse(model.Id));
+                    if (admin == null)
+                    {
+                        return new()
+                        {
+                            StatusCode = (int)StatusCode.NotFound,
+                            Message = FBus.Business.BaseBusiness.Configuration.Message.NotFound
+                        };
+                    }
+                    admin.NotifyToken = model.NotificationToken;
+                    _unitOfWork.AdminRepository.Update(admin);
                     break;
 
                 case Role.Driver:

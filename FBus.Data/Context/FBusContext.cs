@@ -41,6 +41,8 @@ namespace FBus.Data.Context
 
                 entity.Property(e => e.AdminId).ValueGeneratedNever();
 
+                entity.Property(e => e.NotifyToken).IsUnicode(false);
+
                 entity.Property(e => e.Password)
                     .IsRequired()
                     .HasMaxLength(128)
