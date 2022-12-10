@@ -139,6 +139,10 @@ namespace FBus.Business.BaseBusiness.Implements
             switch (role)
             {
                 case Role.Admin:
+                    data = await _unitOfWork.ShiftRepository
+                            .Query()
+                            .OrderByDescending(x => x.RequestTime)
+                            .ToListAsync();
                     break;
 
                 case Role.Driver:

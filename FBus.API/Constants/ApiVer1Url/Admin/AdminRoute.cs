@@ -14,6 +14,7 @@ namespace ApiVer1Url
 
         // Notification
         public const string NotificationToken = BaseApiUrl + "/noti-token";
+        public const string Notification = BaseApiUrl + "/notification";
 
         // Station
         public const string Station = BaseApiUrl + "/station";

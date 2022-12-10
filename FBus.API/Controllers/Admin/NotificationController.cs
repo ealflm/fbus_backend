@@ -23,5 +23,12 @@ namespace FBus.API.Controllers.Admin
         {
             return SendResponse(await _notiService.SaveNotiToken(model, Role.Admin));
         }
+
+        [HttpGet]
+        [Route(ApiVer1Url.Admin.Notification)]
+        public async Task<IActionResult> GetNotification()
+        {
+            return SendResponse(await _notiService.GetNotification("", Role.Admin));
+        }
     }
 }
