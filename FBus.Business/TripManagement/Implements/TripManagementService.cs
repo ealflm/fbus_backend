@@ -583,5 +583,28 @@ namespace FBus.Business.TripManagement.Implements
                 }
             }
         }
+
+        public async Task<Response> MakeReadRequest(string id)
+        {
+            var noti = await _unitOfWork.ShiftRepository.GetById(Guid.Parse(id));
+            if (noti == null)
+            {
+                return new()
+                {
+                    StatusCode = (int)StatusCode.BadRequest,
+                    Message = Message.CustomContent("Yêu cầu không hợp lệ")
+                };
+            }
+
+            noti.Status = (int)ShiftStatus.Checked;
+            _unitOfWork.ShiftRepository.Update(noti);
+            await _unitOfWork.SaveChangesAsync();
+
+            return new()
+            {
+                StatusCode = (int)StatusCode.Success,
+                Message = Message.UpdatedSuccess
+            };
+        }
     }
 }
