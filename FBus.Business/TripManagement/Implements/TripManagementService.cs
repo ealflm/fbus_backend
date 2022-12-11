@@ -409,6 +409,7 @@ namespace FBus.Business.TripManagement.Implements
                                 driver => driver.DriverId,
                                 (_, driver) => driver.AsDriverViewModel()
                             )
+                            .Distinct()
                             .ToListAsync();
 
 
