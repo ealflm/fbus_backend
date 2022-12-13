@@ -470,6 +470,26 @@ namespace FBus.Business.TripManagement.Implements
                 "Bạn vừa gửi thành công yêu cầu đổi tài cho tuyến"
             );
 
+            // send Noti for admin
+            var adminList = await _unitOfWork.AdminRepository
+                        .Query()
+                        .Where(x => x.NotifyToken != null || x.NotifyToken != "")
+                        .Select(x => new
+                        {
+                            AdminId = x.AdminId,
+                            NotifyToken = x.NotifyToken
+                        })
+                        .ToListAsync();
+
+            foreach (var admin in adminList)
+            {
+                await _notificationService.SendNotification(
+                    admin.NotifyToken,
+                    "Bạn vừa nhận được yêu cầu đổi tài xế",
+                    $"Tài xế {driver.FullName} vừa gửi yêu cầu đổi tuyến cho quản trị viên"
+                );
+            }
+
             return new()
             {
                 StatusCode = (int)StatusCode.Ok,
