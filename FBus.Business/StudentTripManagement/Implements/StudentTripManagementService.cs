@@ -324,7 +324,9 @@ namespace FBus.Business.StudentTripManagement.Implements
 
         public async Task<Response> CheckIn(string qrCode, Guid studentID)
         {
-            var BusID = new Guid(DecryptString(qrCode));
+            string s = DecryptString(qrCode);
+            int count = int.Parse((s.Split('_'))[1]);
+            var BusID = new Guid(s.Split('_')[0]);
             var currentDate = DateTime.UtcNow.AddHours(7);
             var dateCheck = currentDate.Date;
             var timeCheck = currentDate.TimeOfDay;
@@ -333,8 +335,10 @@ namespace FBus.Business.StudentTripManagement.Implements
             foreach (var x in tripList)
             {
                 entity = await _unitOfWork.StudentTripRepository.Query().Where(y => y.TripId == x.TripId && y.StudentId == studentID).FirstOrDefaultAsync();
-                if (entity != null)
+                if (entity != null && x.CurrentTicket< count)
                 {
+                    x.CurrentTicket = count;
+                    _unitOfWork.TripRepository.Update(x);
                     break;
                 }
             }
