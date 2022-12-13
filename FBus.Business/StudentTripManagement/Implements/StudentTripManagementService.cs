@@ -93,11 +93,14 @@ namespace FBus.Business.StudentTripManagement.Implements
                 await _notificationService.SaveNotification(saveNoti, Role.Student);
 
                 // Send notification to client
-                await _notificationService.SendNotification(
-                    student.NotifyToken,
-                    "Đặt vé xe buýt",
-                    "Bạn đã đặt vé thành công!"
-                );
+                if (!string.IsNullOrEmpty(student.NotifyToken))
+                {
+                    await _notificationService.SendNotification(
+                        student.NotifyToken,
+                        "Đặt vé xe buýt",
+                        "Bạn đã đặt vé thành công!"
+                    );
+                }
 
                 // Xử lý cho phần tài xế
                 // ... code 
@@ -178,11 +181,15 @@ namespace FBus.Business.StudentTripManagement.Implements
             await _notificationService.SaveNotification(saveNoti, Role.Student);
 
             // Send notification to client
-            await _notificationService.SendNotification(
-                driver.NotifyToken,
-                "Đánh giá chuyến đi",
-                content
-            );
+            if (!string.IsNullOrEmpty(driver.NotifyToken))
+            {
+                await _notificationService.SendNotification(
+                    driver.NotifyToken,
+                    "Đánh giá chuyến đi",
+                    content
+                );
+
+            }
 
             return new()
             {
@@ -357,11 +364,14 @@ namespace FBus.Business.StudentTripManagement.Implements
                 await _notificationService.SaveNotification(saveNoti, Role.Student);
 
                 // Send notification to client
-                await _notificationService.SendNotification(
-                    student.NotifyToken,
-                    "Checkin",
-                    "Bạn vừa checkin thành công!"
-                );
+                if (!string.IsNullOrEmpty(student.NotifyToken))
+                {
+                    await _notificationService.SendNotification(
+                        student.NotifyToken,
+                        "Checkin",
+                        "Bạn vừa checkin thành công!"
+                    );
+                }
 
                 // Xử lý cho phần tài xế
                 // ... code 

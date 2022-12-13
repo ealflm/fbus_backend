@@ -292,12 +292,12 @@ namespace FBus.Business.TripManagement.Implements
 
             // Update new driver for trip
             tripInfo.DriverId = Guid.Parse(model.SwappedDriverId);
-            _unitOfWork.TripRepository.Update(tripInfo);
+            _unitOfWork.TripRepository.UpdateFieldsChange(tripInfo, x => x.DriverId);
 
             // Update status driver to Assigned
             var swapDriver = await _unitOfWork.DriverRepository.GetById(Guid.Parse(model.SwappedDriverId));
             swapDriver.Status = (int)DriverStatus.Assigned;
-            _unitOfWork.DriverRepository.Update(swapDriver);
+            _unitOfWork.DriverRepository.UpdateFieldsChange(swapDriver, x => x.Status);
 
             await _unitOfWork.SaveChangesAsync();
 
@@ -315,25 +315,31 @@ namespace FBus.Business.TripManagement.Implements
             NoticationModel saveNoti1 = new NoticationModel
             {
                 EntityId = swapDriver.DriverId.ToString(),
-                Title = "Yêu cầu đổi tài xế cho tuyến xe buýt",
+                Title = "Nhận chuyến mới",
                 Content = "Bạn vừa được cập nhật thông tin chuyến mới. Vui lòng kiểm tra lịch trình di chuyển",
-                Type = NotificationType.SwapDriver
+                Type = NotificationType.BeAssignedNewTrip
             };
             await _notificationService.SaveNotification(saveNoti1, Role.Driver);
 
             var requestDriver = await _unitOfWork.DriverRepository.GetById(Guid.Parse(model.RequestDriverId));
 
-            await _notificationService.SendNotification(
-                swapDriver.NotifyToken,
-                "Yêu cầu đổi tài xế",
-                "Bạn vừa được cập nhật thông tin chuyến mới. Vui lòng kiểm tra lịch trình di chuyển"
-            );
+            if (!string.IsNullOrEmpty(swapDriver.NotifyToken))
+            {
+                await _notificationService.SendNotification(
+                    swapDriver.NotifyToken,
+                    "Nhận chuyến mới",
+                    "Bạn vừa được cập nhật thông tin chuyến mới. Vui lòng kiểm tra lịch trình di chuyển"
+                );
+            }
 
-            await _notificationService.SendNotification(
-                requestDriver.NotifyToken,
-                "Yêu cầu đổi tài xế",
-                "Yêu cầu đổi tài xế cho tuyến của bạn đã thành công"
-            );
+            if (!string.IsNullOrEmpty(requestDriver.NotifyToken))
+            {
+                await _notificationService.SendNotification(
+                    requestDriver.NotifyToken,
+                    "Yêu cầu đổi tài xế",
+                    "Yêu cầu đổi tài xế cho tuyến của bạn đã thành công"
+                );
+            }
 
             return new()
             {
@@ -464,11 +470,14 @@ namespace FBus.Business.TripManagement.Implements
             await _notificationService.SaveNotification(saveNoti, Role.Driver);
 
             var driver = await _unitOfWork.DriverRepository.GetById(Guid.Parse(model.DriverId));
-            await _notificationService.SendNotification(
-                driver.NotifyToken,
-                "Gửi yêu cầu đổi tài xế cho tuyến",
-                "Bạn vừa gửi thành công yêu cầu đổi tài cho tuyến"
-            );
+            if (!string.IsNullOrEmpty(driver.NotifyToken))
+            {
+                await _notificationService.SendNotification(
+                    driver.NotifyToken,
+                    "Gửi yêu cầu đổi tài xế cho tuyến",
+                    "Bạn vừa gửi thành công yêu cầu đổi tài cho tuyến"
+                );
+            }
 
             // send Noti for admin
             var adminList = await _unitOfWork.AdminRepository
@@ -567,11 +576,14 @@ namespace FBus.Business.TripManagement.Implements
             await _notificationService.SaveNotification(saveNoti, Role.Student);
 
             // Send notification to client
-            await _notificationService.SendNotification(
-                driver.NotifyToken,
-                "Checkin",
-                "Bạn vừa checkin thành công!"
-            );
+            if (!string.IsNullOrEmpty(driver.NotifyToken))
+            {
+                await _notificationService.SendNotification(
+                              driver.NotifyToken,
+                              "Checkin",
+                              "Bạn vừa checkin thành công!"
+                          );
+            }
 
             return new()
             {

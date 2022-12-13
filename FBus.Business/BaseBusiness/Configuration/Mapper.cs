@@ -120,7 +120,7 @@ namespace FBus.Business.BaseBusiness.Configuration
                 Title = item.Title,
                 Content = item.Content,
                 Type = item.Type,
-                CreateDate = DateTime.UtcNow,
+                CreateDate = DateTime.UtcNow.AddHours(7),
             };
         }
 
@@ -133,7 +133,7 @@ namespace FBus.Business.BaseBusiness.Configuration
                 Title = item.Title,
                 Content = item.Content,
                 Type = item.Type,
-                CreateDate = DateTime.UtcNow,
+                CreateDate = DateTime.UtcNow.AddHours(7),
             };
         }
     }
