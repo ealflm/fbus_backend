@@ -85,6 +85,15 @@ namespace FBus.Business.DriverManagement.Implements
                 };
             }
 
+            if (driver.Status == (int)DriverStatus.Assigned || driver.Status == (int)DriverStatus.Running)
+            {
+                return new()
+                {
+                    StatusCode = (int)StatusCode.BadRequest,
+                    Message = Message.CustomContent("Không thể xóa tài xế đang trong trạng thái hoạt động!")
+                };
+            }
+
             var isAssignedTrip = await _unitOfWork.TripRepository
                                 .Query()
                                 .Where(x => x.DriverId != null && x.DriverId.Value == Guid.Parse(id))
