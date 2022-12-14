@@ -141,6 +141,22 @@ namespace FBus.Business.BaseBusiness.Implements
                 case Role.Admin:
                     data = await _unitOfWork.ShiftRepository
                             .Query()
+                            .Join(_unitOfWork.DriverRepository.Query(),
+                                _ => _.DriverId,
+                                driver => driver.DriverId,
+                                (_, driver) =>
+                                    new
+                                    {
+                                        ShiftId = _.ShiftId,
+                                        DriverId = driver.DriverId,
+                                        TripId = _.TripId,
+                                        RequestTime = _.RequestTime,
+                                        Content = _.Content,
+                                        Type = _.Type,
+                                        Status = _.Status,
+                                        DriverPhoto = driver.PhotoUrl
+                                    }
+                            )
                             .OrderByDescending(x => x.RequestTime)
                             .ToListAsync();
                     break;
