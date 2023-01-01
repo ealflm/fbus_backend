@@ -38,6 +38,14 @@ namespace FBus.API.Controllers.Driver
             return SendResponse(await _service.GetList(null, null));
         }
 
+        [HttpGet]
+        [Route(ApiVer1Url.Driver.Trip +"/feedback"+ "/{id}")]
+        public async Task<IActionResult> GetFeedback(Guid id)
+        {
+            return SendResponse(await _service.GetFeedback(id));
+        }
+
+
         /* [HttpPost]
          public async Task<IActionResult> Create([FromBody] TripSearchModel model)
          {

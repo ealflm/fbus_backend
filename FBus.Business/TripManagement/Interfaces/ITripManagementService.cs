@@ -26,6 +26,7 @@ namespace FBus.Business.TripManagement.Interfaces
         Task<Response> CheckAvailableRequestTime(RequestTimeModel model);
         Task<Response> GetAvailabelSwappingDriverList(AvailableSwappingDriverModel model);
         Task<Response> CheckInTripForDriver(string qrCode, string driverId);
-        Task<Response> MakeReadRequest(string id);
+        Task<Response> MakeReadRequest(string id); 
+        Task<Response> GetFeedback(Guid id);
     }
 }

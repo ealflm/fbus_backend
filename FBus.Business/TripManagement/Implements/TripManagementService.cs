@@ -20,6 +20,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using Twilio.TwiML.Voice;
 
 namespace FBus.Business.TripManagement.Implements
 {
@@ -654,6 +655,29 @@ namespace FBus.Business.TripManagement.Implements
             {
                 StatusCode = (int)StatusCode.Success,
                 Message = Message.UpdatedSuccess
+            };
+        }
+
+        public async Task<Response> GetFeedBack(Guid id) 
+        {
+            var feedBackList = await _unitOfWork.StudentTripRepository.Query().Where(x => x.TripId == id).Select(x => new TripFeedbackModel()
+            {
+                Connent = x.Feedback,
+                Rate = Convert.ToDouble(x.Rate)
+            }).ToListAsync();
+            if(feedBackList == null || feedBackList.Count == 0)
+            {
+                return new()
+                {
+                    StatusCode = (int)StatusCode.NotFound,
+                    Message = Message.NotFound
+                };
+            }
+            return new()
+            {
+                StatusCode = (int) StatusCode.Success,
+                Data = feedBackList,
+                Message = Message.GetListSuccess
             };
         }
     }
