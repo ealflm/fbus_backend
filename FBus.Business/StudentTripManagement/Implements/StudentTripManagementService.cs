@@ -52,6 +52,17 @@ namespace FBus.Business.StudentTripManagement.Implements
                     Message = Message.AlreadyExist
                 };
             }
+            var tripCheck = await _unitOfWork.TripRepository.GetById(model.TripId);
+            var tripCount = await _unitOfWork.StudentTripRepository.Query().Where(x => x.TripId == tripCheck.TripId).CountAsync();
+            var busVehicle = await _unitOfWork.BusRepository.GetById(tripCheck.BusVehicleId);
+            if(tripCount >= busVehicle.Seat)
+            {
+                return new()
+                {
+                    StatusCode = (int)StatusCode.Forbbiden,
+                    Message = Message.ErrorExecution
+                };
+            }
             var entity = new StudentTrip()
             {
                 CreateDate = DateTime.UtcNow,
@@ -259,35 +270,27 @@ namespace FBus.Business.StudentTripManagement.Implements
         {
             var entities = await _unitOfWork.StudentTripRepository.Query()
                 .Where(x => x.StudentId.Equals(id)).ToListAsync();
-            var resultList = new List<StudentTripViewModel>();
-            var fromDate = DateTime.UtcNow.AddHours(6);
-            var toDate = DateTime.UtcNow.AddHours(7).AddDays(7);
+            var currentDate = DateTime.UtcNow.AddHours(7);
+            var minTimeSpan = TimeSpan.MaxValue.TotalMinutes;
+            StudentTripViewModel rs = null;
             foreach (var entity in entities)
             {
                 var result = entity.AsViewModel();
                 result.Trip = (TripViewModel)(await _tripManagementService.Get(entity.TripId)).Data;
                 result.Station = (StationViewModel)(await _stationManagementService.Get(entity.StationId)).Data;
                 result.Student = (StudentViewModel)(await _studentManagementService.GetByID(entity.StudentId.ToString())).Data;
-                if (result.Trip.Date.CompareTo(fromDate) >= 0 && result.Trip.Date.CompareTo(toDate) <= 0)
+                var timeSpan = Math.Abs( result.Trip.Date.AddMinutes(result.Trip.TimeStart.TotalMinutes).Subtract(currentDate).TotalMinutes);
+                if (minTimeSpan> timeSpan)
                 {
-                    resultList.Add(result);
+                    rs = result;
+                    minTimeSpan = timeSpan;
                 }
             }
-            resultList.OrderBy(x => x.Trip.Date);
-            int i = 1;
-            DateTime checkdate = resultList[0].Trip.Date;
-            for (; i < resultList.Count; i++)
-            {
-                if (resultList[i].Trip.Date != checkdate)
-                {
-                    break;
-                }
-            }
-            resultList = resultList.GetRange(0, i);
+
             return new()
             {
                 StatusCode = (int)StatusCode.Ok,
-                Data = resultList.OrderBy(x => x.Trip.TimeStart).FirstOrDefault(),
+                Data = rs,
                 Message = Message.GetListSuccess
             };
         }
@@ -326,23 +329,19 @@ namespace FBus.Business.StudentTripManagement.Implements
         {
             string s = DecryptString(qrCode);
             int count = int.Parse((s.Split('_'))[1]);
-            var BusID = new Guid(s.Split('_')[0]);
+            var tripID = new Guid(s.Split('_')[0]);
+            var trip = await _unitOfWork.TripRepository.GetById(tripID);
             var currentDate = DateTime.UtcNow.AddHours(7);
             var dateCheck = currentDate.Date;
             var timeCheck = currentDate.TimeOfDay;
-            var tripList = await _unitOfWork.TripRepository.Query().Where(x => x.BusVehicleId == BusID && x.Date == dateCheck && x.TimeStart <= timeCheck && x.TimeEnd >= timeCheck).ToListAsync();
-            StudentTrip entity = null;
-            foreach (var x in tripList)
+            StudentTrip entity = await _unitOfWork.StudentTripRepository.Query().Where(y => y.TripId == trip.TripId && y.StudentId == studentID).FirstOrDefaultAsync();
+            var busVehicle = await _unitOfWork.BusRepository.GetById(trip.BusVehicleId);
+            if (entity != null && trip.CurrentTicket< count && busVehicle.Seat >= count)
             {
-                entity = await _unitOfWork.StudentTripRepository.Query().Where(y => y.TripId == x.TripId && y.StudentId == studentID).FirstOrDefaultAsync();
-                if (entity != null && x.CurrentTicket< count)
-                {
-                    x.CurrentTicket = count;
-                    _unitOfWork.TripRepository.Update(x);
-                    break;
-                }
-            }
-            if (entity == null)
+                trip.CurrentTicket = count;
+                _unitOfWork.TripRepository.Update(trip);
+            }    
+            else 
             {
                 return new()
                 {
@@ -378,9 +377,30 @@ namespace FBus.Business.StudentTripManagement.Implements
                 }
 
                 // Xử lý cho phần tài xế
-                // ... code 
+                
             }
+            var driver = await _unitOfWork.DriverRepository.GetById(trip.DriverId.Value);
+            if(driver != null)
+            {
+                NoticationModel saveNoti = new NoticationModel
+                {
+                    EntityId = driver.DriverId.ToString(),
+                    Title = "Checkin",
+                    Content = "Sinh viên "+ student.FullName+ " vừa lên xe",
+                    Type = NotificationType.Checkin,
+                };
+                await _notificationService.SaveNotification(saveNoti, Role.Driver);
 
+                // Send notification to client
+                if (!string.IsNullOrEmpty(student.NotifyToken))
+                {
+                    await _notificationService.SendNotification(
+                        driver.NotifyToken,
+                        "Checkin",
+                        "Sinh viên " + student.FullName + " vừa lên xe"
+                    );
+                }
+            }
             return new()
             {
                 StatusCode = (int)StatusCode.Success,

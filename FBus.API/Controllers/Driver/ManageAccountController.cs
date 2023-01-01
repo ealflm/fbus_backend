@@ -27,6 +27,13 @@ namespace FBus.API.Controllers.Driver
             return SendResponse(await _driverService.Update(id, model));
         }
 
+        [HttpGet]
+        [Route(ApiVer1Url.Driver.Profile + "/{id}")]
+        public async Task<IActionResult> GetProfile(string id)
+        {
+            return SendResponse(await _driverService.GetDetails(id));
+        }
+
         [HttpPut]
         [Route(ApiVer1Url.Driver.ChangePassword)]
         public async Task<IActionResult> ChangePassword(ModifiedPasswordModel model)

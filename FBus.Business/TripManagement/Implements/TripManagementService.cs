@@ -239,15 +239,23 @@ namespace FBus.Business.TripManagement.Implements
                                     t.Date.Year.CompareTo(DateTime.UtcNow.Year) == 0 &&
                                     t.TimeEnd.CompareTo(DateTime.UtcNow.TimeOfDay) < 0
                                 )
-                            )
-                            .Select(t => t.AsViewModel())
-                            .ToListAsync();
-
+                            ).ToListAsync();
+                var resultList = new List<TripViewModel>();
+                foreach (var entity in th)
+                {
+                    var result = entity.AsViewModel();
+                    result.Route = (RouteViewModel)(await _routeManagementService.Get(entity.RouteId)).Data;
+                    result.Bus = await _unitOfWork.BusRepository.Query().Where(x => x.BusVehicleId == entity.BusVehicleId).Select(x => x.AsBusViewModel()).FirstOrDefaultAsync();
+                    result.Driver = await _unitOfWork.DriverRepository.Query().Where(x => entity.DriverId != null && x.DriverId == entity.DriverId.Value).Select(x => x.AsDriverViewModel()).FirstOrDefaultAsync();
+                    var studentTrips = await _unitOfWork.StudentTripRepository.Query().Where(x => x.TripId == entity.TripId && x.Rate != null).ToListAsync();
+                    result.Rate = (float?)studentTrips.Average(x => x.Rate);
+                    resultList.Add(result);
+                }
                 return new()
                 {
                     StatusCode = (int)StatusCode.Ok,
                     Message = Message.GetListSuccess,
-                    Data = th,
+                    Data = resultList,
                 };
             }
 
@@ -267,14 +275,23 @@ namespace FBus.Business.TripManagement.Implements
                         .Where(t => t.Date.Month.CompareTo(DateTime.UtcNow.Month) >= 0)
                         .Where(t => t.Date.Year.CompareTo(DateTime.UtcNow.Year) >= 0)
                         .Where(t => t.TimeStart.CompareTo(DateTime.UtcNow.TimeOfDay) >= 0)
-                        .Select(t => t.AsViewModel())
                         .ToListAsync();
-
+            var resultList = new List<TripViewModel>();
+            foreach (var entity in th)
+            {
+                var result = entity.AsViewModel();
+                result.Route = (RouteViewModel)(await _routeManagementService.Get(entity.RouteId)).Data;
+                result.Bus = await _unitOfWork.BusRepository.Query().Where(x => x.BusVehicleId == entity.BusVehicleId).Select(x => x.AsBusViewModel()).FirstOrDefaultAsync();
+                result.Driver = await _unitOfWork.DriverRepository.Query().Where(x => entity.DriverId != null && x.DriverId == entity.DriverId.Value).Select(x => x.AsDriverViewModel()).FirstOrDefaultAsync();
+                var studentTrips = await _unitOfWork.StudentTripRepository.Query().Where(x => x.TripId == entity.TripId && x.Rate != null).ToListAsync();
+                result.Rate = (float?)studentTrips.Average(x => x.Rate);
+                resultList.Add(result);
+            }
             return new()
             {
                 StatusCode = (int)StatusCode.Ok,
                 Message = Message.GetListSuccess,
-                Data = th,
+                Data = resultList,
             };
         }
 

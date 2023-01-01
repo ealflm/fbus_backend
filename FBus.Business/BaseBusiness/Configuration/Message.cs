@@ -11,6 +11,7 @@ namespace FBus.Business.BaseBusiness.Configuration
         public readonly static string WrongUsername = "Tài khoản không chính xác";
         public readonly static string WrongPassword = "Mật khẩu không chính xác";
         public readonly static string ChangePasswordSuccess = "Đổi mật khẩu thành công";
+        public readonly static string ErrorExecution = "Thao tác thất bại";
 
         public static string CustomContent(string content)
         {
