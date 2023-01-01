@@ -624,9 +624,9 @@ namespace FBus.Business.TripManagement.Implements
 
                 using (MemoryStream memoryStream = new MemoryStream(buffer))
                 {
-                    using (CryptoStream cryptoStream = new CryptoStream((Stream)memoryStream, decryptor, CryptoStreamMode.Read))
+                    using (CryptoStream cryptoStream = new CryptoStream((System.IO.Stream)memoryStream, decryptor, CryptoStreamMode.Read))
                     {
-                        using (StreamReader streamReader = new StreamReader((Stream)cryptoStream))
+                        using (StreamReader streamReader = new StreamReader((System.IO.Stream)cryptoStream))
                         {
                             return streamReader.ReadToEnd();
                         }
@@ -658,7 +658,7 @@ namespace FBus.Business.TripManagement.Implements
             };
         }
 
-        public async Task<Response> GetFeedBack(Guid id) 
+        public async Task<Response> GetFeedback(Guid id) 
         {
             var feedBackList = await _unitOfWork.StudentTripRepository.Query().Where(x => x.TripId == id).Select(x => new TripFeedbackModel()
             {
