@@ -28,5 +28,6 @@ namespace FBus.Business.TripManagement.Interfaces
         Task<Response> CheckInTripForDriver(string qrCode, string driverId);
         Task<Response> MakeReadRequest(string id); 
         Task<Response> GetFeedback(Guid id);
+        Task<Response> GetCurrent(Guid id);
     }
 }

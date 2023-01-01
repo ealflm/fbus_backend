@@ -40,5 +40,12 @@ namespace FBus.API.Controllers.Driver
         {
             return SendResponse(await _authorizationService.ChangePassword(model, Role.Driver));
         }
+
+        [HttpGet]
+        [Route(ApiVer1Url.Driver.BaseApiUrl + "/statistics/{id}")]
+        public async Task<IActionResult> GetDetailStatistics(string id)
+        {
+            return SendResponse(await _driverService.Statistics(id));
+        }
     }
 }

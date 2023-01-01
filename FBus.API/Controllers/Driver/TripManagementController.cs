@@ -45,7 +45,12 @@ namespace FBus.API.Controllers.Driver
             return SendResponse(await _service.GetFeedback(id));
         }
 
-
+        [HttpGet]
+        [Route(ApiVer1Url.Driver.Trip + "/current" + "/{id}")]
+        public async Task<IActionResult> GetCurrent(Guid id)
+        {
+            return SendResponse(await _service.GetCurrent(id));
+        }
         /* [HttpPost]
          public async Task<IActionResult> Create([FromBody] TripSearchModel model)
          {
