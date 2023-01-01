@@ -6,6 +6,7 @@ using FBus.Business.BaseBusiness.ViewModel;
 using FBus.Business.BusVehicleManagement.Interfaces;
 using FBus.Business.DriverManagement.Interfaces;
 using FBus.Business.RouteManagement.Interfaces;
+using FBus.Business.StationManagement.Implements;
 using FBus.Business.StationManagement.Interfaces;
 using FBus.Business.TripManagement.Interfaces;
 using FBus.Business.TripManagement.SearchModel;
@@ -680,5 +681,37 @@ namespace FBus.Business.TripManagement.Implements
                 Message = Message.GetListSuccess
             };
         }
+
+        public async Task<Response> GetCurrent(Guid id)
+        {
+            var entities = await _unitOfWork.TripRepository.Query()
+                .Where(x => x.DriverId.Equals(id)).ToListAsync();
+            var currentDate = DateTime.UtcNow.AddHours(7);
+            var minTimeSpan = TimeSpan.MaxValue.TotalMinutes;
+            TripViewModel rs = null;
+            foreach (var entity in entities)
+            {
+                var result = entity.AsViewModel();
+                result.Route = (RouteViewModel)(await _routeManagementService.Get(entity.RouteId)).Data;
+                result.Bus = await _unitOfWork.BusRepository.Query().Where(x => x.BusVehicleId == entity.BusVehicleId).Select(x => x.AsBusViewModel()).FirstOrDefaultAsync();
+                result.Driver = await _unitOfWork.DriverRepository.Query().Where(x => entity.DriverId != null && x.DriverId == entity.DriverId.Value).Select(x => x.AsDriverViewModel()).FirstOrDefaultAsync();
+                var studentTrips = await _unitOfWork.StudentTripRepository.Query().Where(x => x.TripId == entity.TripId && x.Rate != null).ToListAsync();
+                result.Rate = (float?)studentTrips.Average(x => x.Rate);
+                var timeSpan = Math.Abs(result.Date.AddMinutes(result.TimeStart.TotalMinutes).Subtract(currentDate).TotalMinutes);
+                if (minTimeSpan > timeSpan)
+                {
+                    rs = result;
+                    minTimeSpan = timeSpan;
+                }
+            }
+
+            return new()
+            {
+                StatusCode = (int)StatusCode.Ok,
+                Data = rs,
+                Message = Message.GetListSuccess
+            };
+        }
+
     }
 }

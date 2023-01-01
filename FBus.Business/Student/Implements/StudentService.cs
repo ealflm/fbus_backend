@@ -31,7 +31,7 @@ namespace FBus.Business.StudentManagement.Implements
             var student = await _unitOfWork.StudentRepository.GetById(Guid.Parse(id));
             DateTime fd = DateTime.Now.StartOfWeek(DayOfWeek.Monday);
             DateTime td = fd.AddDays(7);
-            var studentTripList = await _unitOfWork.StudentTripRepository.Query().ToListAsync();
+            var studentTripList = await _unitOfWork.StudentTripRepository.Query().Where(x=> x.StudentId == student.StudentId).ToListAsync();
             int studentTripCount = 0;
             int studentTripNotUse = 0;
             double distance = 0;

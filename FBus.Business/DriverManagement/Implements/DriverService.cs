@@ -10,6 +10,7 @@ using FBus.Business.BaseBusiness.Interfaces;
 using FBus.Business.BaseBusiness.ViewModel;
 using FBus.Business.DriverManagement.Interfaces;
 using FBus.Business.DriverManagement.Models;
+using FBus.Business.Student.Models;
 using FBus.Business.TripManagement.Interfaces;
 using FBus.Data.Interfaces;
 using FBus.Data.Models;
@@ -30,6 +31,44 @@ namespace FBus.Business.DriverManagement.Implements
             _azureBlobService = azureBlobService;
             _smsService = smsService;
             _tripService = tripManagementService;
+        }
+
+
+        public async Task<Response> Statistics(string id)
+        {
+            var driver = await _unitOfWork.DriverRepository.GetById(Guid.Parse(id));
+            DateTime fd = DateTime.UtcNow.AddHours(7).StartOfWeek(DayOfWeek.Monday);
+            DateTime td = fd.AddDays(7);
+            DateTime currentDate = DateTime.UtcNow.AddHours(7);
+            var TripList = await _unitOfWork.TripRepository.Query().ToListAsync();
+            int tripCount = 0;
+            int tripNotUse = 0;
+            double distance = 0;
+            foreach (var item in TripList)
+            {
+                var trip = await _unitOfWork.TripRepository.GetById(item.TripId);
+                if (trip.Date >= fd && trip.Date <= currentDate && trip.TimeStart < currentDate.TimeOfDay)
+                {
+                    tripCount++;
+                    var route = await _unitOfWork.RouteRepository.GetById(trip.RouteId);
+                    distance += Convert.ToDouble(route.Distance);
+                }
+                if(trip.Date > currentDate && trip.TimeStart > currentDate.TimeOfDay && trip.Date <= td)
+                {
+                    tripNotUse++;
+                }
+            }
+            var result = new DriverStatisticsModel();
+            result.Distance = distance;
+            result.TripCount = tripCount;
+            result.TripNotUseCount = tripNotUse;
+            return new()
+            {
+                StatusCode = (int)StatusCode.Ok,
+                Message = Message.GetDetailsSuccess,
+                Data = result
+            };
+
         }
 
         public async Task<Response> Create(CreateDriverModel model)
