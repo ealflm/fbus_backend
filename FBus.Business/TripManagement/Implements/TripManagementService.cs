@@ -276,7 +276,6 @@ namespace FBus.Business.TripManagement.Implements
                         .Where(t => t.Date.Day.CompareTo(DateTime.UtcNow.AddHours(7).Day) >= 0)
                         .Where(t => t.Date.Month.CompareTo(DateTime.UtcNow.AddHours(7).Month) >= 0)
                         .Where(t => t.Date.Year.CompareTo(DateTime.UtcNow.AddHours(7).Year) >= 0)
-                        .Where(t => t.TimeStart.CompareTo(DateTime.UtcNow.AddHours(7).TimeOfDay) >= 0)
                         .ToListAsync();
             var resultList = new List<TripViewModel>();
             foreach (var entity in th)
@@ -287,7 +286,10 @@ namespace FBus.Business.TripManagement.Implements
                 result.Driver = await _unitOfWork.DriverRepository.Query().Where(x => entity.DriverId != null && x.DriverId == entity.DriverId.Value).Select(x => x.AsDriverViewModel()).FirstOrDefaultAsync();
                 var studentTrips = await _unitOfWork.StudentTripRepository.Query().Where(x => x.TripId == entity.TripId && x.Rate != null).ToListAsync();
                 result.Rate = (float?)studentTrips.Average(x => x.Rate);
-                resultList.Add(result);
+                if (result.Date > DateTime.UtcNow.AddHours(7).Date || (result.Date == DateTime.UtcNow.AddHours(7).Date && result.TimeStart >= DateTime.UtcNow.AddHours(7).TimeOfDay))
+                {
+                    resultList.Add(result);
+                }
             }
             return new()
             {
