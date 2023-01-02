@@ -29,5 +29,7 @@ namespace FBus.Business.TripManagement.Interfaces
         Task<Response> MakeReadRequest(string id); 
         Task<Response> GetFeedback(Guid id);
         Task<Response> GetCurrent(Guid id);
+
+        Task<Response> GetStudentTrips(Guid id);
     }
 }

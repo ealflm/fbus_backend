@@ -137,6 +137,35 @@ namespace FBus.Business.TripManagement.Implements
             };
         }
 
+        public async Task<Response> GetStudentTrips(Guid id)
+        {
+            var entity = await _unitOfWork.TripRepository.GetById(id);
+            if (entity != null)
+            {
+                var routeStationList = await _unitOfWork.RouteStationRepository.Query().Where(x => x.RouteId == entity.RouteId).ToListAsync();
+                List<TripGetStudentTripModel> resultList = new List<TripGetStudentTripModel>();
+                foreach(var routeStation in routeStationList)
+                {
+                    TripGetStudentTripModel result = new TripGetStudentTripModel();
+                    result.Station = (await _unitOfWork.StationRepository.GetById(routeStation.StationId)).AsViewModel();
+                    result.Count = await _unitOfWork.StudentTripRepository.Query().Where(x=> x.TripId == entity.TripId && x.StationId == routeStation.StationId).CountAsync();
+                    resultList.Add(result);
+                }
+
+                return new()
+                {
+                    StatusCode = (int)StatusCode.Ok,
+                    Data = resultList,
+                    Message = Message.GetDetailsSuccess
+                };
+            }
+            return new()
+            {
+                StatusCode = (int)StatusCode.NotFound,
+                Message = Message.NotFound
+            };
+        }
+
         public async Task<Response> GetListByRoute(Guid? routeID, DateTime? date)
         {
             var entities = await _unitOfWork.TripRepository.Query()

@@ -39,17 +39,24 @@ namespace FBus.API.Controllers.Driver
         }
 
         [HttpGet]
-        [Route(ApiVer1Url.Driver.Trip +"/feedback"+ "/{id}")]
+        [Route(ApiVer1Url.Driver.Trip +"/feedback/{id}")]
         public async Task<IActionResult> GetFeedback(Guid id)
         {
             return SendResponse(await _service.GetFeedback(id));
         }
 
         [HttpGet]
-        [Route(ApiVer1Url.Driver.Trip + "/current" + "/{id}")]
+        [Route(ApiVer1Url.Driver.Trip + "/current/{id}")]
         public async Task<IActionResult> GetCurrent(Guid id)
         {
             return SendResponse(await _service.GetCurrent(id));
+        }
+
+        [HttpGet]
+        [Route(ApiVer1Url.Driver.Trip + "/studentTrip/{id}")]
+        public async Task<IActionResult> GetStudentTrip(Guid id)
+        {
+            return SendResponse(await _service.GetStudentTrips(id));
         }
         /* [HttpPost]
          public async Task<IActionResult> Create([FromBody] TripSearchModel model)
