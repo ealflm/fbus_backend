@@ -232,14 +232,14 @@ namespace FBus.Business.TripManagement.Implements
                             .Query()
                             .Where(t => t.DriverId != null && t.DriverId.Value == Guid.Parse(id))
                             .Where(t =>
-                                (t.Date.Day.CompareTo(DateTime.UtcNow.Day) < 0 && t.Date.Month.CompareTo(DateTime.UtcNow.Month) == 0 && t.Date.Year.CompareTo(DateTime.UtcNow.Year) == 0) ||
-                                (t.Date.Month.CompareTo(DateTime.UtcNow.Month) < 0 && t.Date.Year.CompareTo(DateTime.UtcNow.Year) == 0) ||
-                                (t.Date.Year.CompareTo(DateTime.UtcNow.Year) < 0) ||
+                                (t.Date.Day.CompareTo(DateTime.UtcNow.AddHours(7).Day) < 0 && t.Date.Month.CompareTo(DateTime.UtcNow.AddHours(7).Month) == 0 && t.Date.Year.CompareTo(DateTime.UtcNow.AddHours(7).Year) == 0) ||
+                                (t.Date.Month.CompareTo(DateTime.UtcNow.AddHours(7).Month) < 0 && t.Date.Year.CompareTo(DateTime.UtcNow.AddHours(7).Year) == 0) ||
+                                (t.Date.Year.CompareTo(DateTime.UtcNow.AddHours(7).Year) < 0) ||
                                 (
-                                    t.Date.Day.CompareTo(DateTime.UtcNow.Day) == 0 &&
-                                    t.Date.Month.CompareTo(DateTime.UtcNow.Month) == 0 &&
-                                    t.Date.Year.CompareTo(DateTime.UtcNow.Year) == 0 &&
-                                    t.TimeEnd.CompareTo(DateTime.UtcNow.TimeOfDay) < 0
+                                    t.Date.Day.CompareTo(DateTime.UtcNow.AddHours(7).Day) == 0 &&
+                                    t.Date.Month.CompareTo(DateTime.UtcNow.AddHours(7).Month) == 0 &&
+                                    t.Date.Year.CompareTo(DateTime.UtcNow.AddHours(7).Year) == 0 &&
+                                    t.TimeEnd.CompareTo(DateTime.UtcNow.AddHours(7).TimeOfDay) < 0
                                 )
                             ).ToListAsync();
                 var resultList = new List<TripViewModel>();
@@ -273,10 +273,10 @@ namespace FBus.Business.TripManagement.Implements
             var th = await _unitOfWork.TripRepository
                         .Query()
                         .Where(t => t.DriverId != null && t.DriverId.Value == Guid.Parse(id))
-                        .Where(t => t.Date.Day.CompareTo(DateTime.UtcNow.Day) >= 0)
-                        .Where(t => t.Date.Month.CompareTo(DateTime.UtcNow.Month) >= 0)
-                        .Where(t => t.Date.Year.CompareTo(DateTime.UtcNow.Year) >= 0)
-                        .Where(t => t.TimeStart.CompareTo(DateTime.UtcNow.TimeOfDay) >= 0)
+                        .Where(t => t.Date.Day.CompareTo(DateTime.UtcNow.AddHours(7).Day) >= 0)
+                        .Where(t => t.Date.Month.CompareTo(DateTime.UtcNow.AddHours(7).Month) >= 0)
+                        .Where(t => t.Date.Year.CompareTo(DateTime.UtcNow.AddHours(7).Year) >= 0)
+                        .Where(t => t.TimeStart.CompareTo(DateTime.UtcNow.AddHours(7).TimeOfDay) >= 0)
                         .ToListAsync();
             var resultList = new List<TripViewModel>();
             foreach (var entity in th)
