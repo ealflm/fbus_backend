@@ -67,7 +67,8 @@ namespace FBus.Business.BaseBusiness.Configuration
                 TimeStart = item.TimeStart,
                 TripId = item.TripId,
                 Date = item.Date,
-                Status = item.Status
+                Status = item.Status,
+                CurrentTicket = item.CurrentTicket
             };
         }
 

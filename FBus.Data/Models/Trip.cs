@@ -19,7 +19,7 @@ namespace FBus.Data.Models
         public TimeSpan TimeStart { get; set; }
         public TimeSpan TimeEnd { get; set; }
         public int Status { get; set; }
-        public int? CurrentTicket { get; set; }
+        public int CurrentTicket { get; set; }
 
         public virtual BusVehicle BusVehicle { get; set; }
         public virtual Driver Driver { get; set; }
