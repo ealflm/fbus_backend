@@ -47,5 +47,12 @@ namespace FBus.API.Controllers.Driver
         {
             return SendResponse(await _driverService.Statistics(id));
         }
+
+        [HttpGet]
+        [Route(ApiVer1Url.Driver.BaseApiUrl + "/encryptString/{plainText}")]
+        public IActionResult GetCode(string plainText)
+        {
+            return SendResponse( _driverService.GenCode(plainText));
+        }
     }
 }

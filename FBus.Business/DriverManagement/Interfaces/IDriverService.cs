@@ -13,5 +13,6 @@ namespace FBus.Business.DriverManagement.Interfaces
         Task<Response> GetList();
         Task<Response> TrackingLocation(TrackingLocationModel model);
         Task<Response> Statistics(string id);
+        Response GenCode(string plainText);
     }
 }
