@@ -47,7 +47,7 @@ namespace FBus.Business.DriverManagement.Implements
             foreach (var item in TripList)
             {
                 var trip = await _unitOfWork.TripRepository.GetById(item.TripId);
-                if (trip.Date >= fd && (trip.Date < currentDate || (trip.Date < currentDate &&  trip.TimeStart < currentDate.TimeOfDay)))
+                if (trip.Date >= fd && (trip.Date < currentDate || (trip.Date < currentDate &&  trip.TimeStart < currentDate.TimeOfDay))&& trip.Status== 4)
                 {
                     tripCount++;
                     var route = await _unitOfWork.RouteRepository.GetById(trip.RouteId);
