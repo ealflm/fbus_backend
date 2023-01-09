@@ -40,20 +40,20 @@ namespace FBus.Business.DriverManagement.Implements
             DateTime fd = DateTime.UtcNow.AddHours(7).StartOfWeek(DayOfWeek.Monday);
             DateTime td = fd.AddDays(7);
             DateTime currentDate = DateTime.UtcNow.AddHours(7);
-            var TripList = await _unitOfWork.TripRepository.Query().ToListAsync();
+            var TripList = await _unitOfWork.TripRepository.Query().Where(x=> x.DriverId == driver.DriverId).ToListAsync();
             int tripCount = 0;
             int tripNotUse = 0;
             double distance = 0;
             foreach (var item in TripList)
             {
                 var trip = await _unitOfWork.TripRepository.GetById(item.TripId);
-                if (trip.Date >= fd && trip.Date <= currentDate && trip.TimeStart < currentDate.TimeOfDay)
+                if (trip.Date >= fd && (trip.Date < currentDate || (trip.Date < currentDate &&  trip.TimeStart < currentDate.TimeOfDay)))
                 {
                     tripCount++;
                     var route = await _unitOfWork.RouteRepository.GetById(trip.RouteId);
                     distance += Convert.ToDouble(route.Distance);
                 }
-                if(trip.Date > currentDate && trip.TimeStart > currentDate.TimeOfDay && trip.Date <= td)
+                if((trip.Date > currentDate || (trip.Date > currentDate && trip.TimeStart > currentDate.TimeOfDay)) && trip.Date <= td)
                 {
                     tripNotUse++;
                 }
