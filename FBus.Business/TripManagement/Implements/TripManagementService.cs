@@ -144,11 +144,11 @@ namespace FBus.Business.TripManagement.Implements
             {
                 var routeStationList = await _unitOfWork.RouteStationRepository.Query().Where(x => x.RouteId == entity.RouteId).ToListAsync();
                 List<TripGetStudentTripModel> resultList = new List<TripGetStudentTripModel>();
-                foreach(var routeStation in routeStationList)
+                foreach (var routeStation in routeStationList)
                 {
                     TripGetStudentTripModel result = new TripGetStudentTripModel();
                     result.Station = (await _unitOfWork.StationRepository.GetById(routeStation.StationId)).AsViewModel();
-                    result.Count = await _unitOfWork.StudentTripRepository.Query().Where(x=> x.TripId == entity.TripId && x.StationId == routeStation.StationId).CountAsync();
+                    result.Count = await _unitOfWork.StudentTripRepository.Query().Where(x => x.TripId == entity.TripId && x.StationId == routeStation.StationId).CountAsync();
                     resultList.Add(result);
                 }
 
@@ -690,14 +690,14 @@ namespace FBus.Business.TripManagement.Implements
             };
         }
 
-        public async Task<Response> GetFeedback(Guid id) 
+        public async Task<Response> GetFeedback(Guid id)
         {
             var feedBackList = await _unitOfWork.StudentTripRepository.Query().Where(x => x.TripId == id).Select(x => new TripFeedbackModel()
             {
                 Connent = x.Feedback,
                 Rate = Convert.ToDouble(x.Rate)
             }).ToListAsync();
-            if(feedBackList == null || feedBackList.Count == 0)
+            if (feedBackList == null || feedBackList.Count == 0)
             {
                 return new()
                 {
@@ -707,7 +707,7 @@ namespace FBus.Business.TripManagement.Implements
             }
             return new()
             {
-                StatusCode = (int) StatusCode.Success,
+                StatusCode = (int)StatusCode.Success,
                 Data = feedBackList,
                 Message = Message.GetListSuccess
             };
