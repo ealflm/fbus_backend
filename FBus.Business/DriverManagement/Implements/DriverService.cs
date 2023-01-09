@@ -1,7 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Security.Cryptography;
+using System.Text;
 using System.Threading.Tasks;
 using FBus.Business.BaseBusiness.CommonModel;
 using FBus.Business.BaseBusiness.Configuration;
@@ -33,6 +36,44 @@ namespace FBus.Business.DriverManagement.Implements
             _tripService = tripManagementService;
         }
 
+        private static string EncryptString(string plainText)
+        {
+            string key = "b14pa58l8aee4133bhce2ea2315b1916";
+            byte[] iv = new byte[16];
+            byte[] array;
+
+            using (Aes aes = Aes.Create())
+            {
+                aes.Key = Encoding.UTF8.GetBytes(key);
+                aes.IV = iv;
+
+                ICryptoTransform encryptor = aes.CreateEncryptor(aes.Key, aes.IV);
+
+                using (MemoryStream memoryStream = new MemoryStream())
+                {
+                    using (CryptoStream cryptoStream = new CryptoStream((Stream)memoryStream, encryptor, CryptoStreamMode.Write))
+                    {
+                        using (StreamWriter streamWriter = new StreamWriter((Stream)cryptoStream))
+                        {
+                            streamWriter.Write(plainText);
+                        }
+
+                        array = memoryStream.ToArray();
+                    }
+                }
+            }
+
+            return Convert.ToBase64String(array);
+        }
+        public  Response GenCode(string plainText)
+        {
+            var code = EncryptString(plainText);
+            return new()
+            {
+                Data = code,
+                StatusCode= (int) StatusCode.Ok
+            };
+        }
 
         public async Task<Response> Statistics(string id)
         {
