@@ -103,7 +103,7 @@ namespace FBus.API.Controllers.Driver
             return SendResponse(await _service.SendRequestToSwapDriver(model));
         }
 
-        [HttpPatch]
+        [HttpPost]
         [Route(ApiVer1Url.Driver.CheckIn)]
         public async Task<IActionResult> CheckInTripForDriver([FromBody] DriverCheckinModel model)
         {
