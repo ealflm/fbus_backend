@@ -626,7 +626,7 @@ namespace FBus.Business.TripManagement.Implements
                 Content = "Bạn vừa checkin thành công!",
                 Type = NotificationType.Checkin,
             };
-            await _notificationService.SaveNotification(saveNoti, Role.Student);
+            await _notificationService.SaveNotification(saveNoti, Role.Driver);
 
             // Send notification to client
             if (!string.IsNullOrEmpty(driver.NotifyToken))
@@ -640,8 +640,8 @@ namespace FBus.Business.TripManagement.Implements
 
             return new()
             {
-                StatusCode = (int)StatusCode.BadRequest,
-                Message = Message.CustomContent("Tuyến không hợp lệ!")
+                StatusCode = (int)StatusCode.Success,
+                Message = Message.CustomContent("Bạn vừa checkin thành công!")
             };
         }
 
@@ -719,7 +719,7 @@ namespace FBus.Business.TripManagement.Implements
         public async Task<Response> GetCurrent(Guid id)
         {
             var entities = await _unitOfWork.TripRepository.Query()
-                .Where(x => x.DriverId.Equals(id) && x.Status != (int) TripStatus.Disable).ToListAsync();
+                .Where(x => x.DriverId.Equals(id) && x.Status != (int)TripStatus.Disable).ToListAsync();
             var currentDate = DateTime.UtcNow.AddHours(7);
             var minTimeSpan = TimeSpan.MaxValue.TotalMinutes;
             TripViewModel rs = null;
