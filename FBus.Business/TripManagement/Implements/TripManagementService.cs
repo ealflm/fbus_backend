@@ -410,7 +410,11 @@ namespace FBus.Business.TripManagement.Implements
                 };
             }
 
-            var isAvailiableTime = model.RequestTime.TimeOfDay.CompareTo(tripInfo.TimeStart.Subtract(TimeSpan.FromMinutes(30))) <= 0;
+            var isAvailiableTime = model.RequestTime.Date.CompareTo(tripInfo.Date) < 0 ||
+                                    (
+                                        model.RequestTime.TimeOfDay.CompareTo(tripInfo.TimeStart.Subtract(TimeSpan.FromMinutes(30))) <= 0 &&
+                                        model.RequestTime.Date.CompareTo(tripInfo.Date) == 0
+                                    );
 
             if (!isAvailiableTime)
             {
