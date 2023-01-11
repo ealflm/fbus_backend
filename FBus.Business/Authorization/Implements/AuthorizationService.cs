@@ -242,7 +242,7 @@ namespace FBus.Business.Authorization.Implements
                         }else if(countBan == 4)
                         {
                             dateBan = dateBan.AddDays(14);
-                        }else if(countBan == 5)
+                        }else if(countBan >= 5)
                         {
                             dateBan = dateBan.AddYears(20);
                         }
