@@ -591,9 +591,7 @@ namespace FBus.Business.TripManagement.Implements
                                     x.Date == dateCheck &&
                                     x.TimeStart <= timeCheck &&
                                     x.TimeEnd >= timeCheck &&
-                                    (x.Status == (int)TripStatus.Waiting ||
-                                    x.Status == (int)TripStatus.NoDriver)
-                                )
+                                    x.Status == (int)TripStatus.Waiting)
                                 .FirstOrDefaultAsync();
 
             if (availableTrip == null)
