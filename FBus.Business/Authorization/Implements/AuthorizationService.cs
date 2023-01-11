@@ -251,11 +251,11 @@ namespace FBus.Business.Authorization.Implements
                         _unitOfWork.StudentRepository.Update(user);
                         
                     }
-                    if(user.DateBan< DateTime.UtcNow.AddHours(7))
-                    {
-                        user.DateBan = null;
-                        _unitOfWork.StudentRepository.Update(user);
-                    }
+                    //if(user.DateBan< DateTime.UtcNow.AddHours(7))
+                    //{
+                    //    user.DateBan = null;
+                    //    _unitOfWork.StudentRepository.Update(user);
+                    //}
                     await _unitOfWork.SaveChangesAsync();
                     if (user.Status == 0)
                     {

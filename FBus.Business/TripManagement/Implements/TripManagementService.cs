@@ -716,7 +716,7 @@ namespace FBus.Business.TripManagement.Implements
         public async Task<Response> GetCurrent(Guid id)
         {
             var entities = await _unitOfWork.TripRepository.Query()
-                .Where(x => x.DriverId.Equals(id)).ToListAsync();
+                .Where(x => x.DriverId.Equals(id) && x.Status != (int) TripStatus.Disable).ToListAsync();
             var currentDate = DateTime.UtcNow.AddHours(7);
             var minTimeSpan = TimeSpan.MaxValue.TotalMinutes;
             TripViewModel rs = null;
