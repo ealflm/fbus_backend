@@ -588,7 +588,7 @@ namespace FBus.Business.TripManagement.Implements
                                 .Where(x =>
                                     x.BusVehicleId == busId &&
                                     x.DriverId != null && x.DriverId.Value == Guid.Parse(driverId) &&
-                                    x.Date == dateCheck &&
+                                    x.Date.CompareTo(dateCheck) == 0 &&
                                     x.TimeStart <= timeCheck &&
                                     x.TimeEnd >= timeCheck &&
                                     x.Status == (int)TripStatus.Waiting)
