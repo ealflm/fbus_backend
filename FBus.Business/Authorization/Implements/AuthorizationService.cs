@@ -234,26 +234,26 @@ namespace FBus.Business.Authorization.Implements
                             }
                         }
                     }
-                    if(countBan> user.CountBan)
+                    if(countBan == 3)
                     {
-                        if(countBan == 3)
-                        {
-                            dateBan = dateBan.AddDays(7);
-                        }else if(countBan == 4)
-                        {
-                            dateBan = dateBan.AddDays(14);
-                        }else if(countBan == 5)
-                        {
-                            dateBan = dateBan.AddYears(20);
-                        }
-                        user.DateBan = dateBan;
-                        user.CountBan = countBan;
-                        _unitOfWork.StudentRepository.Update(user);
-                        
+                        dateBan = dateBan.AddDays(7);
+                    }else if(countBan == 4)
+                    {
+                        dateBan = dateBan.AddDays(14);
+                    }else if(countBan >= 5)
+                    {
+                        dateBan = dateBan.AddYears(20);
                     }
-                    if(user.DateBan< DateTime.UtcNow.AddHours(7))
+                    user.DateBan = dateBan;
+                    user.CountBan = countBan;
+                    user.Status = (int)StudentStatus.Disable;
+                    _unitOfWork.StudentRepository.Update(user);
+                        
+                    
+                    if (user.DateBan < DateTime.UtcNow.AddHours(7))
                     {
                         user.DateBan = null;
+                        user.Status = (int)StudentStatus.Active;
                         _unitOfWork.StudentRepository.Update(user);
                     }
                     await _unitOfWork.SaveChangesAsync();

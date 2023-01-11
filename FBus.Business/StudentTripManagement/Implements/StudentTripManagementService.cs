@@ -334,7 +334,7 @@ namespace FBus.Business.StudentTripManagement.Implements
             var currentDate = DateTime.UtcNow.AddHours(7);
             var dateCheck = currentDate.Date;
             var timeCheck = currentDate.TimeOfDay;
-            StudentTrip entity = await _unitOfWork.StudentTripRepository.Query().Where(y => y.TripId == trip.TripId && y.StudentId == studentID).FirstOrDefaultAsync();
+            StudentTrip entity = await _unitOfWork.StudentTripRepository.Query().Where(y => y.TripId == trip.TripId && y.StudentId == studentID && y.Status==1).FirstOrDefaultAsync();
             var busVehicle = await _unitOfWork.BusRepository.GetById(trip.BusVehicleId);
             if (entity != null && trip.CurrentTicket< count && busVehicle.Seat >= count)
             {
