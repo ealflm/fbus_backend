@@ -60,7 +60,7 @@ namespace FBus.Business.TripManagement.Implements
                                 ))
                                 .FirstOrDefaultAsync()) != null;
 
-                if (!already && model.StartDate.AddDays(i).DayOfWeek != DayOfWeek.Sunday)
+                if (!already)
                 {
                     var entity = new Trip()
                     {
