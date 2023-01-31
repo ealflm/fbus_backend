@@ -253,12 +253,12 @@ namespace FBus.Business.Authorization.Implements
                     if (user.DateBan < DateTime.UtcNow.AddHours(7))
                     {
                         user.DateBan = null;
-                        user.Status = (int)StudentStatus.Active;
+                        user.Status = (int)StudentStatus.Disable;
                         _unitOfWork.StudentRepository.Update(user);
                     }
                     else
                     {
-                        user.Status = (int)StudentStatus.Disable;
+                        user.Status = (int)StudentStatus.Active;
                         _unitOfWork.StudentRepository.Update(user);
                     }
                     await _unitOfWork.SaveChangesAsync();
