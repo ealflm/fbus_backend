@@ -73,6 +73,14 @@ namespace FBus.Business.TripManagement.Implements
                                 ))
                                 .FirstOrDefaultAsync()) != null;
                 }
+                else
+                {
+                    return new()
+                    {
+                        StatusCode = (int)StatusCode.BadRequest,
+                        Message = Message.AlreadyExist
+                    };
+                }
                 if (!already)
                 {
                     already = (await _unitOfWork.TripRepository
@@ -85,6 +93,14 @@ namespace FBus.Business.TripManagement.Implements
                                     (start.CompareTo(x.TimeStart) < 0 && x.TimeStart.CompareTo(end) <= 0)
                                 ))
                                 .FirstOrDefaultAsync()) != null;
+                }
+                else
+                {
+                    return new()
+                    {
+                        StatusCode = (int)StatusCode.BadRequest,
+                        Message = Message.AlreadyExist
+                    };
                 }
                 if (!already)
                 {
@@ -100,6 +116,14 @@ namespace FBus.Business.TripManagement.Implements
                         TripId = Guid.NewGuid()
                     };
                     await _unitOfWork.TripRepository.Add(entity);
+                }
+                else
+                {
+                    return new()
+                    {
+                        StatusCode = (int)StatusCode.BadRequest,
+                        Message = Message.AlreadyExist
+                    };
                 }
             }
 
