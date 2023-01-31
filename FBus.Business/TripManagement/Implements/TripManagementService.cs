@@ -62,6 +62,32 @@ namespace FBus.Business.TripManagement.Implements
                                 .FirstOrDefaultAsync()) != null;
                 if (!already)
                 {
+                    already = (await _unitOfWork.TripRepository
+                                .Query()
+                                .Where(x => x.Date.Equals(model.StartDate.AddDays(i)) &&
+                                x.BusVehicleId.Equals(model.BusId) &&
+                                (
+                                    (x.TimeStart.CompareTo(start) <= 0 && start.CompareTo(x.TimeEnd) <= 0) ||
+                                    (x.TimeStart.CompareTo(end) <= 0 && end.CompareTo(x.TimeEnd) <= 0) ||
+                                    (start.CompareTo(x.TimeStart) < 0 && x.TimeStart.CompareTo(end) <= 0)
+                                ))
+                                .FirstOrDefaultAsync()) != null;
+                }
+                if (!already)
+                {
+                    already = (await _unitOfWork.TripRepository
+                                .Query()
+                                .Where(x => x.Date.Equals(model.StartDate.AddDays(i)) &&
+                                x.DriverId.Equals(model.DriverId) &&
+                                (
+                                    (x.TimeStart.CompareTo(start) <= 0 && start.CompareTo(x.TimeEnd) <= 0) ||
+                                    (x.TimeStart.CompareTo(end) <= 0 && end.CompareTo(x.TimeEnd) <= 0) ||
+                                    (start.CompareTo(x.TimeStart) < 0 && x.TimeStart.CompareTo(end) <= 0)
+                                ))
+                                .FirstOrDefaultAsync()) != null;
+                }
+                if (!already)
+                {
                     var entity = new Trip()
                     {
                         BusVehicleId = model.BusId,
