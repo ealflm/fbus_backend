@@ -225,7 +225,7 @@ namespace FBus.Business.Authorization.Implements
                     foreach(var studentTrip in studentTripList)
                     {
                         var trip = await _unitOfWork.TripRepository.GetById(studentTrip.TripId);
-                        if(trip.Date< DateTime.UtcNow.AddHours(7))
+                        if(trip.Date< DateTime.UtcNow.AddHours(7) && user.CreatedDate<= trip.Date)
                         {
                             countBan++;
                             if(trip.Date> dateBan)
@@ -247,13 +247,18 @@ namespace FBus.Business.Authorization.Implements
                     user.DateBan = dateBan;
                     user.CountBan = countBan;
                     // user.Status = (int)StudentStatus.Disable;
-                    _unitOfWork.StudentRepository.Update(user);
+                    //_unitOfWork.StudentRepository.Update(user);
                         
                     
                     if (user.DateBan < DateTime.UtcNow.AddHours(7))
                     {
                         user.DateBan = null;
-                        // user.Status = (int)StudentStatus.Active;
+                        user.Status = (int)StudentStatus.Active;
+                        _unitOfWork.StudentRepository.Update(user);
+                    }
+                    else
+                    {
+                        user.Status = (int)StudentStatus.Disable;
                         _unitOfWork.StudentRepository.Update(user);
                     }
                     await _unitOfWork.SaveChangesAsync();

@@ -206,9 +206,7 @@ namespace FBus.Data.Context
                     .ValueGeneratedNever()
                     .HasColumnName("ShiftID");
 
-                entity.Property(e => e.Content)
-                    .IsRequired()
-                    .IsUnicode(false);
+                entity.Property(e => e.Content).IsRequired();
 
                 entity.Property(e => e.DriverId).HasColumnName("DriverID");
 

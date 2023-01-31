@@ -50,7 +50,8 @@ namespace FBus.Business.TripManagement.Implements
             {
                 bool already = (await _unitOfWork.TripRepository
                                 .Query()
-                                .Where(x => x.Date.Equals(model.StartDate.AddDays(i)) &&
+                                .Where(x => x.Date.Equals(model.StartDate.AddDays(i)) && 
+                                x.DriverId.Equals(model.DriverId) &&
                                 x.RouteId.Equals(model.RouteId) &&
                                 x.BusVehicleId.Equals(model.BusId) &&
                                 (
@@ -59,7 +60,6 @@ namespace FBus.Business.TripManagement.Implements
                                     (start.CompareTo(x.TimeStart) < 0 && x.TimeStart.CompareTo(end) <= 0)
                                 ))
                                 .FirstOrDefaultAsync()) != null;
-
                 if (!already)
                 {
                     var entity = new Trip()
