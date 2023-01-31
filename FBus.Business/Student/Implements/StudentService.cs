@@ -297,7 +297,7 @@ namespace FBus.Business.StudentManagement.Implements
             stud.PhotoUrl += await _azureBlobService.UploadFile(student.UploadFile, AzureBlobContainer.Student);
             stud.NotifyToken = UpdateTypeOfNullAbleObject<string>(stud.NotifyToken, student.NotifyToken);
             stud.AutomaticScheduling = UpdateTypeOfNotNullAbleObject<bool>(stud.AutomaticScheduling, student.AutomaticScheduling);
-            if(stud.Status ==(int) StudentStatus.Disable && student.Status == (int)StudentStatus.Active)
+            if(stud.Status ==(int) StudentStatus.Active && student.Status == (int)StudentStatus.Disable)
             {
                 stud.CreatedDate = DateTime.UtcNow.AddHours(7);
             }
